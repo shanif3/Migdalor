@@ -28,8 +28,15 @@ import { motion } from 'framer-motion';
 export default function ManageCrews() {
   const [showModal, setShowModal] = useState(false);
   const [editingCrew, setEditingCrew] = useState(null);
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({ name: '', contact: '', notes: '' });
   const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const isAdmin = user?.role === 'admin';
 
   const { data: crews = [], isLoading } = useQuery({
     queryKey: ['crews'],
@@ -110,12 +117,14 @@ export default function ManageCrews() {
         </div>
 
         {/* Add Button */}
-        <div className="flex justify-end mb-6">
-          <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="w-4 h-4 ml-2" />
-            הוסף צוות חדש
-          </Button>
-        </div>
+        {isAdmin && (
+          <div className="flex justify-end mb-6">
+            <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
+              <Plus className="w-4 h-4 ml-2" />
+              הוסף צוות חדש
+            </Button>
+          </div>
+        )}
 
         {/* Crews Table */}
         <Card className="overflow-hidden border-slate-200">
@@ -167,24 +176,26 @@ export default function ManageCrews() {
                       {crew.notes || '—'}
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(crew)}
-                      className="text-slate-400 hover:text-slate-600">
+                      {isAdmin && (
+                        <div className="flex justify-end gap-2">
+                          <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(crew)}
+                        className="text-slate-400 hover:text-slate-600">
 
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMutation.mutate(crew.id)}
-                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteMutation.mutate(crew.id)}
+                        className="text-red-400 hover:text-red-600 hover:bg-red-50">
 
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
               )
