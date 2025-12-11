@@ -28,14 +28,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Key, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Key, Trash2, Edit2, Monitor } from 'lucide-react';
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
 export default function ManageKeys() {
   const [showModal, setShowModal] = useState(false);
   const [editingKey, setEditingKey] = useState(null);
-  const [formData, setFormData] = useState({ room_number: '', room_type: 'small' });
+  const [formData, setFormData] = useState({ room_number: '', room_type: 'small', has_computers: false });
   const queryClient = useQueryClient();
 
   const { data: keys = [], isLoading } = useQuery({
@@ -82,14 +83,14 @@ export default function ManageKeys() {
 
   const handleEdit = (key) => {
     setEditingKey(key);
-    setFormData({ room_number: key.room_number, room_type: key.room_type });
+    setFormData({ room_number: key.room_number, room_type: key.room_type, has_computers: key.has_computers || false });
     setShowModal(true);
   };
 
   const handleClose = () => {
     setShowModal(false);
     setEditingKey(null);
-    setFormData({ room_number: '', room_type: 'small' });
+    setFormData({ room_number: '', room_type: 'small', has_computers: false });
   };
 
   const smallCount = keys.filter(k => k.room_type === 'small').length;
@@ -142,6 +143,7 @@ export default function ManageKeys() {
               <TableRow className="bg-slate-50">
                 <TableHead>Room Number</TableHead>
                 <TableHead>Type</TableHead>
+                <TableHead>Computers</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Current Holder</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -177,6 +179,13 @@ export default function ManageKeys() {
                       }>
                         {key.room_type === 'large' ? '🏢 Large' : '🏠 Small'}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {key.has_computers ? (
+                        <Monitor className="w-4 h-4 text-blue-600" />
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge className={
@@ -257,6 +266,19 @@ export default function ManageKeys() {
                   <SelectItem value="large">🏢 Large Classroom</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="has_computers"
+                checked={formData.has_computers}
+                onCheckedChange={(checked) => 
+                  setFormData({ ...formData, has_computers: checked })
+                }
+              />
+              <Label htmlFor="has_computers" className="cursor-pointer">
+                💻 Has computers
+              </Label>
             </div>
           </div>
 

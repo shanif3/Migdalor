@@ -1,6 +1,8 @@
 import Dashboard from './pages/Dashboard';
 import ManageKeys from './pages/ManageKeys';
 import ManageCrews from './pages/ManageCrews';
+import MySchedule from './pages/MySchedule';
+import KeyAllocation from './pages/KeyAllocation';
 import __Layout from './Layout.jsx';
 
 
@@ -8,6 +10,8 @@ export const PAGES = {
     "Dashboard": Dashboard,
     "ManageKeys": ManageKeys,
     "ManageCrews": ManageCrews,
+    "MySchedule": MySchedule,
+    "KeyAllocation": KeyAllocation,
 }
 
 export const pagesConfig = {
