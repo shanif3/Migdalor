@@ -24,6 +24,7 @@ export default function Layout({ children, currentPageName }) {
 
   const userNavItems = [
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule' },
+    { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
   ];
 
   const navItems = isAdmin ? adminNavItems : userNavItems;
