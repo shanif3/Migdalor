@@ -326,29 +326,38 @@ export default function MySchedule() {
         
 
 <div className="space-y-2 flex flex-col items-end text-right">
-  <Label className="text-right">
+  <Label className="text-right ml-auto">
     סוג חדר נדרש *
   </Label>
 
   <Select
     value={formData.room_type_needed}
-    onValueChange={(value) => setFormData({ ...formData, room_type_needed: value })}
+    onValueChange={(value) =>
+      setFormData({ ...formData, room_type_needed: value })
+    }
   >
     <SelectTrigger className="text-right justify-end">
       <SelectValue placeholder="בחר סוג חדר" />
     </SelectTrigger>
 
     <SelectContent className="text-right" dir="rtl">
-      <SelectItem className="text-right flex justify-end" value="צוותי">
+      <SelectItem
+        value="צוותי"
+        className="text-right flex justify-end pr-2"
+      >
         🏠 צוותי
       </SelectItem>
 
-      <SelectItem className="text-right flex justify-end" value="פלוגתי">
+      <SelectItem
+        value="פלוגתי"
+        className="text-right flex justify-end pr-2"
+      >
         🏢 פלוגתי
       </SelectItem>
     </SelectContent>
   </Select>
 </div>
+
 
 
             <div className="flex items-center space-x-2 space-x-reverse">
