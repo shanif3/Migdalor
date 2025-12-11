@@ -143,8 +143,9 @@ export default function ManageCrews() {
                 </TableRow>
               ) : (
                 crews.map((crew) => (
-                  <TableRow key={crew.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-medium" className="text-center">
+                  <TableRow key={crew.id} className="hover:bg-slate-50/50" className="[&_td]:text-center">
+
+                    <TableCell className="font-medium text-center">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                           <Users className="w-4 h-4 text-indigo-600" />
@@ -152,7 +153,7 @@ export default function ManageCrews() {
                         {crew.name}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {crew.contact ? (
                         <div className="flex items-center gap-1 text-slate-600">
                           <Phone className="w-3 h-3" />
