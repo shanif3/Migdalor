@@ -45,7 +45,7 @@ export default function Layout({ children, currentPageName }) {
                 </span>
                 {user && (
                   <p className="text-xs text-slate-500">
-                    {isAdmin ? '👑 מנהל' : '👤 מנהל צוות'}
+                    {isAdmin ? 'מנהל 👑' : 'מנהל צוות 👤'}
                   </p>
                 )}
               </div>
