@@ -128,13 +128,15 @@ export default function ManageKeys() {
           </Card>
         </div>
 
-        {/* Add Button */}
-        <div className="flex justify-end mb-6">
-          <Button onClick={() => setShowModal(true)} className="bg-emerald-600 hover:bg-emerald-700">
-            <Plus className="w-4 h-4 ml-2" />
-            הוסף מפתח חדש
-          </Button>
-        </div>
+        <div className="flex justify-start rtl:justify-end mb-6">
+  <Button
+    onClick={() => setShowModal(true)}
+    className="bg-emerald-600 hover:bg-emerald-700"
+  >
+    <Plus className="w-4 h-4 ml-2" />
+    הוסף מפתח חדש
+  </Button>
+</div>
 
         {/* Keys Table */}
         <Card className="overflow-hidden border-slate-200">
