@@ -267,19 +267,23 @@ export default function MySchedule() {
       </div>
 
       {/* Add Lesson Modal */}
-      <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <Calendar className="w-5 h-5 text-indigo-600" />
-              </div>
-              הוסף שיעור
-            </DialogTitle>
-            <DialogDescription>
-             {format(new Date(selectedDate), 'MMM d, yyyy')} - הוסף שיעור חדש ללוח הזמנים שלך ל
-            </DialogDescription>
-          </DialogHeader>
+<Dialog open={showModal} onOpenChange={setShowModal}>
+  <DialogContent dir="rtl" className="sm:max-w-md text-right">
+    <DialogHeader className="text-right">
+
+      <DialogTitle className="flex items-center gap-2 flex-row-reverse">
+        <div className="p-2 bg-indigo-100 rounded-lg">
+          <Calendar className="w-5 h-5 text-indigo-600" />
+        </div>
+        הוסף שיעור
+      </DialogTitle>
+
+      <DialogDescription className="text-right">
+        הוסף שיעור חדש ללוח הזמנים שלך ל־
+        {format(new Date(selectedDate), 'MMM d, yyyy')}
+      </DialogDescription>
+
+    </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2 flex flex-col items-end">
