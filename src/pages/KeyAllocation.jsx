@@ -87,7 +87,6 @@ export default function KeyAllocation() {
       });
 
       const assignments = [];
-      const usedKeys = new Set();
 
       for (const lesson of pendingLessons) {
         // Find suitable key
@@ -96,8 +95,7 @@ export default function KeyAllocation() {
         // First try to find exact match with computer requirement
         if (lesson.needs_computers) {
           assignedKey = availableKeys.find(
-            (k) => !usedKeys.has(k.id) &&
-            k.room_type === lesson.room_type_needed &&
+            (k) => k.room_type === lesson.room_type_needed &&
             k.has_computers &&
             !isKeyOccupied(k, lesson, assignments)
           );
@@ -106,8 +104,7 @@ export default function KeyAllocation() {
         // If not found or doesn't need computers, find by room type
         if (!assignedKey) {
           assignedKey = availableKeys.find(
-            (k) => !usedKeys.has(k.id) &&
-            k.room_type === lesson.room_type_needed &&
+            (k) => k.room_type === lesson.room_type_needed &&
             !isKeyOccupied(k, lesson, assignments)
           );
         }
@@ -115,8 +112,7 @@ export default function KeyAllocation() {
         // If still not found, try any available key (upgrade צוותי to פלוגתי)
         if (!assignedKey && lesson.room_type_needed === 'צוותי') {
           assignedKey = availableKeys.find(
-            (k) => !usedKeys.has(k.id) &&
-            k.room_type === 'פלוגתי' &&
+            (k) => k.room_type === 'פלוגתי' &&
             !isKeyOccupied(k, lesson, assignments)
           );
         }
@@ -129,9 +125,6 @@ export default function KeyAllocation() {
             startTime: lesson.start_time,
             endTime: lesson.end_time
           });
-
-          // Mark key as used for this time slot
-          usedKeys.add(assignedKey.id);
         }
       }
 
