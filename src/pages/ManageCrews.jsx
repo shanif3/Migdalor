@@ -94,7 +94,7 @@ export default function ManageCrews() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            👥 ניהול צוותים
+            ניהול צוותים 👥
           </h1>
           <p className="text-slate-500">
             הוסף ונהל צוותים שמשתמשים במפתחות כיתות
