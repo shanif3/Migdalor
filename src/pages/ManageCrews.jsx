@@ -42,7 +42,7 @@ export default function ManageCrews() {
       queryClient.invalidateQueries({ queryKey: ['crews'] });
       setShowModal(false);
       setFormData({ name: '', contact: '', notes: '' });
-      toast.success('Crew added successfully');
+      toast.success('צוות נוסף בהצלחה');
     },
   });
 
@@ -53,7 +53,7 @@ export default function ManageCrews() {
       setShowModal(false);
       setEditingCrew(null);
       setFormData({ name: '', contact: '', notes: '' });
-      toast.success('Crew updated successfully');
+      toast.success('צוות עודכן בהצלחה');
     },
   });
 
@@ -61,7 +61,7 @@ export default function ManageCrews() {
     mutationFn: (id) => base44.entities.Crew.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crews'] });
-      toast.success('Crew deleted successfully');
+      toast.success('צוות נמחק בהצלחה');
     },
   });
 
@@ -94,17 +94,17 @@ export default function ManageCrews() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            👥 Manage Crews
+            👥 ניהול צוותים
           </h1>
           <p className="text-slate-500">
-            Add and manage crews that use classroom keys
+            הוסף ונהל צוותים שמשתמשים במפתחות כיתות
           </p>
         </motion.div>
 
         {/* Stats */}
         <div className="mb-8">
           <Card className="p-4 border-slate-200 inline-block">
-            <p className="text-sm text-slate-500">Total Crews</p>
+            <p className="text-sm text-slate-500">סה״כ צוותים</p>
             <p className="text-2xl font-bold text-slate-800">{crews.length}</p>
           </Card>
         </div>
@@ -112,8 +112,8 @@ export default function ManageCrews() {
         {/* Add Button */}
         <div className="flex justify-end mb-6">
           <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Crew
+            <Plus className="w-4 h-4 ml-2" />
+            הוסף צוות חדש
           </Button>
         </div>
 
@@ -122,23 +122,23 @@ export default function ManageCrews() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead>Crew Name</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Notes</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>שם הצוות</TableHead>
+                <TableHead>איש קשר</TableHead>
+                <TableHead>הערות</TableHead>
+                <TableHead className="text-left">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-8 text-slate-400">
-                    Loading...
+                    טוען...
                   </TableCell>
                 </TableRow>
               ) : crews.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-8 text-slate-400">
-                    No crews added yet
+                    עדיין לא נוספו צוותים
                   </TableCell>
                 </TableRow>
               ) : (
@@ -201,36 +201,36 @@ export default function ManageCrews() {
               <div className="p-2 bg-indigo-100 rounded-lg">
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
-              {editingCrew ? 'Edit Crew' : 'Add New Crew'}
+              {editingCrew ? 'ערוך צוות' : 'הוסף צוות חדש'}
             </DialogTitle>
             <DialogDescription>
-              {editingCrew ? 'Update the crew details' : 'Add a new crew to track'}
+              {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף צוות חדש למעקב'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Crew Name</Label>
+              <Label>שם הצוות</Label>
               <Input
-                placeholder="e.g., Team Alpha, Morning Shift..."
+                placeholder="למשל, צוות אלפא, משמרת בוקר..."
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Contact (optional)</Label>
+              <Label>איש קשר (אופציונלי)</Label>
               <Input
-                placeholder="Phone number or email..."
+                placeholder="טלפון או אימייל..."
                 value={formData.contact}
                 onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Notes (optional)</Label>
+              <Label>הערות (אופציונלי)</Label>
               <Textarea
-                placeholder="Any additional information..."
+                placeholder="מידע נוסף..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 className="h-20"
@@ -240,14 +240,14 @@ export default function ManageCrews() {
 
           <div className="flex gap-3">
             <Button variant="outline" onClick={handleClose} className="flex-1">
-              Cancel
+              ביטול
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
               className="flex-1 bg-indigo-600 hover:bg-indigo-700"
             >
-              {editingCrew ? 'Update Crew' : 'Add Crew'}
+              {editingCrew ? 'עדכן צוות' : 'הוסף צוות'}
             </Button>
           </div>
         </DialogContent>

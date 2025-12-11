@@ -43,20 +43,20 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
             <div className="p-2 bg-emerald-100 rounded-lg">
               <Key className="w-5 h-5 text-emerald-600" />
             </div>
-            Checkout Key
+            משוך מפתח
           </DialogTitle>
           <DialogDescription>
-            Checking out key for Room {keyItem.room_number} ({keyItem.room_type})
+            משיכת מפתח לחדר {keyItem.room_number} ({keyItem.room_type})
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           {crews.length > 0 && !useCustom && (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Select Crew</Label>
+              <Label className="text-sm font-medium">בחר צוות</Label>
               <Select value={selectedCrew} onValueChange={setSelectedCrew}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a crew..." />
+                  <SelectValue placeholder="בחר צוות..." />
                 </SelectTrigger>
                 <SelectContent>
                   {crews.map((crew) => (
@@ -75,16 +75,16 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
                 className="text-slate-500 text-xs"
                 onClick={() => setUseCustom(true)}
               >
-                Or enter a name manually
+                או הזן שם ידנית
               </Button>
             </div>
           )}
 
           {(useCustom || crews.length === 0) && (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Crew Name</Label>
+              <Label className="text-sm font-medium">שם הצוות</Label>
               <Input
-                placeholder="Enter crew name..."
+                placeholder="הזן שם צוות..."
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
               />
@@ -95,7 +95,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
                   className="text-slate-500 text-xs"
                   onClick={() => setUseCustom(false)}
                 >
-                  Select from existing crews
+                  בחר מצוותים קיימים
                 </Button>
               )}
             </div>
@@ -104,14 +104,14 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={onClose} className="flex-1">
-            Cancel
+            ביטול
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={useCustom ? !customName : !selectedCrew}
             className="flex-1 bg-emerald-600 hover:bg-emerald-700"
           >
-            Confirm Checkout
+            אשר משיכה
           </Button>
         </div>
       </DialogContent>

@@ -31,14 +31,14 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
             </div>
             <div>
               <h3 className="font-semibold text-slate-800 text-lg">
-                Room {keyItem.room_number}
+                חדר {keyItem.room_number}
               </h3>
               <Badge variant="outline" className={`mt-1 ${
-                keyItem.room_type === 'large' 
+                keyItem.room_type === 'פלוגתי' 
                   ? 'border-purple-300 text-purple-700 bg-purple-50' 
                   : 'border-blue-300 text-blue-700 bg-blue-50'
               }`}>
-                {keyItem.room_type === 'large' ? '🏢 Large' : '🏠 Small'}
+                {keyItem.room_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
               </Badge>
             </div>
           </div>
@@ -47,7 +47,7 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
               ? 'bg-emerald-500 hover:bg-emerald-600' 
               : 'bg-amber-500 hover:bg-amber-600'
           }`}>
-            {isAvailable ? 'Available' : 'In Use'}
+            {isAvailable ? 'זמין' : 'תפוס'}
           </Badge>
         </div>
 
@@ -60,7 +60,7 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
             {keyItem.checkout_time && (
               <div className="flex items-center gap-2 text-slate-400 text-xs">
                 <Clock className="w-3 h-3" />
-                <span>Since {format(new Date(keyItem.checkout_time), 'MMM d, h:mm a')}</span>
+                <span>מאז {format(new Date(keyItem.checkout_time), 'MMM d, h:mm a')}</span>
               </div>
             )}
           </div>
@@ -71,7 +71,7 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
             onClick={() => onCheckout(keyItem)}
             className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all"
           >
-            Checkout Key <ArrowRight className="w-4 h-4 ml-2" />
+            משוך מפתח <ArrowRight className="w-4 h-4 mr-2" />
           </Button>
         ) : (
           <Button 
@@ -79,7 +79,7 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
             variant="outline"
             className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
           >
-            Return Key
+            החזר מפתח
           </Button>
         )}
       </Card>

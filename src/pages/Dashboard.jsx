@@ -38,7 +38,7 @@ export default function Dashboard() {
     mutationFn: ({ id, data }) => base44.entities.ClassroomKey.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
-      toast.success('Key updated successfully');
+      toast.success('מפתח עודכן בהצלחה');
     },
   });
 
@@ -50,7 +50,7 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] });
       setShowQueueModal(false);
-      toast.success('Added to waiting queue');
+      toast.success('נוסף לתור המתנה');
     },
   });
 
@@ -58,7 +58,7 @@ export default function Dashboard() {
     mutationFn: (id) => base44.entities.WaitingQueue.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] });
-      toast.success('Removed from queue');
+      toast.success('הוסר מהתור');
     },
   });
 
@@ -109,10 +109,10 @@ export default function Dashboard() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            🔑 Key Management
+            🔑 ניהול מפתחות
           </h1>
           <p className="text-slate-500">
-            Track classroom keys and manage the waiting queue
+            עקוב אחרי מפתחות כיתות ונהל את תור ההמתנה
           </p>
         </motion.div>
 
@@ -124,12 +124,12 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <TabsList className="bg-white border border-slate-200 p-1">
               <TabsTrigger value="keys" className="data-[state=active]:bg-slate-100">
-                <Key className="w-4 h-4 mr-2" />
-                Keys
+                <Key className="w-4 h-4 ml-2" />
+                מפתחות
               </TabsTrigger>
               <TabsTrigger value="queue" className="data-[state=active]:bg-slate-100">
-                <Clock className="w-4 h-4 mr-2" />
-                Queue ({queue.length})
+                <Clock className="w-4 h-4 ml-2" />
+                תור ({queue.length})
               </TabsTrigger>
             </TabsList>
 
@@ -139,8 +139,8 @@ export default function Dashboard() {
                 onClick={() => setShowQueueModal(true)}
                 className="border-blue-200 text-blue-600 hover:bg-blue-50"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add to Queue
+                <Plus className="w-4 h-4 ml-2" />
+                הוסף לתור
               </Button>
             </div>
           </div>
@@ -149,9 +149,9 @@ export default function Dashboard() {
             {/* Filter */}
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-slate-400" />
-              <span className="text-sm text-slate-500">Filter:</span>
+              <span className="text-sm text-slate-500">סנן:</span>
               <div className="flex gap-2">
-                {['all', 'small', 'large'].map((f) => (
+                {['all', 'צוותי', 'פלוגתי'].map((f) => (
                   <Button
                     key={f}
                     variant={filter === f ? 'default' : 'outline'}
@@ -159,7 +159,7 @@ export default function Dashboard() {
                     onClick={() => setFilter(f)}
                     className={filter === f ? 'bg-slate-800' : ''}
                   >
-                    {f === 'all' ? 'All' : f === 'small' ? '🏠 Small' : '🏢 Large'}
+                    {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
                   </Button>
                 ))}
               </div>
@@ -175,8 +175,8 @@ export default function Dashboard() {
             ) : filteredKeys.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
                 <Key className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-600 mb-2">No keys yet</h3>
-                <p className="text-slate-400 mb-4">Add your first classroom key to get started</p>
+                <h3 className="text-lg font-medium text-slate-600 mb-2">אין מפתחות עדיין</h3>
+                <p className="text-slate-400 mb-4">הוסף את המפתח הראשון שלך כדי להתחיל</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -199,11 +199,11 @@ export default function Dashboard() {
             {queue.length === 0 ? (
               <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
                 <Clock className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-600 mb-2">Queue is empty</h3>
-                <p className="text-slate-400 mb-4">No crews are currently waiting for keys</p>
+                <h3 className="text-lg font-medium text-slate-600 mb-2">התור ריק</h3>
+                <p className="text-slate-400 mb-4">אין צוותים ממתינים למפתחות כרגע</p>
                 <Button onClick={() => setShowQueueModal(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add to Queue
+                  <Plus className="w-4 h-4 ml-2" />
+                  הוסף לתור
                 </Button>
               </div>
             ) : (
