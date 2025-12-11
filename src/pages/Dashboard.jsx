@@ -17,7 +17,12 @@ export default function Dashboard() {
   const [checkoutKey, setCheckoutKey] = useState(null);
   const [showQueueModal, setShowQueueModal] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const { data: keys = [], isLoading: keysLoading } = useQuery({
     queryKey: ['keys'],
@@ -69,18 +74,28 @@ export default function Dashboard() {
         status: 'taken',
         current_holder: holderName,
         checkout_time: new Date().toISOString(),
+        checked_out_by: user?.email,
       },
     });
     setCheckoutKey(null);
   };
 
   const handleReturn = (key) => {
+    const isAdmin = user?.role === 'admin';
+    const isKeyOwner = key.checked_out_by === user?.email;
+    
+    if (!isAdmin && !isKeyOwner) {
+      toast.error('רק המשתמש שלקח את המפתח או המנהל יכולים להחזיר אותו');
+      return;
+    }
+    
     updateKeyMutation.mutate({
       id: key.id,
       data: {
         status: 'available',
         current_holder: null,
         checkout_time: null,
+        checked_out_by: null,
       },
     });
   };
@@ -183,6 +198,7 @@ export default function Dashboard() {
                       key={key.id}
                       keyItem={key}
                       crews={crews}
+                      currentUser={user}
                       onCheckout={setCheckoutKey}
                       onReturn={handleReturn}
                     />

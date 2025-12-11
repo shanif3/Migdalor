@@ -6,8 +6,10 @@ import { Key, User, Clock, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
-export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
+export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentUser }) {
   const isAvailable = keyItem.status === 'available';
+  const isAdmin = currentUser?.role === 'admin';
+  const canReturn = isAvailable || isAdmin || keyItem.checked_out_by === currentUser?.email;
   
   return (
     <motion.div
@@ -77,7 +79,8 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
           <Button 
             onClick={() => onReturn(keyItem)}
             variant="outline"
-            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
+            disabled={!canReturn}
+            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             החזר מפתח
           </Button>
