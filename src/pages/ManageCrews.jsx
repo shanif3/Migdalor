@@ -121,12 +121,12 @@ export default function ManageCrews() {
         <Card className="overflow-hidden border-slate-200">
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead>שם הצוות</TableHead>
-                <TableHead>איש קשר</TableHead>
-                <TableHead>הערות</TableHead>
-                <TableHead className="text-left">פעולות</TableHead>
-              </TableRow>
+            <TableRow className="bg-slate-50">
+                <TableHead className="text-center">שם הצוות</TableHead>
+                <TableHead className="text-center">איש קשר</TableHead>
+                <TableHead className="text-center">הערות</TableHead>
+                <TableHead className="text-center">פעולות</TableHead>
+            </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
