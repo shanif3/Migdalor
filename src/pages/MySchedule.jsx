@@ -275,7 +275,7 @@ export default function MySchedule() {
               הוסף שיעור
             </DialogTitle>
             <DialogDescription>
-              הוסף שיעור חדש ללוח הזמנים שלך ל-{format(new Date(selectedDate), 'MMM d, yyyy')}
+             -{format(new Date(selectedDate), 'MMM d, yyyy')} הוסף שיעור חדש ללוח הזמנים שלך ל
             </DialogDescription>
           </DialogHeader>
 
