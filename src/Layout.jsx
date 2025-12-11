@@ -16,15 +16,15 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
 
   const adminNavItems = [
-    { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard' },
-    { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation' },
-    { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
-    { name: 'צוותים', icon: Users, page: 'ManageCrews' },
-  ];
+  { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard' },
+  { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation' },
+  { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
+  { name: 'צוותים', icon: Users, page: 'ManageCrews' }];
+
 
   const userNavItems = [
-    { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule' },
-  ];
+  { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule' }];
+
 
   const navItems = isAdmin ? adminNavItems : userNavItems;
 
@@ -43,11 +43,11 @@ export default function Layout({ children, currentPageName }) {
                 <span className="font-bold text-xl text-slate-800">
                   מגדלור
                 </span>
-                {user && (
-                  <p className="text-xs text-slate-500">
+                {user &&
+                <p className="text-xs text-slate-500">
                     {isAdmin ? 'מנהל 👑' : 'מנהל צוות 👤'}
                   </p>
-                )}
+                }
               </div>
             </Link>
 
@@ -58,29 +58,29 @@ export default function Layout({ children, currentPageName }) {
                 return (
                   <Link
                     key={item.page}
-                    to={createPageUrl(item.page)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                      isActive
-                        ? 'bg-slate-100 text-slate-900'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
+                    to={createPageUrl(item.page)} className="flex flex-row-reverse items-center gap-2 px-4 py-2 rounded-lg transition-all bg-slate-100 text-slate-900\n">
+
+
+
+
+
+
                     <item.icon className="w-4 h-4" />
                     <span className="hidden sm:block text-sm font-medium">{item.name}</span>
-                  </Link>
-                );
+                  </Link>);
+
               })}
-              {user && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => base44.auth.logout()}
-                  className="mr-2 text-slate-500 hover:text-slate-700"
-                >
+              {user &&
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => base44.auth.logout()}
+                className="mr-2 text-slate-500 hover:text-slate-700">
+
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:block mr-2">התנתק</span>
                 </Button>
-              )}
+              }
             </div>
           </div>
         </div>
@@ -91,6 +91,6 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Toast notifications */}
       <Toaster position="top-right" />
-    </div>
-  );
+    </div>);
+
 }
