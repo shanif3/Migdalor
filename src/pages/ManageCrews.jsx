@@ -165,7 +165,7 @@ export default function ManageCrews() {
                     <TableCell className="text-slate-500 max-w-xs truncate">
                       {crew.notes || '—'}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-center">
                       <div className="flex justify-end gap-2">
                         <Button
                           variant="ghost"
