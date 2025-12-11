@@ -16,20 +16,20 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
 
   const adminNavItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
-    { name: 'Allocation', icon: Target, page: 'KeyAllocation' },
-    { name: 'Keys', icon: Key, page: 'ManageKeys' },
-    { name: 'Crews', icon: Users, page: 'ManageCrews' },
+    { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard' },
+    { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation' },
+    { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
+    { name: 'צוותים', icon: Users, page: 'ManageCrews' },
   ];
 
   const userNavItems = [
-    { name: 'My Schedule', icon: Calendar, page: 'MySchedule' },
+    { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule' },
   ];
 
   const navItems = isAdmin ? adminNavItems : userNavItems;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50" dir="rtl">
       {/* Top Navigation */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,11 +41,11 @@ export default function Layout({ children, currentPageName }) {
               </div>
               <div className="hidden sm:block">
                 <span className="font-bold text-xl text-slate-800">
-                  KeyTracker
+                  מגדלור
                 </span>
                 {user && (
                   <p className="text-xs text-slate-500">
-                    {isAdmin ? '👑 Admin' : '👤 Crew Manager'}
+                    {isAdmin ? '👑 מנהל' : '👤 מנהל צוות'}
                   </p>
                 )}
               </div>
@@ -75,10 +75,10 @@ export default function Layout({ children, currentPageName }) {
                   variant="ghost"
                   size="sm"
                   onClick={() => base44.auth.logout()}
-                  className="ml-2 text-slate-500 hover:text-slate-700"
+                  className="mr-2 text-slate-500 hover:text-slate-700"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:block ml-2">Logout</span>
+                  <span className="hidden sm:block mr-2">התנתק</span>
                 </Button>
               )}
             </div>

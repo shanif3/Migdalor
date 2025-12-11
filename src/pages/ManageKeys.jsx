@@ -36,7 +36,7 @@ import { motion } from 'framer-motion';
 export default function ManageKeys() {
   const [showModal, setShowModal] = useState(false);
   const [editingKey, setEditingKey] = useState(null);
-  const [formData, setFormData] = useState({ room_number: '', room_type: 'small', has_computers: false });
+  const [formData, setFormData] = useState({ room_number: '', room_type: 'צוותי', has_computers: false });
   const queryClient = useQueryClient();
 
   const { data: keys = [], isLoading } = useQuery({
@@ -69,7 +69,7 @@ export default function ManageKeys() {
     mutationFn: (id) => base44.entities.ClassroomKey.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
-      toast.success('Key deleted successfully');
+      toast.success('מפתח נמחק בהצלחה');
     },
   });
 
@@ -90,11 +90,11 @@ export default function ManageKeys() {
   const handleClose = () => {
     setShowModal(false);
     setEditingKey(null);
-    setFormData({ room_number: '', room_type: 'small', has_computers: false });
+    setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
   };
 
-  const smallCount = keys.filter(k => k.room_type === 'small').length;
-  const largeCount = keys.filter(k => k.room_type === 'large').length;
+  const smallCount = keys.filter(k => k.room_type === 'צוותי').length;
+  const largeCount = keys.filter(k => k.room_type === 'פלוגתי').length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -105,25 +105,25 @@ export default function ManageKeys() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            🗝️ Manage Keys
+            🗝️ ניהול מפתחות
           </h1>
           <p className="text-slate-500">
-            Add, edit, or remove classroom keys
+            הוסף, ערוך או הסר מפתחות כיתות
           </p>
         </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           <Card className="p-4 border-slate-200">
-            <p className="text-sm text-slate-500">Total Keys</p>
+            <p className="text-sm text-slate-500">סה״כ מפתחות</p>
             <p className="text-2xl font-bold text-slate-800">{keys.length}</p>
           </Card>
           <Card className="p-4 border-blue-200 bg-blue-50/50">
-            <p className="text-sm text-blue-600">Small Rooms</p>
+            <p className="text-sm text-blue-600">חדרים צוותיים</p>
             <p className="text-2xl font-bold text-blue-700">{smallCount}</p>
           </Card>
           <Card className="p-4 border-purple-200 bg-purple-50/50">
-            <p className="text-sm text-purple-600">Large Rooms</p>
+            <p className="text-sm text-purple-600">חדרים פלוגתיים</p>
             <p className="text-2xl font-bold text-purple-700">{largeCount}</p>
           </Card>
         </div>
@@ -131,8 +131,8 @@ export default function ManageKeys() {
         {/* Add Button */}
         <div className="flex justify-end mb-6">
           <Button onClick={() => setShowModal(true)} className="bg-emerald-600 hover:bg-emerald-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Key
+            <Plus className="w-4 h-4 ml-2" />
+            הוסף מפתח חדש
           </Button>
         </div>
 
@@ -141,25 +141,25 @@ export default function ManageKeys() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead>Room Number</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Computers</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Current Holder</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>מספר חדר</TableHead>
+                <TableHead>סוג</TableHead>
+                <TableHead>מחשבים</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>מחזיק נוכחי</TableHead>
+                <TableHead className="text-left">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-slate-400">
-                    Loading...
+                  <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                    טוען...
                   </TableCell>
                 </TableRow>
               ) : keys.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-slate-400">
-                    No keys added yet
+                  <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                    עדיין לא נוספו מפתחות
                   </TableCell>
                 </TableRow>
               ) : (
@@ -173,11 +173,11 @@ export default function ManageKeys() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={
-                        key.room_type === 'large' 
+                        key.room_type === 'פלוגתי' 
                           ? 'border-purple-300 text-purple-700' 
                           : 'border-blue-300 text-blue-700'
                       }>
-                        {key.room_type === 'large' ? '🏢 Large' : '🏠 Small'}
+                        {key.room_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -193,7 +193,7 @@ export default function ManageKeys() {
                           ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' 
                           : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
                       }>
-                        {key.status === 'available' ? 'Available' : 'Taken'}
+                        {key.status === 'available' ? 'זמין' : 'תפוס'}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-slate-500">
@@ -235,25 +235,25 @@ export default function ManageKeys() {
               <div className="p-2 bg-emerald-100 rounded-lg">
                 <Key className="w-5 h-5 text-emerald-600" />
               </div>
-              {editingKey ? 'Edit Key' : 'Add New Key'}
+              {editingKey ? 'ערוך מפתח' : 'הוסף מפתח חדש'}
             </DialogTitle>
             <DialogDescription>
-              {editingKey ? 'Update the classroom key details' : 'Add a new classroom key to track'}
+              {editingKey ? 'עדכן את פרטי המפתח' : 'הוסף מפתח חדש למעקב'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Room Number</Label>
+              <Label>מספר חדר</Label>
               <Input
-                placeholder="e.g., 101, A-203..."
+                placeholder="למשל, 101, A-203..."
                 value={formData.room_number}
                 onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Room Type</Label>
+              <Label>סוג חדר</Label>
               <Select
                 value={formData.room_type}
                 onValueChange={(value) => setFormData({ ...formData, room_type: value })}
@@ -262,13 +262,13 @@ export default function ManageKeys() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="small">🏠 Small Classroom</SelectItem>
-                  <SelectItem value="large">🏢 Large Classroom</SelectItem>
+                  <SelectItem value="צוותי">🏠 צוותי</SelectItem>
+                  <SelectItem value="פלוגתי">🏢 פלוגתי</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 space-x-reverse">
               <Checkbox
                 id="has_computers"
                 checked={formData.has_computers}
@@ -277,21 +277,21 @@ export default function ManageKeys() {
                 }
               />
               <Label htmlFor="has_computers" className="cursor-pointer">
-                💻 Has computers
+                💻 יש מחשבים
               </Label>
             </div>
           </div>
 
           <div className="flex gap-3">
             <Button variant="outline" onClick={handleClose} className="flex-1">
-              Cancel
+              ביטול
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.room_number}
               className="flex-1 bg-emerald-600 hover:bg-emerald-700"
             >
-              {editingKey ? 'Update Key' : 'Add Key'}
+              {editingKey ? 'עדכן מפתח' : 'הוסף מפתח'}
             </Button>
           </div>
         </DialogContent>

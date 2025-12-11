@@ -42,7 +42,7 @@ export default function MySchedule() {
     crew_name: '',
     start_time: '',
     end_time: '',
-    room_type_needed: 'small',
+    room_type_needed: 'צוותי',
     needs_computers: false,
     notes: ''
   });
@@ -70,11 +70,11 @@ export default function MySchedule() {
         crew_name: '',
         start_time: '',
         end_time: '',
-        room_type_needed: 'small',
+        room_type_needed: 'צוותי',
         needs_computers: false,
         notes: ''
       });
-      toast.success('Lesson added to schedule');
+      toast.success('שיעור נוסף ללוח הזמנים');
     },
   });
 
@@ -82,13 +82,13 @@ export default function MySchedule() {
     mutationFn: (id) => base44.entities.Lesson.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
-      toast.success('Lesson removed');
+      toast.success('השיעור הוסר');
     },
   });
 
   const handleSubmit = () => {
     if (!formData.crew_name || !formData.start_time || !formData.end_time) {
-      toast.error('Please fill in all required fields');
+      toast.error('אנא מלא את כל השדות הנדרשים');
       return;
     }
 
@@ -102,10 +102,10 @@ export default function MySchedule() {
 
   const getStatusBadge = (status) => {
     const config = {
-      pending: { color: 'bg-yellow-100 text-yellow-700', icon: Clock, label: 'Pending' },
-      assigned: { color: 'bg-green-100 text-green-700', icon: CheckCircle, label: 'Assigned' },
-      completed: { color: 'bg-slate-100 text-slate-700', icon: CheckCircle, label: 'Completed' },
-      cancelled: { color: 'bg-red-100 text-red-700', icon: XCircle, label: 'Cancelled' }
+      pending: { color: 'bg-yellow-100 text-yellow-700', icon: Clock, label: 'ממתין' },
+      assigned: { color: 'bg-green-100 text-green-700', icon: CheckCircle, label: 'שובץ' },
+      completed: { color: 'bg-slate-100 text-slate-700', icon: CheckCircle, label: 'הושלם' },
+      cancelled: { color: 'bg-red-100 text-red-700', icon: XCircle, label: 'בוטל' }
     };
     const { color, icon: Icon, label } = config[status] || config.pending;
     return (
@@ -133,17 +133,17 @@ export default function MySchedule() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            📅 My Schedule
+            📅 לוח הזמנים שלי
           </h1>
           <p className="text-slate-500">
-            Submit your lesson schedule for key allocation
+            הגש את לוח הזמנים שלך להקצאת מפתחות
           </p>
         </motion.div>
 
         {/* Date Selector */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
-            <Label className="text-sm font-medium">Select Date:</Label>
+            <Label className="text-sm font-medium">בחר תאריך:</Label>
             <Input
               type="date"
               value={selectedDate}
@@ -152,25 +152,25 @@ export default function MySchedule() {
             />
           </div>
           <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Lesson
+            <Plus className="w-4 h-4 ml-2" />
+            הוסף שיעור
           </Button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card className="p-4">
-            <p className="text-sm text-slate-500">Total Lessons</p>
+            <p className="text-sm text-slate-500">סה״כ שיעורים</p>
             <p className="text-2xl font-bold text-slate-800">{lessons.length}</p>
           </Card>
           <Card className="p-4 bg-green-50 border-green-200">
-            <p className="text-sm text-green-600">Assigned</p>
+            <p className="text-sm text-green-600">שובצו</p>
             <p className="text-2xl font-bold text-green-700">
               {lessons.filter(l => l.status === 'assigned').length}
             </p>
           </Card>
           <Card className="p-4 bg-yellow-50 border-yellow-200">
-            <p className="text-sm text-yellow-600">Pending</p>
+            <p className="text-sm text-yellow-600">ממתינים</p>
             <p className="text-2xl font-bold text-yellow-700">
               {lessons.filter(l => l.status === 'pending').length}
             </p>
@@ -182,13 +182,13 @@ export default function MySchedule() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead>Crew</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Room Type</TableHead>
-                <TableHead>Computers</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Assigned Room</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>צוות</TableHead>
+                <TableHead>שעה</TableHead>
+                <TableHead>סוג חדר</TableHead>
+                <TableHead>מחשבים</TableHead>
+                <TableHead>סטטוס</TableHead>
+                <TableHead>חדר משובץ</TableHead>
+                <TableHead className="text-left">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -201,7 +201,7 @@ export default function MySchedule() {
               ) : lessons.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-slate-400">
-                    No lessons scheduled for this date
+                    אין שיעורים מתוכננים לתאריך זה
                   </TableCell>
                 </TableRow>
               ) : (
@@ -216,20 +216,20 @@ export default function MySchedule() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={
-                        lesson.room_type_needed === 'large' 
+                        lesson.room_type_needed === 'פלוגתי' 
                           ? 'border-purple-300 text-purple-700' 
                           : 'border-blue-300 text-blue-700'
                       }>
-                        {lesson.room_type_needed === 'large' ? '🏢 Large' : '🏠 Small'}
+                        {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       {lesson.needs_computers ? (
                         <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                          💻 Yes
+                          💻 כן
                         </Badge>
                       ) : (
-                        <span className="text-slate-400 text-sm">No</span>
+                        <span className="text-slate-400 text-sm">לא</span>
                       )}
                     </TableCell>
                     <TableCell>{getStatusBadge(lesson.status)}</TableCell>
@@ -238,7 +238,7 @@ export default function MySchedule() {
                         <div className="flex items-center gap-2">
                           <Key className="w-4 h-4 text-emerald-600" />
                           <span className="font-medium text-emerald-700">
-                            Room {lesson.assigned_key}
+                            חדר {lesson.assigned_key}
                           </span>
                         </div>
                       ) : (
@@ -272,18 +272,18 @@ export default function MySchedule() {
               <div className="p-2 bg-indigo-100 rounded-lg">
                 <Calendar className="w-5 h-5 text-indigo-600" />
               </div>
-              Add Lesson
+              הוסף שיעור
             </DialogTitle>
             <DialogDescription>
-              Add a new lesson to your schedule for {format(new Date(selectedDate), 'MMM d, yyyy')}
+              הוסף שיעור חדש ללוח הזמנים שלך ל-{format(new Date(selectedDate), 'MMM d, yyyy')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Crew Name *</Label>
+              <Label>שם הצוות *</Label>
               <Input
-                placeholder="e.g., Team Alpha..."
+                placeholder="למשל, צוות אלפא..."
                 value={formData.crew_name}
                 onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })}
               />
@@ -291,7 +291,7 @@ export default function MySchedule() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Start Time *</Label>
+                <Label>שעת התחלה *</Label>
                 <Input
                   type="time"
                   value={formData.start_time}
@@ -299,7 +299,7 @@ export default function MySchedule() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>End Time *</Label>
+                <Label>שעת סיום *</Label>
                 <Input
                   type="time"
                   value={formData.end_time}
@@ -309,7 +309,7 @@ export default function MySchedule() {
             </div>
 
             <div className="space-y-2">
-              <Label>Room Type Needed *</Label>
+              <Label>סוג חדר נדרש *</Label>
               <Select
                 value={formData.room_type_needed}
                 onValueChange={(value) => setFormData({ ...formData, room_type_needed: value })}
@@ -318,13 +318,13 @@ export default function MySchedule() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="small">🏠 Small Classroom</SelectItem>
-                  <SelectItem value="large">🏢 Large Classroom</SelectItem>
+                  <SelectItem value="צוותי">🏠 צוותי</SelectItem>
+                  <SelectItem value="פלוגתי">🏢 פלוגתי</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 space-x-reverse">
               <Checkbox
                 id="computers"
                 checked={formData.needs_computers}
@@ -333,14 +333,14 @@ export default function MySchedule() {
                 }
               />
               <Label htmlFor="computers" className="cursor-pointer">
-                💻 Requires computers
+                💻 דורש מחשבים
               </Label>
             </div>
 
             <div className="space-y-2">
-              <Label>Notes (optional)</Label>
+              <Label>הערות (אופציונלי)</Label>
               <Input
-                placeholder="Any special requirements..."
+                placeholder="דרישות מיוחדות..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               />
@@ -349,14 +349,14 @@ export default function MySchedule() {
 
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">
-              Cancel
+              ביטול
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.crew_name || !formData.start_time || !formData.end_time}
               className="flex-1 bg-indigo-600 hover:bg-indigo-700"
             >
-              Add Lesson
+              הוסף שיעור
             </Button>
           </div>
         </DialogContent>
