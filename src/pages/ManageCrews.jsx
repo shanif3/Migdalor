@@ -103,9 +103,6 @@ export default function ManageCrews() {
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             ניהול צוותים 👥
           </h1>
-          <p className="text-slate-500">
-            הוסף ונהל צוותים שמשתמשים במפתחות כיתות
-          </p>
         </motion.div>
 
         {/* Stats */}
