@@ -49,8 +49,8 @@ export default function ManageKeys() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
       setShowModal(false);
-      setFormData({ room_number: '', room_type: 'small' });
-      toast.success('Key added successfully');
+      setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
+      toast.success('מפתח נוסף בהצלחה');
     },
   });
 
@@ -60,8 +60,8 @@ export default function ManageKeys() {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
       setShowModal(false);
       setEditingKey(null);
-      setFormData({ room_number: '', room_type: 'small' });
-      toast.success('Key updated successfully');
+      setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
+      toast.success('מפתח עודכן בהצלחה');
     },
   });
 
