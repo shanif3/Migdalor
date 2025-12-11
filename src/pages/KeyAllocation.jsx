@@ -13,8 +13,8 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  TableRow } from
+"@/components/ui/table";
 import { Wand2, Calendar, Key, RefreshCw, Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -28,55 +28,55 @@ export default function KeyAllocation() {
 
   const { data: allKeys = [] } = useQuery({
     queryKey: ['keys'],
-    queryFn: () => base44.entities.ClassroomKey.list(),
+    queryFn: () => base44.entities.ClassroomKey.list()
   });
 
   const { data: lessons = [], isLoading } = useQuery({
     queryKey: ['all-lessons', selectedDate],
-    queryFn: () => base44.entities.Lesson.filter({ date: selectedDate }, 'start_time'),
+    queryFn: () => base44.entities.Lesson.filter({ date: selectedDate }, 'start_time')
   });
 
   const updateLessonMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
-    },
+    }
   });
 
   const toggleKeySelection = (keyId) => {
-    setSelectedKeys(prev => 
-      prev.includes(keyId) 
-        ? prev.filter(id => id !== keyId)
-        : [...prev, keyId]
+    setSelectedKeys((prev) =>
+    prev.includes(keyId) ?
+    prev.filter((id) => id !== keyId) :
+    [...prev, keyId]
     );
   };
 
   const allocateKeys = async () => {
     setIsAllocating(true);
-    
+
     try {
       // Get available keys
-      const availableKeys = allKeys.filter(k => selectedKeys.includes(k.id));
-      
+      const availableKeys = allKeys.filter((k) => selectedKeys.includes(k.id));
+
       // Get pending lessons sorted by priority
-      const pendingLessons = lessons
-        .filter(l => l.status === 'pending')
-        .sort((a, b) => {
-          // Priority 1: Earlier time
-          const timeA = a.start_time;
-          const timeB = b.start_time;
-          if (timeA !== timeB) return timeA.localeCompare(timeB);
-          
-          // Priority 2: פלוגתי rooms first
-          if (a.room_type_needed === 'פלוגתי' && b.room_type_needed === 'צוותי') return -1;
-          if (a.room_type_needed === 'צוותי' && b.room_type_needed === 'פלוגתי') return 1;
-          
-          // Priority 3: Needs computers (lower priority for those who don't need)
-          if (a.needs_computers && !b.needs_computers) return -1;
-          if (!a.needs_computers && b.needs_computers) return 1;
-          
-          return 0;
-        });
+      const pendingLessons = lessons.
+      filter((l) => l.status === 'pending').
+      sort((a, b) => {
+        // Priority 1: Earlier time
+        const timeA = a.start_time;
+        const timeB = b.start_time;
+        if (timeA !== timeB) return timeA.localeCompare(timeB);
+
+        // Priority 2: פלוגתי rooms first
+        if (a.room_type_needed === 'פלוגתי' && b.room_type_needed === 'צוותי') return -1;
+        if (a.room_type_needed === 'צוותי' && b.room_type_needed === 'פלוגתי') return 1;
+
+        // Priority 3: Needs computers (lower priority for those who don't need)
+        if (a.needs_computers && !b.needs_computers) return -1;
+        if (!a.needs_computers && b.needs_computers) return 1;
+
+        return 0;
+      });
 
       const assignments = [];
       const usedKeys = new Set();
@@ -88,28 +88,28 @@ export default function KeyAllocation() {
         // First try to find exact match with computer requirement
         if (lesson.needs_computers) {
           assignedKey = availableKeys.find(
-            k => !usedKeys.has(k.id) && 
-                 k.room_type === lesson.room_type_needed &&
-                 k.has_computers &&
-                 !isKeyOccupied(k, lesson, assignments)
+            (k) => !usedKeys.has(k.id) &&
+            k.room_type === lesson.room_type_needed &&
+            k.has_computers &&
+            !isKeyOccupied(k, lesson, assignments)
           );
         }
 
         // If not found or doesn't need computers, find by room type
         if (!assignedKey) {
           assignedKey = availableKeys.find(
-            k => !usedKeys.has(k.id) && 
-                 k.room_type === lesson.room_type_needed &&
-                 !isKeyOccupied(k, lesson, assignments)
+            (k) => !usedKeys.has(k.id) &&
+            k.room_type === lesson.room_type_needed &&
+            !isKeyOccupied(k, lesson, assignments)
           );
         }
 
         // If still not found, try any available key (upgrade צוותי to פלוגתי)
         if (!assignedKey && lesson.room_type_needed === 'צוותי') {
           assignedKey = availableKeys.find(
-            k => !usedKeys.has(k.id) && 
-                 k.room_type === 'פלוגתי' &&
-                 !isKeyOccupied(k, lesson, assignments)
+            (k) => !usedKeys.has(k.id) &&
+            k.room_type === 'פלוגתי' &&
+            !isKeyOccupied(k, lesson, assignments)
           );
         }
 
@@ -121,7 +121,7 @@ export default function KeyAllocation() {
             startTime: lesson.start_time,
             endTime: lesson.end_time
           });
-          
+
           // Mark key as used for this time slot
           usedKeys.add(assignedKey.id);
         }
@@ -139,12 +139,12 @@ export default function KeyAllocation() {
       }
 
       toast.success(`שובצו בהצלחה ${assignments.length} שיעורים!`);
-      
+
       const unassigned = pendingLessons.length - assignments.length;
       if (unassigned > 0) {
         toast.warning(`${unassigned} שיעורים לא שובצו בגלל מחסור במפתחות`);
       }
-      
+
     } catch (error) {
       toast.error('שגיאה בהקצאת מפתחות');
       console.error(error);
@@ -155,8 +155,8 @@ export default function KeyAllocation() {
 
   // Check if a key is already occupied during the lesson time
   const isKeyOccupied = (key, newLesson, currentAssignments) => {
-    const overlapping = currentAssignments.filter(a => a.keyId === key.id);
-    
+    const overlapping = currentAssignments.filter((a) => a.keyId === key.id);
+
     for (const assignment of overlapping) {
       if (timeSlotsOverlap(
         newLesson.start_time, newLesson.end_time,
@@ -173,7 +173,7 @@ export default function KeyAllocation() {
   };
 
   const resetAllocations = async () => {
-    const assigned = lessons.filter(l => l.status === 'assigned');
+    const assigned = lessons.filter((l) => l.status === 'assigned');
     for (const lesson of assigned) {
       await updateLessonMutation.mutateAsync({
         id: lesson.id,
@@ -183,17 +183,17 @@ export default function KeyAllocation() {
     toast.success('ההקצאות אופסו');
   };
 
-  const pendingCount = lessons.filter(l => l.status === 'pending').length;
-  const assignedCount = lessons.filter(l => l.status === 'assigned').length;
+  const pendingCount = lessons.filter((l) => l.status === 'pending').length;
+  const assignedCount = lessons.filter((l) => l.status === 'assigned').length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             הקצאת מפתחות 🎯
           </h1>
@@ -208,28 +208,28 @@ export default function KeyAllocation() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-auto"
-            />
+              className="w-auto" />
+
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={resetAllocations}
-              disabled={assignedCount === 0}
-            >
+              disabled={assignedCount === 0}>
+
               <RefreshCw className="w-4 h-4 ml-2" />
               אפס
             </Button>
             <Button
               onClick={allocateKeys}
               disabled={selectedKeys.length === 0 || pendingCount === 0 || isAllocating}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              {isAllocating ? (
-                <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-              ) : (
-                <Wand2 className="w-4 h-4 ml-2" />
-              )}
+              className="bg-emerald-600 hover:bg-emerald-700">
+
+              {isAllocating ?
+              <Loader2 className="w-4 h-4 ml-2 animate-spin" /> :
+
+              <Wand2 className="w-4 h-4 ml-2" />
+              }
               שבץ אוטומטית
             </Button>
           </div>
@@ -263,29 +263,29 @@ export default function KeyAllocation() {
               בחר מפתחות זמינים
             </h3>
             <div className="space-y-2 max-h-[500px] overflow-y-auto">
-              {allKeys.map((key) => (
-                <div
-                  key={key.id}
-                  className="flex items-center space-x-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50"
-                >
+              {allKeys.map((key) =>
+              <div
+                key={key.id}
+                className="flex items-center space-x-3 p-3 rounded-lg border border-slate-200 hover:bg-slate-50">
+
                   <Checkbox
-                    id={key.id}
-                    checked={selectedKeys.includes(key.id)}
-                    onCheckedChange={() => toggleKeySelection(key.id)}
-                  />
+                  id={key.id}
+                  checked={selectedKeys.includes(key.id)}
+                  onCheckedChange={() => toggleKeySelection(key.id)} />
+
                   <label htmlFor={key.id} className="flex-1 cursor-pointer">
-                    <div className="font-medium text-slate-700">חדר {key.room_number}</div>
+                    <div className="text-slate-700 mx-3 font-medium opacity-100">חדר {key.room_number}</div>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="bg-teal-100 text-foreground mx-2 px-2.5 py-0.5 text-xs font-semibold rounded-md inline-flex items-center border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                         {key.room_type === 'פלוגתי' ? '🏢' : '🏠'} {key.room_type}
                       </Badge>
-                      {key.has_computers && (
-                        <Badge variant="outline" className="text-xs">💻</Badge>
-                      )}
+                      {key.has_computers &&
+                    <Badge variant="outline" className="text-xs">💻</Badge>
+                    }
                     </div>
                   </label>
                 </div>
-              ))}
+              )}
             </div>
           </Card>
 
@@ -310,21 +310,21 @@ export default function KeyAllocation() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
-                    <TableRow>
+                  {isLoading ?
+                  <TableRow>
                       <TableCell colSpan={6} className="text-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                       </TableCell>
-                    </TableRow>
-                  ) : lessons.length === 0 ? (
-                    <TableRow>
+                    </TableRow> :
+                  lessons.length === 0 ?
+                  <TableRow>
                       <TableCell colSpan={6} className="text-center py-8 text-slate-400">
                         אין שיעורים מתוכננים לתאריך זה
                       </TableCell>
-                    </TableRow>
-                  ) : (
-                    lessons.map((lesson) => (
-                      <TableRow key={lesson.id} className="hover:bg-slate-50/50">
+                    </TableRow> :
+
+                  lessons.map((lesson) =>
+                  <TableRow key={lesson.id} className="hover:bg-slate-50/50">
                         <TableCell className="font-mono text-sm">
                           {lesson.start_time}-{lesson.end_time}
                         </TableCell>
@@ -338,24 +338,24 @@ export default function KeyAllocation() {
                           {lesson.needs_computers ? '✅' : '—'}
                         </TableCell>
                         <TableCell>
-                          {lesson.status === 'assigned' ? (
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          ) : (
-                            <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                          )}
+                          {lesson.status === 'assigned' ?
+                      <CheckCircle className="w-4 h-4 text-green-600" /> :
+
+                      <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                      }
                         </TableCell>
                         <TableCell>
-                          {lesson.assigned_key ? (
-                            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                          {lesson.assigned_key ?
+                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
                               {lesson.assigned_key}
-                            </Badge>
-                          ) : (
-                            <span className="text-slate-400">—</span>
-                          )}
+                            </Badge> :
+
+                      <span className="text-slate-400">—</span>
+                      }
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
+                  )
+                  }
                 </TableBody>
               </Table>
             </div>
@@ -373,6 +373,6 @@ export default function KeyAllocation() {
           </ol>
         </Card>
       </div>
-    </div>
-  );
+    </div>);
+
 }
