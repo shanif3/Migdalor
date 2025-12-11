@@ -288,7 +288,15 @@ export default function MySchedule() {
                 onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })}
               />
             </div>
-
+            <div className="space-y-2">
+                <Label>שעת סיום *</Label>
+                <Input
+                  type="time"
+                  value={formData.end_time}
+                  onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>שעת התחלה *</Label>
@@ -298,15 +306,7 @@ export default function MySchedule() {
                   onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label>שעת סיום *</Label>
-                <Input
-                  type="time"
-                  value={formData.end_time}
-                  onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                />
-              </div>
-            </div>
+        
 
             <div className="space-y-2">
               <Label>סוג חדר נדרש *</Label>
