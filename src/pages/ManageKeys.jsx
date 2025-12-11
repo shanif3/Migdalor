@@ -105,7 +105,7 @@ export default function ManageKeys() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            🗝️ ניהול מפתחות
+            ניהול מפתחות 🗝️
           </h1>
           <p className="text-slate-500">
             הוסף, ערוך או הסר מפתחות כיתות
