@@ -128,7 +128,10 @@ export default function ManageKeys() {
           </Card>
         </div>
 
-        <div className="flex justify-start rtl:justify-end mb-6">
+        <div className="flex justify-end rtl:justify-end mb-6">
+
+
+
   <Button
     onClick={() => setShowModal(true)}
     className="bg-emerald-600 hover:bg-emerald-700"
