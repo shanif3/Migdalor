@@ -87,6 +87,7 @@ export default function KeyAllocation() {
       });
 
       const assignments = [];
+      const failureReasons = [];
 
       for (const lesson of pendingLessons) {
         // Find suitable key
@@ -125,6 +126,23 @@ export default function KeyAllocation() {
             startTime: lesson.start_time,
             endTime: lesson.end_time
           });
+        } else {
+          // Track why this lesson couldn't be assigned
+          const matchingTypeKeys = availableKeys.filter(k => k.room_type === lesson.room_type_needed);
+          const occupiedKeys = matchingTypeKeys.filter(k => isKeyOccupied(k, lesson, assignments));
+          
+          let reason = `${lesson.crew_name} (${lesson.start_time}-${lesson.end_time}): `;
+          if (matchingTypeKeys.length === 0) {
+            reason += `אין מפתחות מסוג ${lesson.room_type_needed}`;
+          } else if (occupiedKeys.length === matchingTypeKeys.length) {
+            reason += `כל המפתחות מסוג ${lesson.room_type_needed} תפוסים בשעות אלה`;
+          } else if (lesson.needs_computers) {
+            reason += `אין מפתחות עם מחשבים זמינים`;
+          } else {
+            reason += `לא נמצא מפתח מתאים`;
+          }
+          
+          failureReasons.push(reason);
         }
       }
 
@@ -143,7 +161,8 @@ export default function KeyAllocation() {
 
       const unassigned = pendingLessons.length - assignments.length;
       if (unassigned > 0) {
-        toast.warning(`${unassigned} שיעורים לא שובצו בגלל מחסור במפתחות`);
+        console.log('שיעורים שלא שובצו:', failureReasons);
+        toast.warning(`${unassigned} שיעורים לא שובצו. פתח Console לפרטים`);
       }
 
     } catch (error) {
