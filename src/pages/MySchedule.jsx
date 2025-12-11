@@ -341,20 +341,22 @@ export default function MySchedule() {
     </SelectTrigger>
 
     <SelectContent className="text-right" dir="rtl">
-      <SelectItem
-        value="צוותי"
-        className="text-right flex justify-end pr-2"
-      >
-        🏠 צוותי
-      </SelectItem>
 
-      <SelectItem
-        value="פלוגתי"
-        className="text-right flex justify-end pr-2"
-      >
-        🏢 פלוגתי
-      </SelectItem>
-    </SelectContent>
+  <SelectItem
+    value="צוותי"
+    className="text-right flex flex-row-reverse justify-end gap-2 pr-8"
+  >
+    צוותי 🏠
+  </SelectItem>
+
+  <SelectItem
+    value="פלוגתי"
+    className="text-right flex flex-row-reverse justify-end gap-2 pr-8"
+  >
+    פלוגתי 🏢
+  </SelectItem>
+
+</SelectContent>
   </Select>
 </div>
 
