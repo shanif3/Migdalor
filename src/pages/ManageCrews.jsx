@@ -131,19 +131,19 @@ export default function ManageCrews() {
                 <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">שם הצוות</TableHead>
                 <TableHead className="text-center">איש קשר</TableHead>
                 <TableHead className="text-center">הערות</TableHead>
-                <TableHead className="text-center">פעולות</TableHead>
+                {isAdmin && <TableHead className="text-center">פעולות</TableHead>}
             </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ?
               <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow> :
               crews.length === 0 ?
               <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-slate-400">
                     עדיין לא נוספו צוותים
                   </TableCell>
                 </TableRow> :
@@ -172,8 +172,8 @@ export default function ManageCrews() {
                     <TableCell className="text-slate-500 max-w-xs truncate">
                       {crew.notes || '—'}
                     </TableCell>
-                    <TableCell className="text-center">
-                      {isAdmin && (
+                    {isAdmin && (
+                      <TableCell className="text-center">
                         <div className="flex justify-end gap-2">
                           <Button
                         variant="ghost"
@@ -192,8 +192,8 @@ export default function ManageCrews() {
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                      )}
-                    </TableCell>
+                      </TableCell>
+                    )}
                   </TableRow>
               )
               }
