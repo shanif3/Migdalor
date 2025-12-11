@@ -71,7 +71,7 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews }) {
             onClick={() => onCheckout(keyItem)}
             className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all"
           >
-            משוך מפתח <ArrowRight className="w-4 h-4 mr-2" />
+           <ArrowRight className="w-4 h-4 mr-2" /> משוך מפתח 
           </Button>
         ) : (
           <Button 
