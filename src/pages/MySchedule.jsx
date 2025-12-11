@@ -12,23 +12,23 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  TableRow } from
+"@/components/ui/table";
 import { Plus, Calendar, Clock, Trash2, Key, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -58,7 +58,7 @@ export default function MySchedule() {
       crew_manager: user?.email,
       date: selectedDate
     }, '-start_time'),
-    enabled: !!user,
+    enabled: !!user
   });
 
   const createMutation = useMutation({
@@ -75,7 +75,7 @@ export default function MySchedule() {
         notes: ''
       });
       toast.success('שיעור נוסף ללוח הזמנים');
-    },
+    }
   });
 
   const deleteMutation = useMutation({
@@ -83,7 +83,7 @@ export default function MySchedule() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
       toast.success('השיעור הוסר');
-    },
+    }
   });
 
   const handleSubmit = () => {
@@ -112,26 +112,26 @@ export default function MySchedule() {
       <Badge className={`${color} hover:${color} flex items-center gap-1 w-fit`}>
         <Icon className="w-3 h-3" />
         {label}
-      </Badge>
-    );
+      </Badge>);
+
   };
 
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    );
+      </div>);
+
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             📅 לוח הזמנים שלי
           </h1>
@@ -148,8 +148,8 @@ export default function MySchedule() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-auto"
-            />
+              className="w-auto" />
+
           </div>
           <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
             <Plus className="w-4 h-4 ml-2" />
@@ -166,13 +166,13 @@ export default function MySchedule() {
           <Card className="p-4 bg-green-50 border-green-200">
             <p className="text-sm text-green-600">שובצו</p>
             <p className="text-2xl font-bold text-green-700">
-              {lessons.filter(l => l.status === 'assigned').length}
+              {lessons.filter((l) => l.status === 'assigned').length}
             </p>
           </Card>
           <Card className="p-4 bg-yellow-50 border-yellow-200">
             <p className="text-sm text-yellow-600">ממתינים</p>
             <p className="text-2xl font-bold text-yellow-700">
-              {lessons.filter(l => l.status === 'pending').length}
+              {lessons.filter((l) => l.status === 'pending').length}
             </p>
           </Card>
         </div>
@@ -192,21 +192,21 @@ export default function MySchedule() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow>
+              {isLoading ?
+              <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                   </TableCell>
-                </TableRow>
-              ) : lessons.length === 0 ? (
-                <TableRow>
+                </TableRow> :
+              lessons.length === 0 ?
+              <TableRow>
                   <TableCell colSpan={7} className="text-center py-8 text-slate-400">
                     אין שיעורים מתוכננים לתאריך זה
                   </TableCell>
-                </TableRow>
-              ) : (
-                lessons.map((lesson) => (
-                  <TableRow key={lesson.id} className="hover:bg-slate-50/50">
+                </TableRow> :
+
+              lessons.map((lesson) =>
+              <TableRow key={lesson.id} className="hover:bg-slate-50/50">
                     <TableCell className="font-medium">{lesson.crew_name}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-sm">
@@ -216,49 +216,49 @@ export default function MySchedule() {
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={
-                        lesson.room_type_needed === 'פלוגתי' 
-                          ? 'border-purple-300 text-purple-700' 
-                          : 'border-blue-300 text-blue-700'
-                      }>
+                  lesson.room_type_needed === 'פלוגתי' ?
+                  'border-purple-300 text-purple-700' :
+                  'border-blue-300 text-blue-700'
+                  }>
                         {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {lesson.needs_computers ? (
-                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                      {lesson.needs_computers ?
+                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
                           💻 כן
-                        </Badge>
-                      ) : (
-                        <span className="text-slate-400 text-sm">לא</span>
-                      )}
+                        </Badge> :
+
+                  <span className="text-slate-400 text-sm">לא</span>
+                  }
                     </TableCell>
                     <TableCell>{getStatusBadge(lesson.status)}</TableCell>
                     <TableCell>
-                      {lesson.assigned_key ? (
-                        <div className="flex items-center gap-2">
+                      {lesson.assigned_key ?
+                  <div className="flex items-center gap-2">
                           <Key className="w-4 h-4 text-emerald-600" />
                           <span className="font-medium text-emerald-700">
                             חדר {lesson.assigned_key}
                           </span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
+                        </div> :
+
+                  <span className="text-slate-400">—</span>
+                  }
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(lesson.id)}
-                        disabled={lesson.status === 'assigned'}
-                        className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50"
-                      >
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => deleteMutation.mutate(lesson.id)}
+                    disabled={lesson.status === 'assigned'}
+                    className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50">
+
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+              )
+              }
             </TableBody>
           </Table>
         </Card>
@@ -281,30 +281,30 @@ export default function MySchedule() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>שם הצוות *</Label>
+              <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-auto">שם הצוות *</Label>
               <Input
                 placeholder="למשל, צוות אלפא..."
                 value={formData.crew_name}
-                onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })}
-              />
+                onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })} />
+
             </div>
             <div className="space-y-2">
                 <Label>שעת סיום *</Label>
                 <Input
-                  type="time"
-                  value={formData.end_time}
-                  onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                />
+                type="time"
+                value={formData.end_time}
+                onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} />
+
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>שעת התחלה *</Label>
                 <Input
-                  type="time"
-                  value={formData.start_time}
-                  onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                />
+                type="time"
+                value={formData.start_time}
+                onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} />
+
               </div>
         
 
@@ -312,8 +312,8 @@ export default function MySchedule() {
               <Label>סוג חדר נדרש *</Label>
               <Select
                 value={formData.room_type_needed}
-                onValueChange={(value) => setFormData({ ...formData, room_type_needed: value })}
-              >
+                onValueChange={(value) => setFormData({ ...formData, room_type_needed: value })}>
+
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -328,10 +328,10 @@ export default function MySchedule() {
               <Checkbox
                 id="computers"
                 checked={formData.needs_computers}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, needs_computers: checked })
-                }
-              />
+                onCheckedChange={(checked) =>
+                setFormData({ ...formData, needs_computers: checked })
+                } />
+
               <Label htmlFor="computers" className="cursor-pointer">
                 💻 דורש מחשבים
               </Label>
@@ -342,8 +342,8 @@ export default function MySchedule() {
               <Input
                 placeholder="דרישות מיוחדות..."
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              />
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })} />
+
             </div>
           </div>
 
@@ -354,13 +354,13 @@ export default function MySchedule() {
             <Button
               onClick={handleSubmit}
               disabled={!formData.crew_name || !formData.start_time || !formData.end_time}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-            >
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+
               הוסף שיעור
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>);
+
 }
