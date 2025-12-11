@@ -284,7 +284,7 @@ export default function MySchedule() {
           <div className="space-y-4 py-4">
             <div className="space-y-2 flex flex-col items-end">
             <Label className="text-sm font-medium text-right leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-    שם הצוות *
+    *שם הצוות 
   </Label>
 
   <Input
