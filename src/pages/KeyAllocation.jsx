@@ -364,10 +364,10 @@ export default function KeyAllocation() {
 
         {/* Priority Info */}
         <Card className="mt-6 p-6 bg-blue-50 border-blue-200">
-          <h4 className="font-semibold text-blue-900 mb-3">🎯 סדר עדיפויות הקצאה</h4>
+          <h4 className="font-semibold text-blue-900 mb-3">סדר עדיפויות הקצאה:</h4>
           <ol className="space-y-2 text-sm text-blue-800">
             <li>1. שיעורים מוקדמים יותר מקבלים עדיפות</li>
-            <li>2. חדרים פלוגתיים משובצים ראשונים (באותה שעה)</li>
+            <li>2. חדרים פלוגתיים משובצים ראשונים</li>
             <li>3. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
             <li>4. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
           </ol>
