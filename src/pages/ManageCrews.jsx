@@ -144,7 +144,7 @@ export default function ManageCrews() {
               ) : (
                 crews.map((crew) => (
                   <TableRow key={crew.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium" className="text-center">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                           <Users className="w-4 h-4 text-indigo-600" />
