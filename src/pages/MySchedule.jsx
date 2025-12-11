@@ -282,14 +282,18 @@ export default function MySchedule() {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-auto">שם הצוות *</Label>
-              <Input
-                placeholder="למשל, צוות אלפא..."
-                value={formData.crew_name}
-                onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })} />
+            <div className="space-y-2 flex flex-col items-end">
+            <Label className="text-sm font-medium text-right leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+    שם הצוות *
+  </Label>
 
-            </div>
+  <Input
+    placeholder="למשל, צוות 5..."
+    className="text-right"
+    value={formData.crew_name}
+    onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })}
+  />
+</div>
             <div className="space-y-2">
                 <Label>שעת סיום *</Label>
                 <Input
