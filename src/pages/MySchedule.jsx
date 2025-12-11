@@ -271,8 +271,8 @@ export default function MySchedule() {
   <DialogContent dir="rtl" className="sm:max-w-md text-right">
     <DialogHeader className="text-right">
 
-      <DialogTitle className="flex items-center gap-2 flex-row-reverse">
-        <div className="p-2 bg-indigo-100 rounded-lg">
+<DialogTitle className="flex items-center gap-2 flex-row-reverse justify-end text-right">
+  <div className="p-2 bg-indigo-100 rounded-lg">
           <Calendar className="w-5 h-5 text-indigo-600" />
         </div>
         הוסף שיעור
