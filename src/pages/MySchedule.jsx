@@ -344,7 +344,7 @@ export default function MySchedule() {
                 } />
 
               <Label htmlFor="computers" className="cursor-pointer">
-                💻 דורש מחשבים
+                💻 דורש כיתה עם מחשב
               </Label>
             </div>
 
