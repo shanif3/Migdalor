@@ -51,6 +51,14 @@ export default function KeyAllocation() {
     );
   };
 
+  const toggleSelectAll = () => {
+    if (selectedKeys.length === allKeys.length) {
+      setSelectedKeys([]);
+    } else {
+      setSelectedKeys(allKeys.map(k => k.id));
+    }
+  };
+
   const allocateKeys = async () => {
     setIsAllocating(true);
 
@@ -258,10 +266,20 @@ export default function KeyAllocation() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Available Keys Selection */}
           <Card className="p-6 border-slate-200">
-            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-              <Key className="w-5 h-5 text-slate-600" />
-              בחר מפתחות זמינים
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <Key className="w-5 h-5 text-slate-600" />
+                בחר מפתחות זמינים
+              </h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleSelectAll}
+                className="text-xs"
+              >
+                {selectedKeys.length === allKeys.length ? 'בטל הכל' : 'בחר הכל'}
+              </Button>
+            </div>
             <div className="space-y-2 max-h-[500px] overflow-y-auto">
               {allKeys.map((key) =>
               <div
