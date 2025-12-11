@@ -195,11 +195,9 @@ export default function KeyAllocation() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            🎯 הקצאת מפתחות
+            הקצאת מפתחות 🎯
           </h1>
-          <p className="text-slate-500">
-            שבץ אוטומטית מפתחות לשיעורים לפי סדר עדיפויות
-          </p>
+          
         </motion.div>
 
         {/* Date and Actions */}
