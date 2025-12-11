@@ -109,11 +109,8 @@ export default function Dashboard() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            🔑 ניהול מפתחות
+            ניהול מפתחות 🔑
           </h1>
-          <p className="text-slate-500">
-            עקוב אחרי מפתחות כיתות ונהל את תור ההמתנה
-          </p>
         </motion.div>
 
         {/* Stats */}
