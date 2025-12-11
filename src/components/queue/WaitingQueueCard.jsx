@@ -26,8 +26,8 @@ export default function WaitingQueueCard({ item, position, onRemove, onMoveUp })
               </div>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline" className="text-xs">
-                  {item.preferred_type === 'any' ? '🔄 Any' : 
-                   item.preferred_type === 'large' ? '🏢 Large' : '🏠 Small'}
+                  {item.preferred_type === 'any' ? '🔄 הכל' : 
+                   item.preferred_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                 </Badge>
                 {item.notes && (
                   <span className="text-xs text-slate-400">{item.notes}</span>

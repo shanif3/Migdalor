@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 export default function StatsBar({ keys, queueCount }) {
   const availableKeys = keys.filter(k => k.status === 'available').length;
   const takenKeys = keys.filter(k => k.status === 'taken').length;
-  const smallKeys = keys.filter(k => k.room_type === 'small');
-  const largeKeys = keys.filter(k => k.room_type === 'large');
+  const smallKeys = keys.filter(k => k.room_type === 'צוותי');
+  const largeKeys = keys.filter(k => k.room_type === 'פלוגתי');
 
   const stats = [
     {
-      label: 'Available',
+      label: 'זמינים',
       value: availableKeys,
       total: keys.length,
       icon: Key,
@@ -18,7 +18,7 @@ export default function StatsBar({ keys, queueCount }) {
       gradient: 'from-emerald-500 to-teal-500',
     },
     {
-      label: 'In Use',
+      label: 'בשימוש',
       value: takenKeys,
       total: keys.length,
       icon: Users,
@@ -26,7 +26,7 @@ export default function StatsBar({ keys, queueCount }) {
       gradient: 'from-amber-500 to-orange-500',
     },
     {
-      label: 'Waiting',
+      label: 'ממתינים',
       value: queueCount,
       icon: Clock,
       color: 'blue',

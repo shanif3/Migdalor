@@ -47,20 +47,20 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
             <div className="p-2 bg-blue-100 rounded-lg">
               <Clock className="w-5 h-5 text-blue-600" />
             </div>
-            Join Waiting Queue
+            הצטרף לתור המתנה
           </DialogTitle>
           <DialogDescription>
-            Add a crew to the waiting list for a key
+            הוסף צוות לרשימת המתנה למפתח
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           {crews.length > 0 && useExisting ? (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Select Crew</Label>
+              <Label className="text-sm font-medium">בחר צוות</Label>
               <Select value={crewName} onValueChange={setCrewName}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a crew..." />
+                  <SelectValue placeholder="בחר צוות..." />
                 </SelectTrigger>
                 <SelectContent>
                   {crews.map((crew) => (
@@ -79,14 +79,14 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
                 className="text-slate-500 text-xs"
                 onClick={() => setUseExisting(false)}
               >
-                Or enter a name manually
+                או הזן שם ידנית
               </Button>
             </div>
           ) : (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Crew Name</Label>
+              <Label className="text-sm font-medium">שם הצוות</Label>
               <Input
-                placeholder="Enter crew name..."
+                placeholder="הזן שם צוות..."
                 value={crewName}
                 onChange={(e) => setCrewName(e.target.value)}
               />
@@ -97,30 +97,30 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
                   className="text-slate-500 text-xs"
                   onClick={() => setUseExisting(true)}
                 >
-                  Select from existing crews
+                  בחר מצוותים קיימים
                 </Button>
               )}
             </div>
           )}
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Preferred Room Type</Label>
+            <Label className="text-sm font-medium">סוג חדר מועדף</Label>
             <Select value={preferredType} onValueChange={setPreferredType}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="any">🔄 Any available</SelectItem>
-                <SelectItem value="small">🏠 Small classroom</SelectItem>
-                <SelectItem value="large">🏢 Large classroom</SelectItem>
+                <SelectItem value="any">🔄 כל חדר זמין</SelectItem>
+                <SelectItem value="צוותי">🏠 צוותי</SelectItem>
+                <SelectItem value="פלוגתי">🏢 פלוגתי</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Notes (optional)</Label>
+            <Label className="text-sm font-medium">הערות (אופציונלי)</Label>
             <Textarea
-              placeholder="Any special requirements..."
+              placeholder="דרישות מיוחדות..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="h-20"
@@ -130,14 +130,14 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={onClose} className="flex-1">
-            Cancel
+            ביטול
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={!crewName}
             className="flex-1 bg-blue-600 hover:bg-blue-700"
           >
-            Add to Queue
+            הוסף לתור
           </Button>
         </div>
       </DialogContent>
