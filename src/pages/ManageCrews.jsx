@@ -11,16 +11,16 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  TableRow } from
+"@/components/ui/table";
 import { Plus, Users, Trash2, Edit2, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -33,7 +33,7 @@ export default function ManageCrews() {
 
   const { data: crews = [], isLoading } = useQuery({
     queryKey: ['crews'],
-    queryFn: () => base44.entities.Crew.list(),
+    queryFn: () => base44.entities.Crew.list()
   });
 
   const createMutation = useMutation({
@@ -43,7 +43,7 @@ export default function ManageCrews() {
       setShowModal(false);
       setFormData({ name: '', contact: '', notes: '' });
       toast.success('צוות נוסף בהצלחה');
-    },
+    }
   });
 
   const updateMutation = useMutation({
@@ -54,7 +54,7 @@ export default function ManageCrews() {
       setEditingCrew(null);
       setFormData({ name: '', contact: '', notes: '' });
       toast.success('צוות עודכן בהצלחה');
-    },
+    }
   });
 
   const deleteMutation = useMutation({
@@ -62,7 +62,7 @@ export default function ManageCrews() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crews'] });
       toast.success('צוות נמחק בהצלחה');
-    },
+    }
   });
 
   const handleSubmit = () => {
@@ -88,11 +88,11 @@ export default function ManageCrews() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             ניהול צוותים 👥
           </h1>
@@ -122,28 +122,28 @@ export default function ManageCrews() {
           <Table>
             <TableHeader>
             <TableRow className="bg-slate-50">
-                <TableHead className="text-center">שם הצוות</TableHead>
+                <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">שם הצוות</TableHead>
                 <TableHead className="text-center">איש קשר</TableHead>
                 <TableHead className="text-center">הערות</TableHead>
                 <TableHead className="text-center">פעולות</TableHead>
             </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow>
+              {isLoading ?
+              <TableRow>
                   <TableCell colSpan={4} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
-                </TableRow>
-              ) : crews.length === 0 ? (
-                <TableRow>
+                </TableRow> :
+              crews.length === 0 ?
+              <TableRow>
                   <TableCell colSpan={4} className="text-center py-8 text-slate-400">
                     עדיין לא נוספו צוותים
                   </TableCell>
-                </TableRow>
-              ) : (
-                crews.map((crew) => (
-                  <TableRow key={crew.id} className="hover:bg-slate-50/50" className="[&_td]:text-center">
+                </TableRow> :
+
+              crews.map((crew) =>
+              <TableRow key={crew.id} className="hover:bg-slate-50/50" className="[&_td]:text-center">
 
                     <TableCell className="font-medium text-center">
                       <div className="flex items-center gap-2">
@@ -154,14 +154,14 @@ export default function ManageCrews() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {crew.contact ? (
-                        <div className="flex items-center gap-1 text-slate-600">
-                          <Phone className="w-3 h-3" />
+                      {crew.contact ?
+                  <div className="flex items-center gap-1 text-slate-600">
+                          <Phone className="mx-20 lucide lucide-phone w-3 h-3" />
                           {crew.contact}
-                        </div>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
+                        </div> :
+
+                  <span className="text-slate-400">—</span>
+                  }
                     </TableCell>
                     <TableCell className="text-slate-500 max-w-xs truncate">
                       {crew.notes || '—'}
@@ -169,26 +169,26 @@ export default function ManageCrews() {
                     <TableCell className="text-center">
                       <div className="flex justify-end gap-2">
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(crew)}
-                          className="text-slate-400 hover:text-slate-600"
-                        >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(crew)}
+                      className="text-slate-400 hover:text-slate-600">
+
                           <Edit2 className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(crew.id)}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                        >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteMutation.mutate(crew.id)}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
+
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+              )
+              }
             </TableBody>
           </Table>
         </Card>
@@ -215,8 +215,8 @@ export default function ManageCrews() {
               <Input
                 placeholder="למשל, צוות אלפא, משמרת בוקר..."
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+
             </div>
 
             <div className="space-y-2">
@@ -224,8 +224,8 @@ export default function ManageCrews() {
               <Input
                 placeholder="טלפון או אימייל..."
                 value={formData.contact}
-                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-              />
+                onChange={(e) => setFormData({ ...formData, contact: e.target.value })} />
+
             </div>
 
             <div className="space-y-2">
@@ -234,8 +234,8 @@ export default function ManageCrews() {
                 placeholder="מידע נוסף..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="h-20"
-              />
+                className="h-20" />
+
             </div>
           </div>
 
@@ -246,13 +246,13 @@ export default function ManageCrews() {
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-            >
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+
               {editingCrew ? 'עדכן צוות' : 'הוסף צוות'}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>);
+
 }
