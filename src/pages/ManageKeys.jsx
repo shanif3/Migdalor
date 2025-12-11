@@ -36,8 +36,15 @@ import { motion } from 'framer-motion';
 export default function ManageKeys() {
   const [showModal, setShowModal] = useState(false);
   const [editingKey, setEditingKey] = useState(null);
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({ room_number: '', room_type: 'צוותי', has_computers: false });
   const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const isAdmin = user?.role === 'admin';
 
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ['keys'],
@@ -204,24 +211,26 @@ export default function ManageKeys() {
                       {key.current_holder || '—'}
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(key)}
-                          className="text-slate-400 hover:text-slate-600"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(key.id)}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      {isAdmin && (
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(key)}
+                            className="text-slate-400 hover:text-slate-600"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(key.id)}
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
