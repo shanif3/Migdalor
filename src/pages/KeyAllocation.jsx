@@ -211,7 +211,7 @@ export default function KeyAllocation() {
               className="w-auto" />
 
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-row-reverse items-center gap-2">
             <Button
               variant="outline"
               onClick={resetAllocations}
