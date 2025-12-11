@@ -133,7 +133,7 @@ export default function MySchedule() {
           className="mb-8">
 
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            📅 לוח הזמנים שלי
+            לוח הזמנים שלי 📅
           </h1>
           <p className="text-slate-500">
             הגש את לוח הזמנים שלך להקצאת מפתחות
