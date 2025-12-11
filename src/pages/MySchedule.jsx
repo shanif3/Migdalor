@@ -292,7 +292,7 @@ export default function MySchedule() {
   </Label>
 
   <Input
-    placeholder="...למשל, צוות 5"
+    placeholder="למשל, צוות 5..."
     className="text-right"
     value={formData.crew_name}
     onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })}
