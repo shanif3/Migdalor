@@ -128,7 +128,7 @@ export default function ManageKeys() {
           </Card>
         </div>
 
-        <div className="flex justify-end rtl:justify-end mb-6">
+        <div className="flex justify-end mb-6">
 
 
 
