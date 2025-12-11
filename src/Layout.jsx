@@ -44,7 +44,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="hidden sm:block">
                 {user && (
                   <p className="text-xs text-slate-500">
-                    {isAdmin ? 'מנהל 👑' : 'מנהל צוות 👤'}
+                    {isAdmin ? 'מנהל 👑' : 'קה״ד פלוגתי 👤'}
                   </p>
                 )}
               </div>
