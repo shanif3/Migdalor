@@ -286,8 +286,8 @@ export default function MySchedule() {
     </DialogHeader>
 
     <div className="space-y-4 py-4">
-<div className="space-y-2 flex flex-col items-end">
-  <Label className="text-sm font-medium text-right leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+<div className="space-y-2 flex flex-col items-end text-right">
+  <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-right">
     שם הצוות *
   </Label>
 
