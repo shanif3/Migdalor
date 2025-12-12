@@ -215,15 +215,15 @@ export default function ManageCrews() {
               {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
             </DialogTitle>
             <DialogDescription>
-              {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף צוות חדש למעקב'}
+              {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדש למעקב'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>שם הצוות</Label>
+              <Label>שם הפלוגה</Label>
               <Input
-                placeholder="למשל, צוות אלפא, משמרת בוקר..."
+                placeholder="...למשל, פלוגת יפתח"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
 
