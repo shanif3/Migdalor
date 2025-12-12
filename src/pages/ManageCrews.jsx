@@ -208,16 +208,16 @@ export default function ManageCrews() {
       <Dialog open={showModal} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader>
+          <div className="p-2 bg-indigo-100 rounded-lg">
+                <Users className="w-5 h-5 text-indigo-600" />
+              </div>
             <DialogTitle className="flex flex-row-reverse items-center gap-2">
-              
               {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
             </DialogTitle>
             <DialogDescription className="text-right">
               {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדש למעקב'}
             </DialogDescription>
-            <div className="p-2 bg-indigo-100 rounded-lg">
-                <Users className="w-5 h-5 text-indigo-600" />
-              </div>
+            
           </DialogHeader>
 
           <div className="space-y-4 py-4">
