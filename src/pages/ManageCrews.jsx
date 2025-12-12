@@ -221,7 +221,7 @@ export default function ManageCrews() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>שם הצוות</Label>
+              <Label>פלוגות</Label>
               <Input
                 placeholder="למשל, צוות אלפא, משמרת בוקר..."
                 value={formData.name}
