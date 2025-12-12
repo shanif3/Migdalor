@@ -153,7 +153,7 @@ export default function ManageCrews() {
                     <TableCell className="font-medium text-center">
   <div className="flex flex-row-reverse items-center justify-between gap-2">
     
-    <span className="flex-1 text-right">{crew.name}</span>
+    <span className="flex-1 text-center">{crew.name}</span>
     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
       <Users className="w-4 h-4 text-indigo-600" />
     </div>
