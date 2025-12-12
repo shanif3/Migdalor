@@ -152,10 +152,11 @@ export default function ManageCrews() {
               <TableRow key={crew.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
   <div className="flex flex-row-reverse items-center justify-between gap-2">
+    
+    <span className="flex-1 text-right">{crew.name}</span>
     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
       <Users className="w-4 h-4 text-indigo-600" />
     </div>
-    <span className="flex-1 text-right">{crew.name}</span>
   </div>
 </TableCell>
                     <TableCell className="text-center">
