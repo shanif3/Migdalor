@@ -290,7 +290,7 @@ export default function ManageKeys() {
                 }
               />
               <Label htmlFor="has_computers" className="cursor-pointer">
-                💻 יש מחשבים
+                💻 יש מחשב בכיתה
               </Label>
             </div>
           </div>
