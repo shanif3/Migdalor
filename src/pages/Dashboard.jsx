@@ -133,14 +133,14 @@ export default function Dashboard() {
 
         {/* Main Content */}
         <Tabs defaultValue="keys" className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div className="flex flex-col sm:flex-row-reverse sm:items-center sm:justify-between gap-4">
             <TabsList className="bg-white border border-slate-200 p-1">
               <TabsTrigger value="keys" className="data-[state=active]:bg-slate-100">
-                <Key className="w-4 h-4 ml-2" />
+                <Key className="w-4 h-4 mr-2" />
                 מפתחות
               </TabsTrigger>
               <TabsTrigger value="queue" className="data-[state=active]:bg-slate-100">
-                <Clock className="w-4 h-4 ml-2" />
+                <Clock className="w-4 h-4 mr-2" />
                 תור ({queue.length})
               </TabsTrigger>
             </TabsList>
@@ -151,7 +151,7 @@ export default function Dashboard() {
                 onClick={() => setShowQueueModal(true)}
                 className="border-blue-200 text-blue-600 hover:bg-blue-50"
               >
-                <Plus className="w-4 h-4 ml-2" />
+                <Plus className="w-4 h-4 mr-2" />
                 הוסף לתור
               </Button>
             </div>
