@@ -36,6 +36,11 @@ export default function KeyAllocation() {
     queryFn: () => base44.entities.Lesson.filter({ date: selectedDate }, 'start_time')
   });
 
+  const { data: specialRequests = [] } = useQuery({
+    queryKey: ['special-requests'],
+    queryFn: () => base44.entities.WaitingQueue.list('priority')
+  });
+
   const updateLessonMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
     onSuccess: () => {
@@ -86,10 +91,25 @@ export default function KeyAllocation() {
         return 0;
       });
 
+      // Add special requests to the end (lowest priority)
+      const specialRequestsToAllocate = specialRequests.map((req) => ({
+        id: `special_${req.id}`,
+        crew_name: req.crew_name,
+        start_time: req.start_time,
+        end_time: req.end_time,
+        room_type_needed: req.preferred_type === 'any' ? 'צוותי' : req.preferred_type,
+        needs_computers: false,
+        status: 'pending',
+        isSpecialRequest: true,
+        originalRequestId: req.id
+      }));
+
+      const allToAllocate = [...pendingLessons, ...specialRequestsToAllocate];
+
       const assignments = [];
       const failureReasons = [];
 
-      for (const lesson of pendingLessons) {
+      for (const lesson of allToAllocate) {
         // Find suitable key
         let assignedKey = null;
 
@@ -123,6 +143,7 @@ export default function KeyAllocation() {
             lessonId: lesson.id,
             keyId: assignedKey.id,
             roomNumber: assignedKey.room_number,
+            crewName: lesson.crew_name,
             startTime: lesson.start_time,
             endTime: lesson.end_time
           });
@@ -148,18 +169,30 @@ export default function KeyAllocation() {
 
       // Apply assignments
       for (const assignment of assignments) {
-        await updateLessonMutation.mutateAsync({
-          id: assignment.lessonId,
-          data: {
-            assigned_key: assignment.roomNumber,
-            status: 'assigned'
-          }
-        });
+        // Check if it's a special request
+        if (assignment.lessonId.startsWith('special_')) {
+          // Delete the special request from queue
+          const requestId = assignment.lessonId.replace('special_', '');
+          await base44.entities.WaitingQueue.delete(requestId);
+          toast.success(`בקשה מיוחדת של ${assignment.crewName} שובצה`);
+        } else {
+          // Regular lesson - update status
+          await updateLessonMutation.mutateAsync({
+            id: assignment.lessonId,
+            data: {
+              assigned_key: assignment.roomNumber,
+              status: 'assigned'
+            }
+          });
+        }
       }
 
-      toast.success(`שובצו בהצלחה ${assignments.length} שיעורים!`);
+      // Refresh special requests
+      queryClient.invalidateQueries({ queryKey: ['special-requests'] });
 
-      const unassigned = pendingLessons.length - assignments.length;
+      toast.success(`שובצו בהצלחה ${assignments.length} שיעורים ובקשות!`);
+
+      const unassigned = allToAllocate.length - assignments.length;
       if (unassigned > 0) {
         console.log('שיעורים שלא שובצו:', failureReasons);
         toast.warning(`${unassigned} שיעורים לא שובצו. פתח Console לפרטים`);
@@ -205,6 +238,7 @@ export default function KeyAllocation() {
 
   const pendingCount = lessons.filter((l) => l.status === 'pending').length;
   const assignedCount = lessons.filter((l) => l.status === 'assigned').length;
+  const specialRequestsCount = specialRequests.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -243,7 +277,7 @@ export default function KeyAllocation() {
             </Button>
             <Button
               onClick={allocateKeys}
-              disabled={selectedKeys.length === 0 || pendingCount === 0 || isAllocating}
+              disabled={selectedKeys.length === 0 || (pendingCount === 0 && specialRequestsCount === 0) || isAllocating}
               className="bg-emerald-600 hover:bg-emerald-700">
 
               {isAllocating ?
@@ -257,7 +291,7 @@ export default function KeyAllocation() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
           <Card className="p-4">
             <p className="text-sm text-slate-500">סה״כ שיעורים</p>
             <p className="text-2xl font-bold text-slate-800">{lessons.length}</p>
@@ -269,6 +303,10 @@ export default function KeyAllocation() {
           <Card className="p-4 bg-green-50 border-green-200">
             <p className="text-sm text-green-600">שובצו</p>
             <p className="text-2xl font-bold text-green-700">{assignedCount}</p>
+          </Card>
+          <Card className="p-4 bg-purple-50 border-purple-200">
+            <p className="text-sm text-purple-600">בקשות מיוחדות</p>
+            <p className="text-2xl font-bold text-purple-700">{specialRequestsCount}</p>
           </Card>
           <Card className="p-4 bg-blue-50 border-blue-200">
             <p className="text-sm text-blue-600">מפתחות זמינים</p>
@@ -401,6 +439,7 @@ export default function KeyAllocation() {
             <li>2. חדרים פלוגתיים משובצים ראשונים</li>
             <li>3. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
             <li>4. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
+            <li>5. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
           </ol>
         </Card>
       </div>

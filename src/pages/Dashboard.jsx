@@ -54,6 +54,7 @@ export default function Dashboard() {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] });
+      queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
       setShowQueueModal(false);
       toast.success('נוסף לתור המתנה');
     }

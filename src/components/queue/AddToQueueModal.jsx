@@ -28,14 +28,18 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
 const [endTime, setEndTime] = useState('');
 
   const handleConfirm = () => {
-    if (crewName) {
+    if (crewName && startTime && endTime) {
       onConfirm({
         crew_name: crewName,
         preferred_type: preferredType,
+        start_time: startTime,
+        end_time: endTime,
         notes: notes
       });
       setCrewName('');
       setPreferredType('any');
+      setStartTime('');
+      setEndTime('');
       setNotes('');
       setUseExisting(false);
     }
