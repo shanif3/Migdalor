@@ -240,38 +240,39 @@ export default function ManageKeys() {
         </Card>
       </div>
 
-      {/* Add/Edit Modal */}
+{/* Add/Edit Modal */}
       <Dialog open={showModal} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+        <DialogContent className="sm:max-w-md" dir="rtl">
+          <DialogHeader className="text-right">
+            <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
               <div className="p-2 bg-emerald-100 rounded-lg">
                 <Key className="w-5 h-5 text-emerald-600" />
               </div>
               {editingKey ? 'ערוך מפתח' : 'הוסף מפתח חדש'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-right">
               {editingKey ? 'עדכן את פרטי המפתח' : 'הוסף מפתח חדש למעקב'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>מספר חדר</Label>
+              <Label className="text-right block">מספר חדר</Label>
               <Input
-                placeholder="למשל, 101, A-203..."
+                placeholder="למשל, 101..."
                 value={formData.room_number}
                 onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
+                className="text-right"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>סוג חדר</Label>
+              <Label className="text-right block">סוג חדר</Label>
               <Select
                 value={formData.room_type}
                 onValueChange={(value) => setFormData({ ...formData, room_type: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="text-right">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,7 +282,10 @@ export default function ManageKeys() {
               </Select>
             </div>
 
-            <div className="flex items-center space-x-2 space-x-reverse">
+            <div className="flex flex-row-reverse items-center gap-2">
+              <Label htmlFor="has_computers" className="cursor-pointer">
+                💻 יש מחשב בכיתה
+              </Label>
               <Checkbox
                 id="has_computers"
                 checked={formData.has_computers}
@@ -289,13 +293,10 @@ export default function ManageKeys() {
                   setFormData({ ...formData, has_computers: checked })
                 }
               />
-              <Label htmlFor="has_computers" className="cursor-pointer">
-                💻 יש מחשב בכיתה
-              </Label>
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-row-reverse gap-3">
             <Button variant="outline" onClick={handleClose} className="flex-1">
               ביטול
             </Button>
