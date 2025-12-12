@@ -11,23 +11,23 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  TableRow } from
+"@/components/ui/table";
 import { Plus, Key, Trash2, Edit2, Monitor } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from 'sonner';
@@ -48,7 +48,7 @@ export default function ManageKeys() {
 
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ['keys'],
-    queryFn: () => base44.entities.ClassroomKey.list(),
+    queryFn: () => base44.entities.ClassroomKey.list()
   });
 
   const createMutation = useMutation({
@@ -58,7 +58,7 @@ export default function ManageKeys() {
       setShowModal(false);
       setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
       toast.success('מפתח נוסף בהצלחה');
-    },
+    }
   });
 
   const updateMutation = useMutation({
@@ -69,7 +69,7 @@ export default function ManageKeys() {
       setEditingKey(null);
       setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
       toast.success('מפתח עודכן בהצלחה');
-    },
+    }
   });
 
   const deleteMutation = useMutation({
@@ -77,7 +77,7 @@ export default function ManageKeys() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
       toast.success('מפתח נמחק בהצלחה');
-    },
+    }
   });
 
   const handleSubmit = () => {
@@ -100,17 +100,17 @@ export default function ManageKeys() {
     setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
   };
 
-  const smallCount = keys.filter(k => k.room_type === 'צוותי').length;
-  const largeCount = keys.filter(k => k.room_type === 'פלוגתי').length;
+  const smallCount = keys.filter((k) => k.room_type === 'צוותי').length;
+  const largeCount = keys.filter((k) => k.room_type === 'פלוגתי').length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             ניהול מפתחות 🗝️
           </h1>
@@ -135,112 +135,112 @@ export default function ManageKeys() {
           </Card>
         </div>
 
-        {isAdmin && (
-          <div className="flex justify-end mb-6">
+        {isAdmin &&
+        <div className="flex justify-end mb-6">
             <Button
-              onClick={() => setShowModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
+            onClick={() => setShowModal(true)}
+            className="bg-emerald-600 hover:bg-emerald-700">
+
               <Plus className="w-4 h-4 ml-2" />
               הוסף מפתח חדש
             </Button>
           </div>
-        )}
+        }
 
         {/* Keys Table */}
         <Card className="overflow-hidden border-slate-200">
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead>מספר חדר</TableHead>
-                <TableHead>סוג</TableHead>
-                <TableHead>מחשבים</TableHead>
-                <TableHead>סטטוס</TableHead>
-                <TableHead>מחזיק נוכחי</TableHead>
-                <TableHead className="text-left">פעולות</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מספר חדר</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סוג</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחשבים</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחזיק נוכחי</TableHead>
+                <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow>
+              {isLoading ?
+              <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
-                </TableRow>
-              ) : keys.length === 0 ? (
-                <TableRow>
+                </TableRow> :
+              keys.length === 0 ?
+              <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-slate-400">
                     עדיין לא נוספו מפתחות
                   </TableCell>
-                </TableRow>
-              ) : (
-                keys.map((key) => (
-                  <TableRow key={key.id} className="hover:bg-slate-50/50">
+                </TableRow> :
+
+              keys.map((key) =>
+              <TableRow key={key.id} className="hover:bg-slate-50/50">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         <Key className="w-4 h-4 text-slate-400" />
                         {key.room_number}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                       <Badge variant="outline" className={
-                        key.room_type === 'פלוגתי' 
-                          ? 'border-purple-300 text-purple-700' 
-                          : 'border-blue-300 text-blue-700'
-                      }>
+                  key.room_type === 'פלוגתי' ?
+                  'border-purple-300 text-purple-700' :
+                  'border-blue-300 text-blue-700'
+                  }>
                         {key.room_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      {key.has_computers ? (
-                        <Monitor className="w-4 h-4 text-blue-600" />
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
+                    <TableCell className="text-cente my-3 p-2 text-center t te tex texx text align-middle flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                      {key.has_computers ?
+                  <Monitor className="w-4 h-4 text-blue-600" /> :
+
+                  <span className="text-slate-300">—</span>
+                  }
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                       <Badge className={
-                        key.status === 'available' 
-                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' 
-                          : 'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                      }>
+                  key.status === 'available' ?
+                  'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' :
+                  'bg-amber-100 text-amber-700 hover:bg-amber-100'
+                  }>
                         {key.status === 'available' ? 'זמין' : 'תפוס'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-500">
+                    <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-slate-500">
                       {key.current_holder || '—'}
                     </TableCell>
                     <TableCell className="text-right">
-                      {isAdmin && (
-                        <div className="flex justify-end gap-2">
+                      {isAdmin &&
+                  <div className="flex justify-end gap-2">
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(key)}
-                            className="text-slate-400 hover:text-slate-600"
-                          >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(key)}
+                      className="text-slate-400 hover:text-slate-600">
+
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteMutation.mutate(key.id)}
-                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                          >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteMutation.mutate(key.id)}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
+
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                      )}
+                  }
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+              )
+              }
             </TableBody>
           </Table>
         </Card>
       </div>
 
-{/* Add/Edit Modal */}
+      {/* Add/Edit Modal */}
       <Dialog open={showModal} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader className="text-right">
@@ -252,7 +252,7 @@ export default function ManageKeys() {
     <Key className="w-5 h-5 text-emerald-600" />
     </div>
 
-</DialogTitle>
+            </DialogTitle>
             <DialogDescription className="text-right">
               {editingKey ? 'עדכן את פרטי המפתח' : 'הוסף מפתח חדש למעקב'}
             </DialogDescription>
@@ -265,16 +265,16 @@ export default function ManageKeys() {
                 placeholder="למשל, 101..."
                 value={formData.room_number}
                 onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
-                className="text-right"
-              />
+                className="text-right" />
+
             </div>
 
-<div className="space-y-2">
+            <div className="space-y-2">
   <Label className="text-right block">סוג חדר</Label>
   <Select
-    value={formData.room_type}
-    onValueChange={(value) => setFormData({ ...formData, room_type: value })}
-  >
+                value={formData.room_type}
+                onValueChange={(value) => setFormData({ ...formData, room_type: value })}>
+
     <SelectTrigger className="text-right" dir="rtl">
       <SelectValue className="text-right" />
     </SelectTrigger>
@@ -283,7 +283,7 @@ export default function ManageKeys() {
       <SelectItem value="פלוגתי">פלוגתי 🏢</SelectItem>
     </SelectContent>
   </Select>
-</div>
+            </div>
 
             <div className="flex flex-row-reverse items-center gap-2 justify-end">
               <Label htmlFor="has_computers" className="cursor-pointer">
@@ -292,10 +292,10 @@ export default function ManageKeys() {
               <Checkbox
                 id="has_computers"
                 checked={formData.has_computers}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, has_computers: checked })
-                }
-              />
+                onCheckedChange={(checked) =>
+                setFormData({ ...formData, has_computers: checked })
+                } />
+
             </div>
           </div>
 
@@ -306,13 +306,13 @@ export default function ManageKeys() {
             <Button
               onClick={handleSubmit}
               disabled={!formData.room_number}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-            >
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+
               {editingKey ? 'עדכן מפתח' : 'הוסף מפתח'}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>);
+
 }
