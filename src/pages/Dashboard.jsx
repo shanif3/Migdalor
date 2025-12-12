@@ -136,12 +136,12 @@ export default function Dashboard() {
 <div className="flex flex-col sm:flex-row-reverse sm:items-center sm:justify-between gap-4">
             <TabsList className="bg-white border border-slate-200 p-1">
               <TabsTrigger value="keys" className="data-[state=active]:bg-slate-100">
-                <Key className="w-4 h-4 mr-2" />
                 מפתחות
+                <Key className="w-4 h-4 mr-2" />
               </TabsTrigger>
               <TabsTrigger value="queue" className="data-[state=active]:bg-slate-100">
-                <Clock className="w-4 h-4 mr-2" />
                 תור ({queue.length})
+                <Clock className="w-4 h-4 mr-2" />
               </TabsTrigger>
             </TabsList>
 
