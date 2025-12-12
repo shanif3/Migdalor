@@ -108,7 +108,7 @@ export default function ManageCrews() {
         {/* Stats */}
         <div className="mb-8">
           <Card className="p-4 border-slate-200 inline-block">
-            <p className="text-sm text-slate-500">סה״כ צוותים</p>
+            <p className="text-sm text-slate-500">סה״כ פלוגות</p>
             <p className="text-2xl font-bold text-slate-800">{crews.length}</p>
           </Card>
         </div>
