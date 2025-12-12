@@ -128,7 +128,7 @@ export default function ManageCrews() {
           <Table>
             <TableHeader>
             <TableRow className="bg-slate-50">
-                <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">שם הצוות</TableHead>
+                <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">פלוגות</TableHead>
                 <TableHead className="text-center">איש קשר</TableHead>
                 <TableHead className="text-center">הערות</TableHead>
                 {isAdmin && <TableHead className="text-center">פעולות</TableHead>}
@@ -221,7 +221,7 @@ export default function ManageCrews() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>פלוגות</Label>
+              <Label>שם הצוות</Label>
               <Input
                 placeholder="למשל, צוות אלפא, משמרת בוקר..."
                 value={formData.name}
