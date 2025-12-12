@@ -216,7 +216,7 @@ export default function ManageCrews() {
               </div>
             </DialogTitle>
             <DialogDescription className="text-right">
-              {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדש למעקב'}
+              {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדשה למעקב'}
             </DialogDescription>
           </DialogHeader>
 
