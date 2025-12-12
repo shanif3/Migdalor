@@ -221,16 +221,16 @@ export default function KeyAllocation() {
         </motion.div>
 
         {/* Date and Actions */}
-{/* Date and Actions */}
-<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        {/* Date and Actions */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
   <div className="flex items-center gap-3">
     <Label className="text-sm font-medium">תאריך:</Label>
     <Input
-      type="date"
-      value={selectedDate}
-      onChange={(e) => setSelectedDate(e.target.value)}
-      className="w-auto"
-    />
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-auto" />
+
   </div>
           <div className="flex flex-row-reverse items-center gap-2">
             <Button
@@ -356,16 +356,16 @@ export default function KeyAllocation() {
 
                   lessons.map((lesson) =>
                   <TableRow key={lesson.id} className="hover:bg-slate-50/50">
-                        <TableCell className="font-mono text-sm">
+                        <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-mono text-sm">
                           {lesson.start_time}-{lesson.end_time}
                         </TableCell>
-                        <TableCell className="font-medium">{lesson.crew_name}</TableCell>
+                        <TableCell className="p-2 text-center  align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium">{lesson.crew_name}</TableCell>
                         <TableCell className="p-2 flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]\n">
                           <Badge variant="outline" className="text-xs">
                             {lesson.room_type_needed === 'פלוגתי' ? '🏢' : '🏠'}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 text-center align-middle[&:has([role=checkbox])]:pr-0 p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                           {lesson.needs_computers ? '✅' : '—'}
                         </TableCell>
                         <TableCell className="p-2 flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]\n">
@@ -375,7 +375,7 @@ export default function KeyAllocation() {
                       <AlertTriangle className="w-4 h-4 text-yellow-600" />
                       }
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 text-center  align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                           {lesson.assigned_key ?
                       <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
                               {lesson.assigned_key}
