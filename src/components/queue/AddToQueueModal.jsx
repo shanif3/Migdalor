@@ -50,7 +50,7 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
             </div>
           </DialogTitle>
           <DialogDescription className="text-right">
-            הוסף צוות לרשימת המתנה למפתח
+            הוסף צוות לבקשה מיוחדת למפתח
           </DialogDescription>
         </DialogHeader>
 
