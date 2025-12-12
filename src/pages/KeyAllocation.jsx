@@ -221,16 +221,7 @@ export default function KeyAllocation() {
         </motion.div>
 
         {/* Date and Actions */}
-       <div className="flex flex-row items-center gap-3">
-  <Label className="text-sm font-medium">תאריך:</Label>
-
-  <Input
-    type="date"
-    value={selectedDate}
-    onChange={(e) => setSelectedDate(e.target.value)}
-    className="w-auto text-right"
-  />
-</div>
+{/* Date and Actions */} <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> <div className="flex flex-row-reverse items-center gap-3"> <Label className="text-sm font-medium">תאריך:</Label> <Input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-auto" /> </div>
 
           <div className="flex flex-row-reverse items-center gap-2">
             <Button
