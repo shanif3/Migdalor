@@ -24,6 +24,8 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
   const [preferredType, setPreferredType] = useState('any');
   const [notes, setNotes] = useState('');
   const [useExisting, setUseExisting] = useState(false);
+  const [startTime, setStartTime] = useState('');
+const [endTime, setEndTime] = useState('');
 
   const handleConfirm = () => {
     if (crewName) {
