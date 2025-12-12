@@ -278,7 +278,7 @@ export default function ManageKeys() {
                 <SelectTrigger className="text-right">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent align="end">
+                <SelectContent align="start">
                   <SelectItem value="צוותי" className="text-right">🏠 צוותי</SelectItem>
                   <SelectItem value="פלוגתי" className="text-right">🏢 פלוגתי</SelectItem>
                 </SelectContent>
