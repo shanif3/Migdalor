@@ -245,10 +245,12 @@ export default function ManageKeys() {
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader className="text-right">
             <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
-  <div className="p-2 bg-emerald-100 rounded-lg">
-  </div>
+ 
   {editingKey ? 'ערוך מפתח' : 'הוסף מפתח חדש'}
+  <div className="p-2 bg-emerald-100 rounded-lg">
+
     <Key className="w-5 h-5 text-emerald-600" />
+    </div>
 
 </DialogTitle>
             <DialogDescription className="text-right">
