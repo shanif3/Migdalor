@@ -49,10 +49,10 @@ export default function StatsBar({ keys, queueCount }) {
             <div>
               <p className="text-sm text-slate-500 mb-1">{stat.label}</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-slate-800">{stat.value}</span>
                 {stat.total && (
-                  <span className="text-slate-400 text-lg">/ {stat.total}</span>
+                  <span className="text-slate-400 text-lg">{stat.total} /</span>
                 )}
+                <span className="text-3xl font-bold text-slate-800">{stat.value}</span>
               </div>
             </div>
             <div className={`p-3 rounded-xl bg-${stat.color}-100`}>
