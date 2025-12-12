@@ -223,7 +223,7 @@ export default function ManageCrews() {
             <div className="space-y-2">
               <Label className="text-right block">שם הפלוגה</Label>
               <Input
-                placeholder="...למשל, פלוגת יפתח"
+                placeholder="למשל, פלוגת יפתח..."
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="text-right"
