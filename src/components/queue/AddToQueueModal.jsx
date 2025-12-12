@@ -4,8 +4,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,8 +15,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import { Clock, Users } from 'lucide-react';
 
 export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
@@ -30,7 +30,7 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
       onConfirm({
         crew_name: crewName,
         preferred_type: preferredType,
-        notes: notes,
+        notes: notes
       });
       setCrewName('');
       setPreferredType('any');
@@ -55,53 +55,53 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {crews.length > 0 && useExisting ? (
-            <div className="space-y-2">
+          {crews.length > 0 && useExisting ?
+          <div className="space-y-2">
               <Label className="text-sm font-medium">בחר צוות</Label>
               <Select value={crewName} onValueChange={setCrewName}>
                 <SelectTrigger>
                   <SelectValue placeholder="בחר צוות..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {crews.map((crew) => (
-                    <SelectItem key={crew.id} value={crew.name}>
+                  {crews.map((crew) =>
+                <SelectItem key={crew.id} value={crew.name}>
                       <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-slate-400" />
                         {crew.name}
                       </div>
                     </SelectItem>
-                  ))}
+                )}
                 </SelectContent>
               </Select>
               <Button
-                variant="ghost"
-                size="sm"
-                className="text-slate-500 text-xs"
-                onClick={() => setUseExisting(false)}
-              >
+              variant="ghost"
+              size="sm"
+              className="text-slate-500 text-xs"
+              onClick={() => setUseExisting(false)}>
+
                 או הזן שם ידנית
               </Button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">שם הצוות</Label>
+            </div> :
+
+          <div className="space-y-2">
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium ">שם הצוות</Label>
               <Input
-                placeholder="הזן שם צוות..."
-                value={crewName}
-                onChange={(e) => setCrewName(e.target.value)}
-              />
-              {crews.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-slate-500 text-xs"
-                  onClick={() => setUseExisting(true)}
-                >
+              placeholder="הזן שם צוות..."
+              value={crewName}
+              onChange={(e) => setCrewName(e.target.value)} />
+
+              {crews.length > 0 &&
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-500 text-xs"
+              onClick={() => setUseExisting(true)}>
+
                   בחר מצוותים קיימים
                 </Button>
-              )}
+            }
             </div>
-          )}
+          }
 
           <div className="space-y-2">
             <Label className="text-sm font-medium">סוג חדר מועדף</Label>
@@ -123,8 +123,8 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
               placeholder="דרישות מיוחדות..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="h-20"
-            />
+              className="h-20" />
+
           </div>
         </div>
 
@@ -135,12 +135,12 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
           <Button
             onClick={handleConfirm}
             disabled={!crewName}
-            className="flex-1 bg-blue-600 hover:bg-blue-700"
-          >
+            className="flex-1 bg-blue-600 hover:bg-blue-700">
+
             הוסף לתור
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
+
 }
