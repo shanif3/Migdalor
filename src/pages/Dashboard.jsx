@@ -161,7 +161,7 @@ export default function Dashboard() {
             {/* Filter */}
             <div className="flex flex-row-reverse items-center gap-2">
 
-              <span className="text-sm text-slate-500">סנן:</span>
+              <span className="text-sm text-slate-500">:סנן</span>
               <Filter className="w-4 h-4 text-slate-400" />
               <div className="flex flex-row-reverse gap-2">
                 {['all', 'צוותי', 'פלוגתי'].map((f) => (
