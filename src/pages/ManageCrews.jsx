@@ -118,7 +118,7 @@ export default function ManageCrews() {
         <div className="flex justify-end mb-6">
             <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
               <Plus className="w-4 h-4 ml-2" />
-              הוסף צוות חדש
+              הוסף פלוגה חדשה
             </Button>
           </div>
         }
