@@ -160,8 +160,9 @@ export default function Dashboard() {
           <TabsContent value="keys" className="space-y-6">
             {/* Filter */}
             <div className="flex flex-row-reverse items-center gap-2">
-              <Filter className="w-4 h-4 text-slate-400" />
+
               <span className="text-sm text-slate-500">סנן:</span>
+              <Filter className="w-4 h-4 text-slate-400" />
               <div className="flex flex-row-reverse gap-2">
                 {['all', 'צוותי', 'פלוגתי'].map((f) => (
                   <Button
