@@ -359,7 +359,7 @@ export default function KeyAllocation() {
                         <TableCell>
                           {lesson.needs_computers ? '✅' : '—'}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]\n">
                           {lesson.status === 'assigned' ?
                       <CheckCircle className="w-4 h-4 text-green-600" /> :
 
