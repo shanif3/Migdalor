@@ -243,7 +243,7 @@ export default function ManageCrews() {
             <div className="space-y-2">
               <Label className="text-right block">הערות (אופציונלי)</Label>
               <Textarea
-                placeholder="מידע נוסף..."
+                placeholder="שם הקה״ד הפלוגתי"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 className="h-20 text-right"
