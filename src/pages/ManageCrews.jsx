@@ -151,7 +151,7 @@ export default function ManageCrews() {
               crews.map((crew) =>
               <TableRow key={crew.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
-                      <div className="flex items-center gap-2 ">
+                      <div className="flex items-center justify-center  gap-2 ">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                           <Users className="w-4 h-4 text-indigo-600" />
                         </div>
