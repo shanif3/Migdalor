@@ -149,8 +149,7 @@ export default function ManageCrews() {
                 </TableRow> :
 
               crews.map((crew) =>
-              <TableRow key={crew.id} className="hover:bg-slate-50/50" className="[&_td]:text-center">
-
+              <TableRow key={crew.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -160,35 +159,38 @@ export default function ManageCrews() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {crew.contact ?
-                  <div className="flex flex-row-reverse items-center gap-2 text-slate-600">
-                         <Phone className="w-4 h-4" />
-                         <span dir="ltr">{crew.contact}</span>
-                        </div> :
-
-                  <span className="text-slate-400">—</span>
-                  }
+                      {crew.contact ? (
+                        <a 
+                          href={`tel:${crew.contact}`}
+                          className="flex flex-row-reverse items-center justify-center gap-2 text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          <Phone className="w-4 h-4" />
+                          <span dir="ltr">{crew.contact}</span>
+                        </a>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-slate-500 max-w-xs truncate">
                       {crew.notes || '—'}
                     </TableCell>
                     {isAdmin && (
                       <TableCell className="text-center">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-center gap-2">
                           <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(crew)}
-                        className="text-slate-400 hover:text-slate-600">
-
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(crew)}
+                            className="text-slate-400 hover:text-slate-600"
+                          >
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(crew.id)}
-                        className="text-red-400 hover:text-red-600 hover:bg-red-50">
-
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(crew.id)}
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
