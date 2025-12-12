@@ -275,8 +275,8 @@ export default function ManageKeys() {
     value={formData.room_type}
     onValueChange={(value) => setFormData({ ...formData, room_type: value })}
   >
-    <SelectTrigger className="text-right">
-      <SelectValue />
+    <SelectTrigger className="text-right" dir="rtl">
+      <SelectValue className="text-right" />
     </SelectTrigger>
     <SelectContent align="end" dir="rtl">
       <SelectItem value="צוותי">🏠 צוותי</SelectItem>
