@@ -13,18 +13,18 @@ export default function WaitingQueueCard({ item, position, onRemove, onMoveUp })
       exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="p-4 border border-slate-200 hover:border-slate-300 transition-all">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+<Card className="p-4 border border-slate-200 hover:border-slate-300 transition-all" dir="rtl">
+        <div className="flex flex-row-reverse items-center justify-between">
+          <div className="flex flex-row-reverse items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
               <span className="font-bold text-slate-600">#{position}</span>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-row-reverse items-center gap-2">
                 <Users className="w-4 h-4 text-slate-400" />
                 <span className="font-medium text-slate-800">{item.crew_name}</span>
               </div>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-row-reverse items-center gap-2 mt-1">
                 <Badge variant="outline" className="text-xs">
                   {item.preferred_type === 'any' ? '🔄 הכל' : 
                    item.preferred_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
@@ -35,7 +35,7 @@ export default function WaitingQueueCard({ item, position, onRemove, onMoveUp })
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-row-reverse items-center gap-2">
             {position > 1 && (
               <Button
                 variant="ghost"
