@@ -287,7 +287,7 @@ export default function ManageKeys() {
 
             <div className="flex flex-row-reverse items-center gap-2 justify-end">
               <Label htmlFor="has_computers" className="cursor-pointer">
-                💻 יש מחשב בכיתה
+                יש מחשב בכיתה 💻
               </Label>
               <Checkbox
                 id="has_computers"
