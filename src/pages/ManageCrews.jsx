@@ -209,10 +209,11 @@ export default function ManageCrews() {
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader className="text-right">
             <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
-              <div className="p-2 bg-indigo-100 rounded-lg">
+
+              {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
+                            <div className="p-2 bg-indigo-100 rounded-lg">
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
-              {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
             </DialogTitle>
             <DialogDescription className="text-right">
               {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדש למעקב'}
