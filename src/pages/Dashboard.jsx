@@ -191,7 +191,7 @@ export default function Dashboard() {
                 <p className="text-slate-400 mb-4">הוסף את המפתח הראשון שלך כדי להתחיל</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" dir="rtl">
                 <AnimatePresence>
                   {filteredKeys.map((key) => (
                     <KeyCard
