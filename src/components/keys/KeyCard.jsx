@@ -22,8 +22,8 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
           ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white' 
           : 'border-amber-200 bg-gradient-to-br from-amber-50/50 to-white'
       }`}>
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
+<div className="flex flex-row-reverse items-start justify-between mb-4">
+          <div className="flex flex-row-reverse items-center gap-3">
             <div className={`p-3 rounded-xl ${
               isAvailable ? 'bg-emerald-100' : 'bg-amber-100'
             }`}>
