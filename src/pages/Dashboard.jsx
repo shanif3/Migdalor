@@ -137,11 +137,11 @@ export default function Dashboard() {
             <TabsList className="bg-white border border-slate-200 p-1">
               <TabsTrigger value="keys" className="data-[state=active]:bg-slate-100">
                 מפתחות
-                <Key className="w-4 h-4 mr-2" />
+                <Key className="w-4 h-4 ml-2" />
               </TabsTrigger>
               <TabsTrigger value="queue" className="data-[state=active]:bg-slate-100">
                 תור ({queue.length})
-                <Clock className="w-4 h-4 mr-2" />
+                <Clock className="w-4 h-4 ml-2" />
               </TabsTrigger>
             </TabsList>
 
