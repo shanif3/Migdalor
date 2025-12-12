@@ -114,22 +114,22 @@ export default function ManageCrews() {
         </div>
 
         {/* Add Button */}
-        {isAdmin && (
-          <div className="flex justify-end mb-6">
+        {isAdmin &&
+        <div className="flex justify-end mb-6">
             <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
               <Plus className="w-4 h-4 ml-2" />
               הוסף צוות חדש
             </Button>
           </div>
-        )}
+        }
 
         {/* Crews Table */}
         <Card className="overflow-hidden border-slate-200">
           <Table>
             <TableHeader>
             <TableRow className="bg-slate-50">
-                <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">פלוגות</TableHead>
-                <TableHead className="text-center">איש קשר</TableHead>
+                <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פלוגות</TableHead>
+                <TableHead className="h-1 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">איש קשר</TableHead>
                 <TableHead className="text-center">הערות</TableHead>
                 {isAdmin && <TableHead className="text-center">פעולות</TableHead>}
             </TableRow>
@@ -159,43 +159,43 @@ export default function ManageCrews() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {crew.contact ? (
-                        <a 
-                          href={`tel:${crew.contact}`}
-                          className="flex flex-row-reverse items-center justify-center gap-2 text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                        >
+                      {crew.contact ?
+                  <a
+                    href={`tel:${crew.contact}`}
+                    className="flex flex-row-reverse items-center justify-center gap-2 text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">
+
                           <Phone className="w-4 h-4" />
                           <span dir="ltr">{crew.contact}</span>
-                        </a>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
+                        </a> :
+
+                  <span className="text-slate-400">—</span>
+                  }
                     </TableCell>
                     <TableCell className="text-slate-500 max-w-xs truncate">
                       {crew.notes || '—'}
                     </TableCell>
-                    {isAdmin && (
-                      <TableCell className="text-center">
+                    {isAdmin &&
+                <TableCell className="text-center">
                         <div className="flex justify-center gap-2">
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(crew)}
-                            className="text-slate-400 hover:text-slate-600"
-                          >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(crew)}
+                      className="text-slate-400 hover:text-slate-600">
+
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteMutation.mutate(crew.id)}
-                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                          >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteMutation.mutate(crew.id)}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
+
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </TableCell>
-                    )}
+                }
                   </TableRow>
               )
               }
