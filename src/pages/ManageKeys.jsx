@@ -270,20 +270,20 @@ export default function ManageKeys() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">סוג חדר</Label>
-              <Select
-                value={formData.room_type}
-                onValueChange={(value) => setFormData({ ...formData, room_type: value })}
-              >
-                <SelectTrigger className="text-right">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent align="start">
-                  <SelectItem value="צוותי" className="text-right">🏠 צוותי</SelectItem>
-                  <SelectItem value="פלוגתי" className="text-right">🏢 פלוגתי</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+  <Label className="text-right block">סוג חדר</Label>
+  <Select
+    value={formData.room_type}
+    onValueChange={(value) => setFormData({ ...formData, room_type: value })}
+  >
+    <SelectTrigger className="text-right">
+      <SelectValue />
+    </SelectTrigger>
+    <SelectContent align="end">
+      <SelectItem value="צוותי" className="text-right">🏠 צוותי</SelectItem>
+      <SelectItem value="פלוגתי" className="text-right">🏢 פלוגתי</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
             <div className="flex items-center gap-2 justify-end">
               <Label htmlFor="has_computers" className="cursor-pointer">
