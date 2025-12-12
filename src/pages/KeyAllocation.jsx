@@ -221,7 +221,7 @@ export default function KeyAllocation() {
         </motion.div>
 
         {/* Date and Actions */}
-{/* Date and Actions */} <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> <div className="flex flex-row-reverse items-center gap-3"> <Label className="text-sm font-medium">תאריך:</Label> <Input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-auto" /> </div>
+        {/* Date and Actions */} <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6"> <div className="flex flex-row-reverse items-center gap-3"> <Label className="text-sm font-medium">תאריך:</Label> <Input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="w-auto" /> </div>
 
           <div className="flex flex-row-reverse items-center gap-2">
             <Button
@@ -323,12 +323,12 @@ export default function KeyAllocation() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>שעה</TableHead>
-                    <TableHead>צוות</TableHead>
-                    <TableHead>סוג</TableHead>
-                    <TableHead>💻</TableHead>
-                    <TableHead>סטטוס</TableHead>
-                    <TableHead>חדר</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">שעה</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">צוות</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">סוג</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">💻</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">סטטוס</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">חדר</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -351,7 +351,7 @@ export default function KeyAllocation() {
                           {lesson.start_time}-{lesson.end_time}
                         </TableCell>
                         <TableCell className="font-medium">{lesson.crew_name}</TableCell>
-                        <TableCell>
+                        <TableCell className="p-2 flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]\n">
                           <Badge variant="outline" className="text-xs">
                             {lesson.room_type_needed === 'פלוגתי' ? '🏢' : '🏠'}
                           </Badge>
