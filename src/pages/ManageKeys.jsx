@@ -176,7 +176,7 @@ export default function ManageKeys() {
 
               keys.map((key) =>
               <TableRow key={key.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-medium">
+                    <TableCell className="p-2 text-center flex items-center justify-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium">
                       <div className="flex items-center gap-2">
                         <Key className="w-4 h-4 text-slate-400" />
                         {key.room_number}
@@ -212,7 +212,7 @@ export default function ManageKeys() {
                     </TableCell>
                     <TableCell className="text-right">
                       {isAdmin &&
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-center gap-2">
                           <Button
                       variant="ghost"
                       size="icon"
