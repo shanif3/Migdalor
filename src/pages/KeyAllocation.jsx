@@ -55,7 +55,7 @@ export default function KeyAllocation() {
     if (selectedKeys.length === allKeys.length) {
       setSelectedKeys([]);
     } else {
-      setSelectedKeys(allKeys.map(k => k.id));
+      setSelectedKeys(allKeys.map((k) => k.id));
     }
   };
 
@@ -128,9 +128,9 @@ export default function KeyAllocation() {
           });
         } else {
           // Track why this lesson couldn't be assigned
-          const matchingTypeKeys = availableKeys.filter(k => k.room_type === lesson.room_type_needed);
-          const occupiedKeys = matchingTypeKeys.filter(k => isKeyOccupied(k, lesson, assignments));
-          
+          const matchingTypeKeys = availableKeys.filter((k) => k.room_type === lesson.room_type_needed);
+          const occupiedKeys = matchingTypeKeys.filter((k) => isKeyOccupied(k, lesson, assignments));
+
           let reason = `${lesson.crew_name} (${lesson.start_time}-${lesson.end_time}): `;
           if (matchingTypeKeys.length === 0) {
             reason += `אין מפתחות מסוג ${lesson.room_type_needed}`;
@@ -141,7 +141,7 @@ export default function KeyAllocation() {
           } else {
             reason += `לא נמצא מפתח מתאים`;
           }
-          
+
           failureReasons.push(reason);
         }
       }
@@ -286,9 +286,9 @@ export default function KeyAllocation() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={toggleSelectAll}
-                className="text-xs"
-              >
+                onClick={toggleSelectAll} className="bg-background px-1 text-xs font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input shadow-sm hover:bg-accent hover:text-accent-foreground h-8">
+
+
                 {selectedKeys.length === allKeys.length ? 'בטל הכל' : 'בחר הכל'}
               </Button>
             </div>
