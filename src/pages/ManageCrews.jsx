@@ -151,7 +151,7 @@ export default function ManageCrews() {
               crews.map((crew) =>
               <TableRow key={crew.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center gap-2 ">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                           <Users className="w-4 h-4 text-indigo-600" />
                         </div>
@@ -204,7 +204,7 @@ export default function ManageCrews() {
         </Card>
       </div>
 
-{/* Add/Edit Modal */}
+      {/* Add/Edit Modal */}
       <Dialog open={showModal} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader className="text-right">
@@ -227,20 +227,20 @@ export default function ManageCrews() {
                 placeholder="למשל, פלוגת יפתח..."
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="text-right"
-              />
+                className="text-right" />
+
             </div>
 
             <div className="space-y-2">
   <Label className="text-right block">טלפון איש קשר</Label>
   <Input
-    type="tel"
-    placeholder="+972.."
-    value={formData.contact}
-    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-    className="text-right"
-  />
-</div>
+                type="tel"
+                placeholder="+972.."
+                value={formData.contact}
+                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                className="text-right" />
+
+            </div>
 
             <div className="space-y-2">
               <Label className="text-right block">הערות (אופציונלי)</Label>
@@ -248,8 +248,8 @@ export default function ManageCrews() {
                 placeholder="שם הקה״ד הפלוגתי"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="h-20 text-right"
-              />
+                className="h-20 text-right" />
+
             </div>
           </div>
 
@@ -257,8 +257,8 @@ export default function ManageCrews() {
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-            >
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+
               {editingCrew ? 'עדכן צוות' : 'הוסף צוות'}
             </Button>
             <Button variant="outline" onClick={handleClose} className="flex-1">
