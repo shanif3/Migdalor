@@ -204,60 +204,62 @@ export default function ManageCrews() {
         </Card>
       </div>
 
-      {/* Add/Edit Modal */}
+{/* Add/Edit Modal */}
       <Dialog open={showModal} onOpenChange={handleClose}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex flex-row-reverse items-center gap-2">
               <div className="p-2 bg-indigo-100 rounded-lg">
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
               {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-right">
               {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדש למעקב'}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>שם הפלוגה</Label>
+              <Label className="text-right block">שם הפלוגה</Label>
               <Input
                 placeholder="...למשל, פלוגת יפתח"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="text-right"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>איש קשר (אופציונלי)</Label>
+              <Label className="text-right block">איש קשר (אופציונלי)</Label>
               <Input
                 placeholder="טלפון או אימייל..."
                 value={formData.contact}
-                onChange={(e) => setFormData({ ...formData, contact: e.target.value })} />
-
+                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                className="text-right"
+              />
             </div>
 
             <div className="space-y-2">
-              <Label>הערות (אופציונלי)</Label>
+              <Label className="text-right block">הערות (אופציונלי)</Label>
               <Textarea
                 placeholder="מידע נוסף..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="h-20" />
-
+                className="h-20 text-right"
+              />
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-row-reverse gap-3">
             <Button variant="outline" onClick={handleClose} className="flex-1">
               ביטול
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700">
-
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+            >
               {editingCrew ? 'עדכן צוות' : 'הוסף צוות'}
             </Button>
           </div>
