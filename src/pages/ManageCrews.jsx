@@ -101,7 +101,7 @@ export default function ManageCrews() {
           className="mb-8">
 
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            ניהול צוותים 👥
+            ניהול פלוגות 👥
           </h1>
         </motion.div>
 
