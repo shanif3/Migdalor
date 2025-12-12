@@ -40,16 +40,16 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+<Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md" dir="rtl">
+        <DialogHeader className="text-right">
+          <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Clock className="w-5 h-5 text-blue-600" />
             </div>
             הצטרף לתור המתנה
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-right">
             הוסף צוות לרשימת המתנה למפתח
           </DialogDescription>
         </DialogHeader>
@@ -57,12 +57,12 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
         <div className="space-y-4 py-4">
           {crews.length > 0 && useExisting ?
           <div className="space-y-2">
-              <Label className="text-sm font-medium">בחר צוות</Label>
+              <Label className="text-sm font-medium text-right block">בחר צוות</Label>
               <Select value={crewName} onValueChange={setCrewName}>
-                <SelectTrigger>
-                  <SelectValue placeholder="בחר צוות..." />
+                <SelectTrigger className="text-right" dir="rtl">
+                  <SelectValue placeholder="בחר צוות..." className="text-right" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent align="end" dir="rtl">
                   {crews.map((crew) =>
                 <SelectItem key={crew.id} value={crew.name}>
                       <div className="flex items-center gap-2">
@@ -76,27 +76,26 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
               <Button
               variant="ghost"
               size="sm"
-              className="text-slate-500 text-xs"
+              className="text-slate-500 text-xs w-full"
               onClick={() => setUseExisting(false)}>
-
                 או הזן שם ידנית
               </Button>
             </div> :
 
           <div className="space-y-2">
-              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium ">שם הצוות</Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">שם הצוות</Label>
               <Input
               placeholder="הזן שם צוות..."
               value={crewName}
-              onChange={(e) => setCrewName(e.target.value)} />
+              onChange={(e) => setCrewName(e.target.value)}
+              className="text-right" />
 
               {crews.length > 0 &&
             <Button
               variant="ghost"
               size="sm"
-              className="text-slate-500 text-xs"
+              className="text-slate-500 text-xs w-full"
               onClick={() => setUseExisting(true)}>
-
                   בחר מצוותים קיימים
                 </Button>
             }
@@ -104,12 +103,12 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
           }
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">סוג חדר מועדף</Label>
+            <Label className="text-sm font-medium text-right block">סוג חדר מועדף</Label>
             <Select value={preferredType} onValueChange={setPreferredType}>
-              <SelectTrigger>
-                <SelectValue />
+              <SelectTrigger className="text-right" dir="rtl">
+                <SelectValue className="text-right" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent align="end" dir="rtl">
                 <SelectItem value="any">🔄 כל חדר זמין</SelectItem>
                 <SelectItem value="צוותי">🏠 צוותי</SelectItem>
                 <SelectItem value="פלוגתי">🏢 פלוגתי</SelectItem>
@@ -118,17 +117,16 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">הערות (אופציונלי)</Label>
+            <Label className="text-sm font-medium text-right block">הערות (אופציונלי)</Label>
             <Textarea
               placeholder="דרישות מיוחדות..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="h-20" />
-
+              className="h-20 text-right" />
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-row-reverse gap-3">
           <Button variant="outline" onClick={onClose} className="flex-1">
             ביטול
           </Button>
@@ -136,11 +134,11 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
             onClick={handleConfirm}
             disabled={!crewName}
             className="flex-1 bg-blue-600 hover:bg-blue-700">
-
             הוסף לתור
           </Button>
         </div>
       </DialogContent>
-    </Dialog>);
+    </Dialog>
+    );
 
 }
