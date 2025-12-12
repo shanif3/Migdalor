@@ -102,6 +102,27 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
             </div>
           }
 
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-right block">שעת התחלה</Label>
+              <Input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="text-right"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-right block">שעת סיום</Label>
+              <Input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="text-right"
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label className="text-sm font-medium text-right block">סוג חדר מועדף</Label>
             <Select value={preferredType} onValueChange={setPreferredType}>
@@ -132,7 +153,7 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={!crewName}
+            disabled={!crewName || !startTime || !endTime}
             className="flex-1 bg-blue-600 hover:bg-blue-700">
             הוסף לתור
           </Button>
