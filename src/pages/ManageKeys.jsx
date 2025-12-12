@@ -285,7 +285,7 @@ export default function ManageKeys() {
   </Select>
 </div>
 
-            <div className="flex items-center gap-2 justify-end">
+            <div className="flex flex-row-reverse items-center gap-2 justify-end">
               <Label htmlFor="has_computers" className="cursor-pointer">
                 💻 יש מחשב בכיתה
               </Label>
