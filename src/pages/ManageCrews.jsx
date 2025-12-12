@@ -231,14 +231,15 @@ export default function ManageCrews() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">איש קשר (אופציונלי)</Label>
-              <Input
-                placeholder="טלפון או אימייל..."
-                value={formData.contact}
-                onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
-                className="text-right"
-              />
-            </div>
+  <Label className="text-right block">טלפון איש קשר</Label>
+  <Input
+    type="tel"
+    placeholder="+972.."
+    value={formData.contact}
+    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+    className="text-right"
+  />
+</div>
 
             <div className="space-y-2">
               <Label className="text-right block">הערות (אופציונלי)</Label>
