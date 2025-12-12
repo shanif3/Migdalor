@@ -216,8 +216,7 @@ export default function Dashboard() {
             {queue.length === 0 ?
             <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200">
                 <Clock className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-600 mb-2">התור ריק</h3>
-                <p className="text-slate-400 mb-4">אין צוותים ממתינים למפתחות כרגע</p>
+                <h3 className="text-lg font-medium text-slate-600 mb-2">אין בקשות מיוחדות</h3>
                 <Button onClick={() => setShowQueueModal(true)}>
                   <Plus className="w-4 h-4 ml-2" />
                   הוסף לתור
