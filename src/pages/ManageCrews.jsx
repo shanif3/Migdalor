@@ -255,6 +255,9 @@ export default function ManageCrews() {
           </div>
 
           <div className="flex flex-row-reverse gap-3">
+          <Button variant="outline" onClick={handleClose} className="flex-1">
+              ביטול
+            </Button>
             <Button
               onClick={handleSubmit}
               disabled={!formData.name}
@@ -262,9 +265,7 @@ export default function ManageCrews() {
 
               {editingCrew ? 'עדכן צוות' : 'הוסף צוות'}
             </Button>
-            <Button variant="outline" onClick={handleClose} className="flex-1">
-              ביטול
-            </Button>
+            
             
           </div>
         </DialogContent>
