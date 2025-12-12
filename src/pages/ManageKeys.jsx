@@ -244,7 +244,7 @@ export default function ManageKeys() {
       <Dialog open={showModal} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader className="text-right">
-            <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
+            <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-start">
               <div className="p-2 bg-emerald-100 rounded-lg">
                 <Key className="w-5 h-5 text-emerald-600" />
               </div>
@@ -275,14 +275,14 @@ export default function ManageKeys() {
                 <SelectTrigger className="text-right">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="צוותי">🏠 צוותי</SelectItem>
-                  <SelectItem value="פלוגתי">🏢 פלוגתי</SelectItem>
+                <SelectContent align="end">
+                  <SelectItem value="צוותי" className="text-right">🏠 צוותי</SelectItem>
+                  <SelectItem value="פלוגתי" className="text-right">🏢 פלוגתי</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="flex flex-row-reverse items-center gap-2">
+            <div className="flex items-center gap-2 justify-end">
               <Label htmlFor="has_computers" className="cursor-pointer">
                 💻 יש מחשב בכיתה
               </Label>
