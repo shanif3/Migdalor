@@ -161,9 +161,9 @@ export default function ManageCrews() {
                     </TableCell>
                     <TableCell className="text-center">
                       {crew.contact ?
-                  <div className="flex items-center gap-1 text-slate-600">
-                          <Phone className="mx-20 lucide lucide-phone w-3 h-3" />
-                          {crew.contact}
+                  <div className="flex flex-row-reverse items-center gap-2 text-slate-600">
+                         <Phone className="w-4 h-4" />
+                         <span dir="ltr">{crew.contact}</span>
                         </div> :
 
                   <span className="text-slate-400">—</span>
