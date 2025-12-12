@@ -29,10 +29,20 @@ export default function WaitingQueueCard({ item, position, onRemove, onMoveUp })
                   {item.preferred_type === 'any' ? '🔄 הכל' : 
                    item.preferred_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                 </Badge>
+                {item.start_time && item.end_time && (
+                  <span className="text-xs text-slate-500">
+                    ⏰ {item.start_time}-{item.end_time}
+                  </span>
+                )}
                 {item.notes && (
                   <span className="text-xs text-slate-400">{item.notes}</span>
                 )}
               </div>
+              {item.created_by && (
+                <span className="text-xs text-slate-400 mt-1 block">
+                  נשלח ע״י {item.created_by}
+                </span>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
