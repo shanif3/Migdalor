@@ -269,7 +269,7 @@ export default function ManageKeys() {
               />
             </div>
 
-            <div className="space-y-2">
+<div className="space-y-2">
   <Label className="text-right block">סוג חדר</Label>
   <Select
     value={formData.room_type}
@@ -278,9 +278,9 @@ export default function ManageKeys() {
     <SelectTrigger className="text-right">
       <SelectValue />
     </SelectTrigger>
-    <SelectContent align="end">
-      <SelectItem value="צוותי" className="text-right">🏠 צוותי</SelectItem>
-      <SelectItem value="פלוגתי" className="text-right">🏢 פלוגתי</SelectItem>
+    <SelectContent align="end" dir="rtl">
+      <SelectItem value="צוותי">🏠 צוותי</SelectItem>
+      <SelectItem value="פלוגתי">🏢 פלוגתי</SelectItem>
     </SelectContent>
   </Select>
 </div>
