@@ -151,8 +151,9 @@ export default function Dashboard() {
                 onClick={() => setShowQueueModal(true)}
                 className="border-blue-200 text-blue-600 hover:bg-blue-50"
               >
-                <Plus className="w-4 h-4 mr-2" />
                 הוסף לתור
+                <Plus className="w-4 h-4 mr-2" />
+
               </Button>
             </div>
           </div>
