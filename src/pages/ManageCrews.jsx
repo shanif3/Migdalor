@@ -212,7 +212,7 @@ export default function ManageCrews() {
               <div className="p-2 bg-indigo-100 rounded-lg">
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
-              {editingCrew ? 'ערוך צוות' : 'הוסף צוות חדש'}
+              {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
             </DialogTitle>
             <DialogDescription>
               {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף צוות חדש למעקב'}
