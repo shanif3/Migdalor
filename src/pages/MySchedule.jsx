@@ -125,7 +125,7 @@ export default function MySchedule() {
   }
 
   return (
-    
+
     <div dir="rtl"
     className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -184,13 +184,13 @@ export default function MySchedule() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead>צוות</TableHead>
-                <TableHead>שעה</TableHead>
-                <TableHead>סוג חדר</TableHead>
-                <TableHead>מחשבים</TableHead>
-                <TableHead>סטטוס</TableHead>
-                <TableHead>חדר משובץ</TableHead>
-                <TableHead className="text-left">פעולות</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">צוות</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">שעה</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סוג חדר</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center\n">מחשבים</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">חדר משובץ</TableHead>
+                <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -209,14 +209,14 @@ export default function MySchedule() {
 
               lessons.map((lesson) =>
               <TableRow key={lesson.id} className="hover:bg-slate-50/50">
-                    <TableCell className="font-medium">{lesson.crew_name}</TableCell>
-                    <TableCell>
+                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium text-center">{lesson.crew_name}</TableCell>
+                    <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                       <div className="flex items-center gap-2 text-sm">
                         <Clock className="w-4 h-4 text-slate-400" />
                         {lesson.start_time} - {lesson.end_time}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       <Badge variant="outline" className={
                   lesson.room_type_needed === 'פלוגתי' ?
                   'border-purple-300 text-purple-700' :
@@ -225,7 +225,7 @@ export default function MySchedule() {
                         {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       {lesson.needs_computers ?
                   <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
                           💻 כן
@@ -234,8 +234,8 @@ export default function MySchedule() {
                   <span className="text-slate-400 text-sm">לא</span>
                   }
                     </TableCell>
-                    <TableCell>{getStatusBadge(lesson.status)}</TableCell>
-                    <TableCell>
+                    <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">{getStatusBadge(lesson.status)}</TableCell>
+                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       {lesson.assigned_key ?
                   <div className="flex items-center gap-2">
                           <Key className="w-4 h-4 text-emerald-600" />
@@ -247,7 +247,7 @@ export default function MySchedule() {
                   <span className="text-slate-400">—</span>
                   }
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       <Button
                     variant="ghost"
                     size="icon"
@@ -267,11 +267,11 @@ export default function MySchedule() {
       </div>
 
       {/* Add Lesson Modal */}
-<Dialog open={showModal} onOpenChange={setShowModal}>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
   <DialogContent dir="rtl" className="sm:max-w-md text-right">
     <DialogHeader className="text-right">
 
-<DialogTitle className="flex items-center gap-2 flex-row-reverse justify-end text-right">
+            <DialogTitle className="flex items-center gap-2 flex-row-reverse justify-end text-right">
   <div className="p-2 bg-indigo-100 rounded-lg">
           <Calendar className="w-5 h-5 text-indigo-600" />
         </div>
@@ -286,56 +286,112 @@ export default function MySchedule() {
     </DialogHeader>
 
     <div className="space-y-4 py-4">
-<div className="space-y-2">
+            <div className="space-y-2">
   <Label
-    className="
+                className="
       text-sm font-medium leading-none 
       peer-disabled:cursor-not-allowed peer-disabled:opacity-70 
       ml-auto text-right
-    "
-  >
+    ">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     שם הצוות *
   </Label>
 
   <Input
-    placeholder="למשל, צוות 5..."
-    className="text-right"
-    value={formData.crew_name}
-    onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })}
-  />
-</div>
+                placeholder="למשל, צוות 5..."
+                className="text-right"
+                value={formData.crew_name}
+                onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })} />
+
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>שעת התחלה *</Label>
                 <Input
-                type="time"
-                value={formData.start_time}
-                onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} />
+                  type="time"
+                  value={formData.start_time}
+                  onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} />
 
               </div>
             <div className="space-y-2">
                 <Label>שעת סיום *</Label>
                 <Input
-                type="time"
-                value={formData.end_time}
-                onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} />
+                  type="time"
+                  value={formData.end_time}
+                  onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} />
 
               </div>
             </div>
 
         
 
-<div className="space-y-2 flex flex-col items-end text-right">
+            <div className="space-y-2 flex flex-col items-end text-right">
   <Label className="text-right ml-auto">
     סוג חדר נדרש *
   </Label>
 
   <Select
-    value={formData.room_type_needed}
-    onValueChange={(value) =>
-      setFormData({ ...formData, room_type_needed: value })
-    }
-  >
+                value={formData.room_type_needed}
+                onValueChange={(value) =>
+                setFormData({ ...formData, room_type_needed: value })
+                }>
+
     <SelectTrigger className="text-right justify-end">
       <SelectValue placeholder="בחר סוג חדר" />
     </SelectTrigger>
@@ -343,22 +399,22 @@ export default function MySchedule() {
     <SelectContent className="text-right" dir="rtl">
 
   <SelectItem
-    value="צוותי"
-    className="text-right flex flex-row-reverse justify-end gap-2 pr-8"
-  >
+                    value="צוותי"
+                    className="text-right flex flex-row-reverse justify-end gap-2 pr-8">
+
     צוותי 🏠
   </SelectItem>
 
   <SelectItem
-    value="פלוגתי"
-    className="text-right flex flex-row-reverse justify-end gap-2 pr-8"
-  >
+                    value="פלוגתי"
+                    className="text-right flex flex-row-reverse justify-end gap-2 pr-8">
+
     פלוגתי 🏢
   </SelectItem>
 
-</SelectContent>
+                </SelectContent>
   </Select>
-</div>
+            </div>
 
 
 
