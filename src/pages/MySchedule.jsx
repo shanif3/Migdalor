@@ -74,14 +74,25 @@ export default function MySchedule() {
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
     
-    // Find the previous lesson that used this key
+    // Check if this crew already used this key earlier today
+    const sameCrewEarlierLesson = allDayLessons.find(l => 
+      l.assigned_key === lesson.assigned_key && 
+      l.crew_name === lesson.crew_name &&
+      l.id !== lesson.id &&
+      l.start_time < lesson.start_time
+    );
+    
+    // If this crew already used this key, don't show handoff note
+    if (sameCrewEarlierLesson) return null;
+    
+    // Find the previous lesson that used this key (from different crew)
     const previousLesson = allDayLessons.find(l => 
       l.assigned_key === lesson.assigned_key && 
       l.id !== lesson.id &&
       l.end_time <= lesson.start_time
     );
     
-    if (previousLesson) {
+    if (previousLesson && previousLesson.crew_name !== lesson.crew_name) {
       return `מקבל מפתח מ${previousLesson.crew_name}`;
     }
     
