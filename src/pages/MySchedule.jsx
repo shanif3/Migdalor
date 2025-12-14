@@ -29,7 +29,7 @@ import {
   TableHeader,
   TableRow } from
 "@/components/ui/table";
-import { Plus, Calendar, Clock, Trash2, Key, CheckCircle, XCircle, Loader2, Edit2 } from 'lucide-react';
+import { Plus, Calendar, Clock, Trash2, Key, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -37,7 +37,6 @@ import { format } from 'date-fns';
 export default function MySchedule() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [editingLesson, setEditingLesson] = useState(null);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [formData, setFormData] = useState({
     crew_name: '',
@@ -67,7 +66,6 @@ export default function MySchedule() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
       setShowModal(false);
-      setEditingLesson(null);
       setFormData({
         crew_name: '',
         start_time: '',
@@ -77,24 +75,6 @@ export default function MySchedule() {
         notes: ''
       });
       toast.success('שיעור נוסף ללוח הזמנים');
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
-      setShowModal(false);
-      setEditingLesson(null);
-      setFormData({
-        crew_name: '',
-        start_time: '',
-        end_time: '',
-        room_type_needed: 'צוותי',
-        needs_computers: false,
-        notes: ''
-      });
-      toast.success('השיעור עודכן בהצלחה');
     }
   });
 
@@ -112,32 +92,12 @@ export default function MySchedule() {
       return;
     }
 
-    if (editingLesson) {
-      updateMutation.mutate({
-        id: editingLesson.id,
-        data: formData
-      });
-    } else {
-      createMutation.mutate({
-        ...formData,
-        crew_manager: user.email,
-        date: selectedDate,
-        status: 'pending'
-      });
-    }
-  };
-
-  const handleEdit = (lesson) => {
-    setEditingLesson(lesson);
-    setFormData({
-      crew_name: lesson.crew_name,
-      start_time: lesson.start_time,
-      end_time: lesson.end_time,
-      room_type_needed: lesson.room_type_needed,
-      needs_computers: lesson.needs_computers || false,
-      notes: lesson.notes || ''
+    createMutation.mutate({
+      ...formData,
+      crew_manager: user.email,
+      date: selectedDate,
+      status: 'pending'
     });
-    setShowModal(true);
   };
 
   const getStatusBadge = (status) => {
@@ -193,18 +153,7 @@ export default function MySchedule() {
               className="w-auto" />
 
           </div>
-          <Button onClick={() => {
-            setEditingLesson(null);
-            setFormData({
-              crew_name: '',
-              start_time: '',
-              end_time: '',
-              room_type_needed: 'צוותי',
-              needs_computers: false,
-              notes: ''
-            });
-            setShowModal(true);
-          }} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
             <Plus className="w-4 h-4 ml-2" />
             הוסף שיעור
           </Button>
@@ -286,7 +235,7 @@ export default function MySchedule() {
                   }
                     </TableCell>
                     <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">{getStatusBadge(lesson.status)}</TableCell>
-                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
+                    <TableCell className="p-2 justify-centeralign-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       {lesson.assigned_key ?
                   <div className="flex items-center gap-2">
                           <Key className="w-4 h-4 text-emerald-600" />
@@ -299,24 +248,15 @@ export default function MySchedule() {
                   }
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(lesson)}
-                          disabled={lesson.status === 'assigned'}
-                          className="text-slate-400 hover:text-slate-600 disabled:opacity-50">
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(lesson.id)}
-                          disabled={lesson.status === 'assigned'}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => deleteMutation.mutate(lesson.id)}
+                    disabled={lesson.status === 'assigned'}
+                    className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50">
+
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
               )
@@ -335,11 +275,12 @@ export default function MySchedule() {
   <div className="p-2 bg-indigo-100 rounded-lg">
           <Calendar className="w-5 h-5 text-indigo-600" />
         </div>
-        {editingLesson ? 'ערוך שיעור' : 'הוסף שיעור'}
+        הוסף שיעור
       </DialogTitle>
 
       <DialogDescription className="text-right">
-        {editingLesson ? 'עדכן את פרטי השיעור' : `הוסף שיעור חדש ללוח הזמנים שלך ל־${format(new Date(selectedDate), 'MMM d, yyyy')}`}
+        הוסף שיעור חדש ללוח הזמנים שלך ל־
+        {format(new Date(selectedDate), 'MMM d, yyyy')}
       </DialogDescription>
 
     </DialogHeader>
@@ -352,6 +293,10 @@ export default function MySchedule() {
       peer-disabled:cursor-not-allowed peer-disabled:opacity-70 
       ml-auto text-right
     ">
+
+
+
+
 
 
 
@@ -505,10 +450,7 @@ export default function MySchedule() {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => {
-              setShowModal(false);
-              setEditingLesson(null);
-            }} className="flex-1">
+            <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">
               ביטול
             </Button>
             <Button
@@ -516,7 +458,7 @@ export default function MySchedule() {
               disabled={!formData.crew_name || !formData.start_time || !formData.end_time}
               className="flex-1 bg-indigo-600 hover:bg-indigo-700">
 
-              {editingLesson ? 'עדכן שיעור' : 'הוסף שיעור'}
+              הוסף שיעור
             </Button>
           </div>
         </DialogContent>
