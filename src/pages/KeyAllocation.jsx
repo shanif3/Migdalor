@@ -118,6 +118,8 @@ export default function KeyAllocation() {
         const userEmail = lesson.crew_manager || lesson.created_by;
         if (userEmail && userKeyMap[userEmail]) {
           const previousKey = availableKeys.find((k) => k.id === userKeyMap[userEmail]);
+          // Only reuse if: exact match OR upgrade (צוותי request gets פלוגתי room)
+          // Never downgrade (פלוגתי request gets צוותי room)
           if (previousKey && 
               !isKeyOccupied(previousKey, lesson, assignments) &&
               (previousKey.room_type === lesson.room_type_needed || 
