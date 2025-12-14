@@ -290,6 +290,7 @@ export default function KeyAllocation() {
 
   // Check if a key is already occupied during the lesson time
   const isKeyOccupied = (key, newLesson, currentAssignments) => {
+    // Check against temporary assignments
     const overlapping = currentAssignments.filter((a) => a.keyId === key.id);
 
     for (const assignment of overlapping) {
@@ -300,6 +301,22 @@ export default function KeyAllocation() {
         return true;
       }
     }
+
+    // Check against already assigned lessons (manual assignments)
+    const alreadyAssigned = lessons.filter(l => 
+      l.status === 'assigned' && 
+      l.assigned_key === key.room_number
+    );
+
+    for (const lesson of alreadyAssigned) {
+      if (timeSlotsOverlap(
+        newLesson.start_time, newLesson.end_time,
+        lesson.start_time, lesson.end_time
+      )) {
+        return true;
+      }
+    }
+
     return false;
   };
 
