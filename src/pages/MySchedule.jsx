@@ -81,7 +81,78 @@ export default function MySchedule() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
+    mutationFn: async ({ id, data, originalLesson }) => {
+      // Update the lesson first
+      await base44.entities.Lesson.update(id, data);
+      
+      // If times or room type changed, try to find a new key
+      const timesChanged = data.start_time !== originalLesson.start_time || 
+                          data.end_time !== originalLesson.end_time;
+      const typeChanged = data.room_type_needed !== originalLesson.room_type_needed;
+      const computersChanged = data.needs_computers !== originalLesson.needs_computers;
+      
+      if (timesChanged || typeChanged || computersChanged) {
+        // Fetch all keys and lessons for the day
+        const [allKeys, allLessons] = await Promise.all([
+          base44.entities.ClassroomKey.list(),
+          base44.entities.Lesson.filter({ date: originalLesson.date })
+        ]);
+        
+        // Find available key
+        let assignedKey = null;
+        
+        // Try to find exact match
+        for (const key of allKeys) {
+          // Check if key matches requirements
+          const matchesType = key.room_type === data.room_type_needed;
+          const matchesComputers = !data.needs_computers || key.has_computers;
+          
+          if (!matchesType || !matchesComputers) continue;
+          
+          // Check if key is available during the new time slot
+          const isOccupied = allLessons.some(lesson => {
+            if (lesson.id === id) return false; // Skip the lesson we're editing
+            if (!lesson.assigned_key || lesson.assigned_key !== key.room_number) return false;
+            
+            // Check time overlap
+            return lesson.start_time < data.end_time && data.start_time < lesson.end_time;
+          });
+          
+          if (!isOccupied) {
+            assignedKey = key.room_number;
+            break;
+          }
+        }
+        
+        // If no exact match for צוותי, try פלוגתי (upgrade)
+        if (!assignedKey && data.room_type_needed === 'צוותי') {
+          for (const key of allKeys) {
+            if (key.room_type !== 'פלוגתי') continue;
+            if (data.needs_computers && !key.has_computers) continue;
+            
+            const isOccupied = allLessons.some(lesson => {
+              if (lesson.id === id) return false;
+              if (!lesson.assigned_key || lesson.assigned_key !== key.room_number) return false;
+              return lesson.start_time < data.end_time && data.start_time < lesson.end_time;
+            });
+            
+            if (!isOccupied) {
+              assignedKey = key.room_number;
+              break;
+            }
+          }
+        }
+        
+        // Update lesson with new key or set to pending if no key found
+        if (assignedKey) {
+          await base44.entities.Lesson.update(id, { assigned_key: assignedKey, status: 'assigned' });
+        } else {
+          await base44.entities.Lesson.update(id, { assigned_key: null, status: 'pending' });
+        }
+      }
+      
+      return { success: true };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
       setShowModal(false);
@@ -94,7 +165,7 @@ export default function MySchedule() {
         needs_computers: false,
         notes: ''
       });
-      toast.success('השיעור עודכן בהצלחה');
+      toast.success('השיעור עודכן והמפתח הוקצה מחדש');
     }
   });
 
@@ -115,7 +186,8 @@ export default function MySchedule() {
     if (editingLesson) {
       updateMutation.mutate({
         id: editingLesson.id,
-        data: formData
+        data: formData,
+        originalLesson: editingLesson
       });
     } else {
       createMutation.mutate({
