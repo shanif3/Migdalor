@@ -108,16 +108,16 @@ export default function KeyAllocation() {
 
       const assignments = [];
       const failureReasons = [];
-      const userKeyMap = {}; // Track which key each user was assigned
+      const crewKeyMap = {}; // Track which key each crew was assigned
 
       for (const lesson of allToAllocate) {
         // Find suitable key
         let assignedKey = null;
 
-        // Try to use the same key this user already has today
-        const userEmail = lesson.crew_manager || lesson.created_by;
-        if (userEmail && userKeyMap[userEmail]) {
-          const previousKey = availableKeys.find((k) => k.id === userKeyMap[userEmail]);
+        // Try to use the same key this crew already has today
+        const crewName = lesson.crew_name;
+        if (crewName && crewKeyMap[crewName]) {
+          const previousKey = availableKeys.find((k) => k.id === crewKeyMap[crewName]);
           // Only reuse if: exact match OR upgrade (צוותי request gets פלוגתי room)
           // Never downgrade (פלוגתי request gets צוותי room)
           if (previousKey && 
@@ -163,11 +163,11 @@ export default function KeyAllocation() {
             startTime: lesson.start_time,
             endTime: lesson.end_time
           });
-          
-          // Remember this key for this user
-          const userEmail = lesson.crew_manager || lesson.created_by;
-          if (userEmail && !userKeyMap[userEmail]) {
-            userKeyMap[userEmail] = assignedKey.id;
+
+          // Remember this key for this crew
+          const crewName = lesson.crew_name;
+          if (crewName && !crewKeyMap[crewName]) {
+            crewKeyMap[crewName] = assignedKey.id;
           }
         } else {
           // Track why this lesson couldn't be assigned
