@@ -108,13 +108,27 @@ export default function KeyAllocation() {
 
       const assignments = [];
       const failureReasons = [];
+      const userKeyMap = {}; // Track which key each user was assigned
 
       for (const lesson of allToAllocate) {
         // Find suitable key
         let assignedKey = null;
 
+        // Try to use the same key this user already has today
+        const userEmail = lesson.crew_manager || lesson.created_by;
+        if (userEmail && userKeyMap[userEmail]) {
+          const previousKey = availableKeys.find((k) => k.id === userKeyMap[userEmail]);
+          if (previousKey && 
+              !isKeyOccupied(previousKey, lesson, assignments) &&
+              (previousKey.room_type === lesson.room_type_needed || 
+               (lesson.room_type_needed === 'צוותי' && previousKey.room_type === 'פלוגתי')) &&
+              (!lesson.needs_computers || previousKey.has_computers)) {
+            assignedKey = previousKey;
+          }
+        }
+
         // First try to find exact match with computer requirement
-        if (lesson.needs_computers) {
+        if (!assignedKey && lesson.needs_computers) {
           assignedKey = availableKeys.find(
             (k) => k.room_type === lesson.room_type_needed &&
             k.has_computers &&
@@ -147,6 +161,12 @@ export default function KeyAllocation() {
             startTime: lesson.start_time,
             endTime: lesson.end_time
           });
+          
+          // Remember this key for this user
+          const userEmail = lesson.crew_manager || lesson.created_by;
+          if (userEmail && !userKeyMap[userEmail]) {
+            userKeyMap[userEmail] = assignedKey.id;
+          }
         } else {
           // Track why this lesson couldn't be assigned
           const matchingTypeKeys = availableKeys.filter((k) => k.room_type === lesson.room_type_needed);
@@ -435,11 +455,12 @@ export default function KeyAllocation() {
         <Card className="mt-6 p-6 bg-blue-50 border-blue-200">
           <h4 className="font-semibold text-blue-900 mb-3">סדר עדיפויות הקצאה:</h4>
           <ol className="space-y-2 text-sm text-blue-800">
-            <li>1. שיעורים מוקדמים יותר מקבלים עדיפות</li>
-            <li>2. חדרים פלוגתיים משובצים ראשונים</li>
-            <li>3. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
-            <li>4. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
-            <li>5. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
+            <li>1. <strong>שימור כיתות - משתמש שקיבל כיתה מסוימת ישאר איתה לאורך היום</strong></li>
+            <li>2. שיעורים מוקדמים יותר מקבלים עדיפות</li>
+            <li>3. חדרים פלוגתיים משובצים ראשונים</li>
+            <li>4. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
+            <li>5. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
+            <li>6. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
           </ol>
         </Card>
       </div>
