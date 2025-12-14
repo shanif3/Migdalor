@@ -15,6 +15,13 @@ import {
   TableHeader,
   TableRow } from
 "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue } from
+"@/components/ui/select";
 import { Wand2, Calendar, Key, RefreshCw, Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -45,6 +52,39 @@ export default function KeyAllocation() {
     mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+    }
+  });
+
+  const manualAssignMutation = useMutation({
+    mutationFn: async ({ lessonId, roomNumber }) => {
+      // Find the lesson
+      const lesson = lessons.find(l => l.id === lessonId);
+      if (!lesson) throw new Error('שיעור לא נמצא');
+
+      // Check for conflicts - if another lesson is using this room at the same time
+      const conflict = lessons.find(l => 
+        l.id !== lessonId &&
+        l.assigned_key === roomNumber &&
+        l.status === 'assigned' &&
+        timeSlotsOverlap(lesson.start_time, lesson.end_time, l.start_time, l.end_time)
+      );
+
+      if (conflict) {
+        throw new Error(`חדר ${roomNumber} תפוס ע״י ${conflict.crew_name} בשעות ${conflict.start_time}-${conflict.end_time}`);
+      }
+
+      // Assign the key
+      return base44.entities.Lesson.update(lessonId, {
+        assigned_key: roomNumber,
+        status: 'assigned'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+      toast.success('חדר הוקצה בהצלחה');
+    },
+    onError: (error) => {
+      toast.error(error.message);
     }
   });
 
@@ -418,18 +458,19 @@ export default function KeyAllocation() {
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">💻</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">סטטוס</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">חדר</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">הקצאה ידנית</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ?
                   <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
+                      <TableCell colSpan={7} className="text-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                       </TableCell>
                     </TableRow> :
                   lessons.length === 0 ?
                   <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                      <TableCell colSpan={7} className="text-center py-8 text-slate-400">
                         אין שיעורים מתוכננים לתאריך זה
                       </TableCell>
                     </TableRow> :
@@ -463,6 +504,41 @@ export default function KeyAllocation() {
 
                       <span className="text-slate-400">—</span>
                       }
+                        </TableCell>
+                        <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                          <Select
+                            value={lesson.assigned_key || ''}
+                            onValueChange={(value) => {
+                              if (value === 'unassign') {
+                                updateLessonMutation.mutate({
+                                  id: lesson.id,
+                                  data: { assigned_key: null, status: 'pending' }
+                                });
+                              } else {
+                                manualAssignMutation.mutate({
+                                  lessonId: lesson.id,
+                                  roomNumber: value
+                                });
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="h-8 w-[120px] text-xs">
+                              <SelectValue placeholder="בחר חדר" />
+                            </SelectTrigger>
+                            <SelectContent dir="rtl">
+                              {lesson.assigned_key && (
+                                <SelectItem value="unassign" className="text-red-600">
+                                  ❌ בטל הקצאה
+                                </SelectItem>
+                              )}
+                              {allKeys.map((key) => (
+                                <SelectItem key={key.id} value={key.room_number}>
+                                  {key.room_type === 'פלוגתי' ? '🏢' : '🏠'} חדר {key.room_number}
+                                  {key.has_computers && ' 💻'}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </TableCell>
                       </TableRow>
                   )
