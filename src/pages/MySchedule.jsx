@@ -58,9 +58,35 @@ export default function MySchedule() {
     queryFn: () => base44.entities.Lesson.filter({
       crew_manager: user?.email,
       date: selectedDate
-    }, '-start_time'),
+    }, 'start_time'),
     enabled: !!user
   });
+
+  const { data: allDayLessons = [] } = useQuery({
+    queryKey: ['all-day-lessons', selectedDate],
+    queryFn: () => base44.entities.Lesson.filter({
+      date: selectedDate,
+      status: 'assigned'
+    }, 'start_time'),
+    enabled: !!selectedDate
+  });
+
+  const getKeyHandoffNote = (lesson) => {
+    if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
+    
+    // Find the previous lesson that used this key
+    const previousLesson = allDayLessons.find(l => 
+      l.assigned_key === lesson.assigned_key && 
+      l.id !== lesson.id &&
+      l.end_time <= lesson.start_time
+    );
+    
+    if (previousLesson) {
+      return `מקבל מפתח מ${previousLesson.crew_name}`;
+    }
+    
+    return null;
+  };
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Lesson.create(data),
@@ -302,19 +328,20 @@ export default function MySchedule() {
                 <TableHead className="h-10 px-2 flex items-center justify-center text-center align-middle font-medium [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">מחשבים</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">חדר משובץ</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">הערות</TableHead>
                 <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ?
               <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                   </TableCell>
                 </TableRow> :
               lessons.length === 0 ?
               <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     אין שיעורים מתוכננים לתאריך זה
                   </TableCell>
                 </TableRow> :
@@ -358,6 +385,15 @@ export default function MySchedule() {
 
                   <span className="text-slate-400">—</span>
                   }
+                    </TableCell>
+                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
+                      {getKeyHandoffNote(lesson) ? (
+                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                          🔄 {getKeyHandoffNote(lesson)}
+                        </Badge>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       <div className="flex items-center justify-center gap-1">
