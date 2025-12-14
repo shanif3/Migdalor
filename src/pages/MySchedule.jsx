@@ -293,8 +293,7 @@ export default function MySchedule() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleEdit(lesson)}
-                          disabled={lesson.status === 'assigned'}
-                          className="text-slate-400 hover:text-slate-600 disabled:opacity-50">
+                          className="text-slate-400 hover:text-slate-600">
                           <Edit2 className="w-4 h-4" />
                         </Button>
                         <Button
