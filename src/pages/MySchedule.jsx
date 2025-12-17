@@ -552,7 +552,7 @@ export default function MySchedule() {
                     <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                       <div className="flex items-center gap-2 text-sm">
                         <Clock className="w-4 h-4 text-slate-400" />
-                        {lesson.start_time} - {lesson.end_time}
+                         {lesson.end_time} - {lesson.start_time}
                       </div>
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
