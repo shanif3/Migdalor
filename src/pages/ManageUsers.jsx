@@ -28,7 +28,7 @@ export default function ManageUsers() {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-  const [formData, setFormData] = useState({ platoon_name: '', position: '' });
+  const [formData, setFormData] = useState({ platoon_name: '', position: '', role: 'user' });
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -49,7 +49,7 @@ export default function ManageUsers() {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowModal(false);
       setEditingUser(null);
-      setFormData({ platoon_name: '', position: '' });
+      setFormData({ platoon_name: '', position: '', role: 'user' });
       toast.success('פרטי משתמש עודכנו בהצלחה');
     }
   });
@@ -72,7 +72,8 @@ export default function ManageUsers() {
     setEditingUser(user);
     setFormData({
       platoon_name: user.platoon_name || '',
-      position: user.position || ''
+      position: user.position || '',
+      role: user.role || 'user'
     });
     setShowModal(true);
   };
@@ -80,7 +81,7 @@ export default function ManageUsers() {
   const handleClose = () => {
     setShowModal(false);
     setEditingUser(null);
-    setFormData({ platoon_name: '', position: '' });
+    setFormData({ platoon_name: '', position: '', role: 'user' });
   };
 
   // Predefined platoon names and positions
@@ -261,6 +262,18 @@ export default function ManageUsers() {
           </DialogHeader>
 
           <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-right block">תפקיד במערכת</Label>
+              <select
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="user">משתמש</option>
+                <option value="admin">מנהל</option>
+              </select>
+            </div>
+
             <div className="space-y-2">
               <Label className="text-right block">פלוגה</Label>
               <select
