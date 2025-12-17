@@ -167,15 +167,16 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
 
        
  <div className="flex flex-row-reverse gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
-            ביטול
-          </Button>
-          <Button
+ <Button
             onClick={handleConfirm}
             disabled={!crewName || !startTime || !endTime}
             className="flex-1 bg-blue-600 hover:bg-blue-700">
             הוסף לתור
           </Button>
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            ביטול
+          </Button>
+          
         </div>
       </DialogContent>
     </Dialog>);
