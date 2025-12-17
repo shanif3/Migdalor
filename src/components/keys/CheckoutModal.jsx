@@ -115,7 +115,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
 
               onClick={() => setUseCustom(true)}>
 
-                או הזן שם ידנית
+                 הזן שם ידנית
               </Button>
             </div>
           }
