@@ -270,22 +270,24 @@ export default function Dashboard() {
 
               {/* Time Range Filter */}
               <div className="flex flex-row-reverse items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
+                <span className="text-sm font-medium text-slate-700">:סנן לפי זמינות</span>
                 <Clock className="w-5 h-5 text-slate-600" />
-                <span className="text-sm font-medium text-slate-700">סנן לפי זמינות:</span>
                 <div className="flex items-center gap-2">
-                  <input
-                    type="time"
-                    value={timeFilter.start}
-                    onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
-                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
-                  />
-                  <span className="text-slate-500">עד</span>
+                  
                   <input
                     type="time"
                     value={timeFilter.end}
                     onChange={(e) => setTimeFilter({ ...timeFilter, end: e.target.value })}
                     className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
                   />
+                  <span className="text-slate-500">עד</span>
+                  <input
+                    type="time"
+                    value={timeFilter.start}
+                    onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
+                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                  />
+                  
                   {(timeFilter.start || timeFilter.end) && (
                     <Button
                       variant="ghost"
