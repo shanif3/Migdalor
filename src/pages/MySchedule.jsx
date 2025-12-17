@@ -413,7 +413,7 @@ export default function MySchedule() {
                   <div>
                     <h3 className="font-bold text-orange-900 text-lg">מסדר כיתות - יום רביעי 22:00</h3>
                     <p className="text-sm text-orange-700">
-                      הפלוגה שלך מנקה את כל החדרים שהמפתחות נשארו אצלכם ({myMisdarAssignments.length} חדרים)
+                      הפלוגה שלך מנקה את החדרים הבאים: ({myMisdarAssignments.length} חדרים)
                     </p>
                     <p className="text-xs text-orange-600 mt-1">
                       מתעדכן ביום רביעי בשעה 9:00 בבוקר
