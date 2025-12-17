@@ -113,7 +113,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
 
           {useCustom &&
           <div className="space-y-2">
-              <Label className="text-sm font-medium">שם הצוות</Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium">החדר עבור *</Label>
               <Input
               placeholder="למשל, סגל"
               value={customName}
