@@ -154,17 +154,7 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-right block">הערות (אופציונלי)</Label>
-            <Textarea
-              placeholder="דרישות מיוחדות..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="h-20 text-right" />
-          </div>
-        </div>
-
-        <div className="flex flex-row-reverse gap-3">
+ <div className="flex flex-row-reverse gap-3">
           <Button variant="outline" onClick={onClose} className="flex-1">
             ביטול
           </Button>
@@ -175,6 +165,18 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
             הוסף לתור
           </Button>
         </div>
+        
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-right block">הערות (אופציונלי)</Label>
+            <Textarea
+              placeholder="דרישות מיוחדות..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="h-20 text-right" />
+          </div>
+        </div>
+
+       
       </DialogContent>
     </Dialog>);
 
