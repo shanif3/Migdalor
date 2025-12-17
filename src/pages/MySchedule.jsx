@@ -46,7 +46,8 @@ export default function MySchedule() {
     end_time: '',
     room_type_needed: 'צוותי',
     needs_computers: false,
-    notes: ''
+    notes: '',
+    room_count: 1
   });
   const queryClient = useQueryClient();
 
@@ -203,7 +204,23 @@ export default function MySchedule() {
   };
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.Lesson.create(data),
+    mutationFn: async (data) => {
+      // If single room or editing, create normally
+      if (data.room_count === 1) {
+        return base44.entities.Lesson.create(data);
+      }
+
+      // Multiple rooms - create multiple lessons
+      const lessons = [];
+      for (let i = 0; i < data.room_count; i++) {
+        lessons.push({
+          ...data,
+          room_type_needed: 'צוותי', // Always צוותי for multiple rooms
+          notes: data.notes ? `${data.notes} (חדר ${i + 1}/${data.room_count})` : `חדר ${i + 1}/${data.room_count}`
+        });
+      }
+      return base44.entities.Lesson.bulkCreate(lessons);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
       setShowModal(false);
@@ -215,9 +232,10 @@ export default function MySchedule() {
         end_time: '',
         room_type_needed: 'צוותי',
         needs_computers: false,
-        notes: ''
+        notes: '',
+        room_count: 1
       });
-      toast.success('שיעור נוסף ללוח הזמנים');
+      toast.success('שיעורים נוספו ללוח הזמנים');
     }
   });
 
@@ -305,7 +323,8 @@ export default function MySchedule() {
         end_time: '',
         room_type_needed: 'צוותי',
         needs_computers: false,
-        notes: ''
+        notes: '',
+        room_count: 1
       });
       toast.success('השיעור עודכן והמפתח הוקצה מחדש');
     }
@@ -332,11 +351,16 @@ export default function MySchedule() {
         originalLesson: editingLesson
       });
     } else {
+      // Check if it's a platoon (crew) with multiple rooms
+      const isPlatoon = filteredCrews.some(c => c.name === formData.crew_name);
+      const roomCount = isPlatoon && formData.room_count > 1 ? formData.room_count : 1;
+
       createMutation.mutate({
         ...formData,
         crew_manager: user.email,
         date: selectedDate,
-        status: 'pending'
+        status: 'pending',
+        room_count: roomCount
       });
     }
   };
@@ -350,7 +374,8 @@ export default function MySchedule() {
       end_time: lesson.end_time,
       room_type_needed: lesson.room_type_needed,
       needs_computers: lesson.needs_computers || false,
-      notes: lesson.notes || ''
+      notes: lesson.notes || '',
+      room_count: 1
     });
     setShowModal(true);
   };
@@ -724,6 +749,27 @@ export default function MySchedule() {
               </select>
 
             </div>
+
+            {/* Room Count - only for platoons when not editing */}
+            {!editingLesson && filteredCrews.some(c => c.name === formData.crew_name) && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">כמות כיתות</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={formData.room_count}
+                  onChange={(e) => setFormData({ ...formData, room_count: parseInt(e.target.value) || 1 })}
+                  className="text-right"
+                />
+                {formData.room_count > 1 && (
+                  <p className="text-xs text-blue-600">
+                    יווצרו {formData.room_count} שיעורים בחדרים צוותיים
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>שעת התחלה *</Label>
