@@ -47,7 +47,8 @@ const [endTime, setEndTime] = useState('');
 
   return (
 <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md" dir="rtl">
+      <DialogContent dir="rtl" className="text-right">
+
         <DialogHeader className="text-right">
           <DialogTitle className="flex items-center gap-2 justify-end text-right">
   בקשה מיוחדת למפתח
