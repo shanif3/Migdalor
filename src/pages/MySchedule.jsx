@@ -197,8 +197,14 @@ export default function MySchedule() {
     l.start_time >= lesson.end_time
     );
 
-    const receiveFrom = previousLesson ? previousLesson.crew_name : null;
-    const passTo = nextLesson ? nextLesson.crew_name : null;
+    const receiveFrom = previousLesson ? {
+      crew: previousLesson.crew_name,
+      platoon: previousLesson.platoon_name
+    } : null;
+    const passTo = nextLesson ? {
+      crew: nextLesson.crew_name,
+      platoon: nextLesson.platoon_name
+    } : null;
 
     if (!receiveFrom && !passTo) return null;
 
@@ -589,12 +595,12 @@ export default function MySchedule() {
                       <div className="flex flex-col gap-1 items-center">
                             {handoff.receiveFrom &&
                         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
-                                🔽 מקבל מ{handoff.receiveFrom}
+                                🔽 מקבל מ{handoff.receiveFrom.crew} ({handoff.receiveFrom.platoon})
                               </Badge>
                         }
                             {handoff.passTo &&
                         <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
-                                🔼 מעביר ל{handoff.passTo}
+                                🔼 מעביר ל{handoff.passTo.crew} ({handoff.passTo.platoon})
                               </Badge>
                         }
                           </div>);
