@@ -20,6 +20,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
     { name: 'פלוגות', icon: Users, page: 'ManageCrews' },
+    { name: 'צוותים', icon: Users, page: 'ManageSquads' },
   ];
 
   const userNavItems = [
@@ -27,6 +28,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
     { name: 'פלוגות', icon: Users, page: 'ManageCrews' },
+    { name: 'צוותים', icon: Users, page: 'ManageSquads' },
   ];
 
   const navItems = isAdmin ? adminNavItems : userNavItems;
