@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Key, User, Clock, ArrowRight } from 'lucide-react';
+import { Key, User, Clock, ArrowRight, Monitor } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
@@ -33,8 +33,11 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
               }`} />
             </div>
             <div>
-              <h3 className="font-semibold text-slate-800 text-lg">
+              <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
                 חדר {keyItem.room_number}
+                {keyItem.has_computers && (
+                  <Monitor className="w-4 h-4 text-blue-600" />
+                )}
               </h3>
               <Badge variant="outline" className={`mt-1 ${
                 keyItem.room_type === 'פלוגתי' 
