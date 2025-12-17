@@ -135,18 +135,28 @@ export default function MySchedule() {
     // If this crew already used this key, don't show handoff note
     if (sameCrewEarlierLesson) return null;
     
-    // Find the previous lesson that used this key (from different crew)
+    // Find who we receive from
     const previousLesson = allDayLessons.find(l => 
       l.assigned_key === lesson.assigned_key && 
       l.id !== lesson.id &&
+      l.crew_name !== lesson.crew_name &&
       l.end_time <= lesson.start_time
     );
     
-    if (previousLesson && previousLesson.crew_name !== lesson.crew_name) {
-      return `מקבל מפתח מ${previousLesson.crew_name}`;
-    }
+    // Find who we pass to
+    const nextLesson = allDayLessons.find(l => 
+      l.assigned_key === lesson.assigned_key && 
+      l.id !== lesson.id &&
+      l.crew_name !== lesson.crew_name &&
+      l.start_time >= lesson.end_time
+    );
     
-    return null;
+    const receiveFrom = previousLesson ? previousLesson.crew_name : null;
+    const passTo = nextLesson ? nextLesson.crew_name : null;
+    
+    if (!receiveFrom && !passTo) return null;
+    
+    return { receiveFrom, passTo };
   };
 
   const createMutation = useMutation({
@@ -487,13 +497,25 @@ export default function MySchedule() {
                   }
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      {getKeyHandoffNote(lesson) ? (
-                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                          🔄 {getKeyHandoffNote(lesson)}
-                        </Badge>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
+                      {(() => {
+                        const handoff = getKeyHandoffNote(lesson);
+                        if (!handoff) return <span className="text-slate-400">—</span>;
+
+                        return (
+                          <div className="flex flex-col gap-1 items-center">
+                            {handoff.receiveFrom && (
+                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                🔽 מקבל מ{handoff.receiveFrom}
+                              </Badge>
+                            )}
+                            {handoff.passTo && (
+                              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
+                                🔼 מעביר ל{handoff.passTo}
+                              </Badge>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       <div className="flex items-center justify-center gap-1">
