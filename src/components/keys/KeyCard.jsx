@@ -6,10 +6,11 @@ import { Key, User, Clock, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
-export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentUser }) {
-  const isAvailable = keyItem.status === 'available';
+export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentUser, currentHolder }) {
+  const isAvailable = keyItem.status === 'available' && !currentHolder;
   const isAdmin = currentUser?.role === 'admin';
   const canReturn = isAvailable || isAdmin || keyItem.checked_out_by === currentUser?.email;
+  const displayHolder = currentHolder || keyItem.current_holder;
   
   return (
     <motion.div
@@ -53,11 +54,11 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
           </Badge>
         </div>
 
-        {!isAvailable && keyItem.current_holder && (
+        {!isAvailable && displayHolder && (
           <div className="mb-4 p-3 bg-white/80 rounded-lg border border-slate-100">
             <div className="flex items-center gap-2 text-slate-600 mb-1">
               <User className="w-4 h-4" />
-              <span className="text-sm font-medium">{keyItem.current_holder}</span>
+              <span className="text-sm font-medium">{displayHolder}</span>
             </div>
             {keyItem.checkout_time && (
               <div className="flex items-center gap-2 text-slate-400 text-xs">
