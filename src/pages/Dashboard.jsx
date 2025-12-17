@@ -176,17 +176,16 @@ export default function Dashboard() {
   const isKeyAvailableInTimeRange = (key) => {
     if (!timeFilter.start || !timeFilter.end) return true;
     
+    // Find lessons for this specific room
+    const roomLessons = todayLessons.filter(lesson => 
+      lesson.assigned_key === key.room_number && 
+      (lesson.status === 'assigned' || lesson.status === 'pending')
+    );
+    
     // Check if any lesson conflicts with this time range
-    const hasConflict = todayLessons.some(lesson => {
-      // Only check lessons that have an assigned key
-      if (!lesson.assigned_key) return false;
-      
-      // Check if this lesson is for this specific room
-      if (lesson.assigned_key !== key.room_number) return false;
-      
-      // Check time overlap
+    const hasConflict = roomLessons.some(lesson => {
+      // Check time overlap: lessons overlap if start1 < end2 AND start2 < end1
       const overlap = lesson.start_time < timeFilter.end && timeFilter.start < lesson.end_time;
-      
       return overlap;
     });
     
