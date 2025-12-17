@@ -16,20 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Key, Users } from 'lucide-react';
+import { Key, Users, AlertCircle } from 'lucide-react';
 
 export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm }) {
   const [selectedCrew, setSelectedCrew] = useState('');
   const [customName, setCustomName] = useState('');
   const [useCustom, setUseCustom] = useState(false);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('23:59');
 
   const handleConfirm = () => {
     const holderName = useCustom ? customName : selectedCrew;
-    if (holderName) {
-      onConfirm(keyItem, holderName);
+    if (holderName && startTime && endTime) {
+      onConfirm(keyItem, holderName, startTime, endTime);
       setSelectedCrew('');
       setCustomName('');
       setUseCustom(false);
+      setStartTime('');
+      setEndTime('23:59');
     }
   };
 
@@ -100,6 +104,36 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
               )}
             </div>
           )}
+
+          <div className="space-y-4 border-t pt-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">שעת התחלה *</Label>
+                <Input
+                  type="time"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">שעת סיום *</Label>
+                <Input
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {endTime === '23:59' && (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-orange-800">
+                  <strong>חשוב:</strong> אם לא ציינת שעת סיום מדויקת, יש לסמן את המפתח כהוחזר בעצמך כאשר מחזירים אותו.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex gap-3">
@@ -108,7 +142,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={useCustom ? !customName : !selectedCrew}
+            disabled={(useCustom ? !customName : !selectedCrew) || !startTime || !endTime}
             className="flex-1 bg-emerald-600 hover:bg-emerald-700"
           >
             אשר משיכה

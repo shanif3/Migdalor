@@ -90,7 +90,7 @@ export default function Dashboard() {
     }
   });
 
-  const handleCheckout = (key, holderName) => {
+  const handleCheckout = (key, holderName, startTime, endTime) => {
     updateKeyMutation.mutate({
       id: key.id,
       data: {
