@@ -90,7 +90,39 @@ export default function Dashboard() {
     }
   });
 
-  const handleCheckout = (key, holderName, startTime, endTime) => {
+  const handleCheckout = async (key, holderName, startTime, endTime) => {
+    // Check for time conflicts with existing lessons
+    const today = new Date().toISOString().split('T')[0];
+    const existingLessons = await base44.entities.Lesson.filter({ 
+      date: today, 
+      assigned_key: key.room_number 
+    });
+    
+    // Check for overlap
+    const hasConflict = existingLessons.some(lesson => 
+      lesson.start_time < endTime && startTime < lesson.end_time
+    );
+    
+    if (hasConflict) {
+      toast.error('החדר תפוס בשעות אלה. בדוק את לוח הזמנים');
+      return;
+    }
+    
+    // Create a lesson for this checkout
+    await base44.entities.Lesson.create({
+      crew_manager: user?.email,
+      crew_name: holderName,
+      date: today,
+      start_time: startTime,
+      end_time: endTime,
+      room_type_needed: key.room_type,
+      needs_computers: key.has_computers || false,
+      assigned_key: key.room_number,
+      status: 'assigned',
+      notes: 'משיכה ידנית מלוח בקרה'
+    });
+    
+    // Update key status
     updateKeyMutation.mutate({
       id: key.id,
       data: {
@@ -100,6 +132,12 @@ export default function Dashboard() {
         checked_out_by: user?.email
       }
     });
+    
+    // Refresh lessons
+    queryClient.invalidateQueries({ queryKey: ['today-lessons'] });
+    queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
+    queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+    
     setCheckoutKey(null);
   };
 
