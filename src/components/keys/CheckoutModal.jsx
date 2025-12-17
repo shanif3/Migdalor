@@ -25,6 +25,14 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('23:59');
 
+  // Prefill times if provided
+  React.useEffect(() => {
+    if (keyItem?.prefilledTimes) {
+      setStartTime(keyItem.prefilledTimes.start);
+      setEndTime(keyItem.prefilledTimes.end);
+    }
+  }, [keyItem]);
+
   const handleConfirm = () => {
     const holderName = useCustom ? customName : selectedCrew;
     if (holderName && startTime && endTime) {
