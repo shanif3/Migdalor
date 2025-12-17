@@ -387,6 +387,23 @@ export default function KeyAllocation() {
   </div>
           <div className="flex flex-col sm:flex-row-reverse items-stretch sm:items-center gap-2">
             <Button
+              onClick={allocateKeys}
+              disabled={selectedKeys.length === 0 || (pendingCount === 0 && specialRequestsCount === 0) || isAllocating}
+              className="bg-emerald-600 hover:bg-emerald-700">
+              {isAllocating ?
+              <Loader2 className="w-4 h-4 ml-2 animate-spin" /> :
+              <Wand2 className="w-4 h-4 ml-2" />
+              }
+              שבץ אוטומטית
+            </Button>
+            <Button
+              variant="outline"
+              onClick={resetAllocations}
+              disabled={assignedCount === 0}>
+              <RefreshCw className="w-4 h-4 ml-2" />
+              אפס הקצאות
+            </Button>
+            <Button
               variant="outline"
               onClick={() => {
                 if (confirm('האם למחוק את כל השיעורים?')) {
@@ -397,23 +414,6 @@ export default function KeyAllocation() {
               className="text-red-600 hover:text-red-700 hover:bg-red-50">
               <Trash2 className="w-4 h-4 ml-2" />
               מחק הכל
-            </Button>
-            <Button
-              variant="outline"
-              onClick={resetAllocations}
-              disabled={assignedCount === 0}>
-              <RefreshCw className="w-4 h-4 ml-2" />
-              אפס הקצאות
-            </Button>
-            <Button
-              onClick={allocateKeys}
-              disabled={selectedKeys.length === 0 || (pendingCount === 0 && specialRequestsCount === 0) || isAllocating}
-              className="bg-emerald-600 hover:bg-emerald-700">
-              {isAllocating ?
-              <Loader2 className="w-4 h-4 ml-2 animate-spin" /> :
-              <Wand2 className="w-4 h-4 ml-2" />
-              }
-              שבץ אוטומטית
             </Button>
           </div>
         </div>
