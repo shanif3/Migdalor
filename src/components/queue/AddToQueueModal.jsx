@@ -123,7 +123,7 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
               size="sm"
               className="text-slate-500 text-xs w-full"
               onClick={() => setUseExisting(false)}>
-                בחר מצוותים קיימים
+                בחר מאפשרויות קיימות
               </Button>
             </div>
           }
