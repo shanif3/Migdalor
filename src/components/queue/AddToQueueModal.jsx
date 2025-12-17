@@ -25,7 +25,7 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
   const [notes, setNotes] = useState('');
   const [useExisting, setUseExisting] = useState(false);
   const [startTime, setStartTime] = useState('');
-const [endTime, setEndTime] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   const handleConfirm = () => {
     if (crewName && startTime && endTime) {
@@ -46,18 +46,18 @@ const [endTime, setEndTime] = useState('');
   };
 
   return (
-<Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent dir="rtl" className="text-right">
 
-<DialogHeader className="text-right">
-<DialogTitle className="w-full text-right">
+        <DialogHeader className="text-right">
+          <DialogTitle className="w-full text-right">
   <div className="flex w-full items-center gap-2">
     <span className="text-right">בקשה מיוחדת למפתח</span>
     <div className="p-2 bg-blue-100 rounded-lg">
       <Clock className="w-5 h-5 text-blue-600" />
     </div>
   </div>
-</DialogTitle>
+          </DialogTitle>
 
 
 
@@ -96,7 +96,7 @@ const [endTime, setEndTime] = useState('');
             </div> :
 
           <div className="space-y-2">
-              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">שם הצוות</Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">החדר עבור *</Label>
               <Input
               placeholder="הזן שם צוות..."
               value={crewName}
@@ -122,8 +122,8 @@ const [endTime, setEndTime] = useState('');
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="text-right"
-              />
+                className="text-right" />
+
             </div>
             <div className="space-y-2">
               <Label className="text-sm font-medium text-right block">שעת סיום</Label>
@@ -131,8 +131,8 @@ const [endTime, setEndTime] = useState('');
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="text-right"
-              />
+                className="text-right" />
+
             </div>
           </div>
 
@@ -172,7 +172,7 @@ const [endTime, setEndTime] = useState('');
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
-    );
+    </Dialog>);
+
 
 }
