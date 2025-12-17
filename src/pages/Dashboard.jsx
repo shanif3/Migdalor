@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [checkoutKey, setCheckoutKey] = useState(null);
   const [showQueueModal, setShowQueueModal] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [timeFilter, setTimeFilter] = useState({ start: '', end: '' });
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
 
@@ -171,9 +172,23 @@ export default function Dashboard() {
     }
   };
 
-  const filteredKeys = filter === 'all' ?
-  keys :
-  keys.filter((k) => k.room_type === filter);
+  // Check if a key is available during the time filter
+  const isKeyAvailableInTimeRange = (key) => {
+    if (!timeFilter.start || !timeFilter.end) return true;
+    
+    // Check if any lesson conflicts with this time range
+    const hasConflict = todayLessons.some(lesson => 
+      lesson.assigned_key === key.room_number &&
+      lesson.start_time < timeFilter.end && 
+      timeFilter.start < lesson.end_time
+    );
+    
+    return !hasConflict;
+  };
+
+  const filteredKeys = keys
+    .filter((k) => filter === 'all' || k.room_type === filter)
+    .filter((k) => isKeyAvailableInTimeRange(k));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
@@ -221,22 +236,60 @@ export default function Dashboard() {
           </div>
 
           <TabsContent value="keys" className="space-y-6">
-            {/* Filter */}
-            <div className="flex flex-row-reverse items-center gap-2">
+            {/* Filters */}
+            <div className="space-y-4">
+              {/* Room Type Filter */}
+              <div className="flex flex-row-reverse items-center gap-2">
+                <span className="text-sm text-slate-500">:סנן לפי סוג</span>
+                <Filter className="w-4 h-4 text-slate-400" />
+                <div className="flex flex-row-reverse gap-2">
+                  {['all', 'צוותי', 'פלוגתי'].map((f) =>
+                  <Button
+                    key={f}
+                    variant={filter === f ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFilter(f)}
+                    className={filter === f ? 'bg-slate-800' : ''}>
 
-              <span className="text-sm text-slate-500">:סנן</span>
-              <Filter className="w-4 h-4 text-slate-400" />
-              <div className="flex flex-row-reverse gap-2">
-                {['all', 'צוותי', 'פלוגתי'].map((f) =>
-                <Button
-                  key={f}
-                  variant={filter === f ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setFilter(f)}
-                  className={filter === f ? 'bg-slate-800' : ''}>
+                      {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
+                    </Button>
+                  )}
+                </div>
+              </div>
 
-                    {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
-                  </Button>
+              {/* Time Range Filter */}
+              <div className="flex flex-row-reverse items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
+                <Clock className="w-5 h-5 text-slate-600" />
+                <span className="text-sm font-medium text-slate-700">סנן לפי זמינות:</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    value={timeFilter.start}
+                    onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
+                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                  />
+                  <span className="text-slate-500">עד</span>
+                  <input
+                    type="time"
+                    value={timeFilter.end}
+                    onChange={(e) => setTimeFilter({ ...timeFilter, end: e.target.value })}
+                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                  />
+                  {(timeFilter.start || timeFilter.end) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setTimeFilter({ start: '', end: '' })}
+                      className="text-slate-500 hover:text-slate-700"
+                    >
+                      נקה
+                    </Button>
+                  )}
+                </div>
+                {timeFilter.start && timeFilter.end && (
+                  <span className="text-xs text-emerald-600 font-medium">
+                    מציג {filteredKeys.length} כיתות זמינות
+                  </span>
                 )}
               </div>
             </div>
@@ -264,7 +317,12 @@ export default function Dashboard() {
                   crews={crews}
                   currentUser={user}
                   currentHolder={getCurrentHolder(key.room_number)}
-                  onCheckout={setCheckoutKey}
+                  onCheckout={(key) => {
+                    setCheckoutKey({ 
+                      ...key, 
+                      prefilledTimes: timeFilter.start && timeFilter.end ? timeFilter : null 
+                    });
+                  }}
                   onReturn={handleReturn} />
 
                 )}
