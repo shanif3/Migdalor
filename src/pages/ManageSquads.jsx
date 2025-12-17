@@ -147,11 +147,21 @@ export default function ManageSquads() {
         </motion.div>
 
         {/* Stats */}
-        <div className="mb-8">
-          <Card className="p-4 border-slate-200 inline-block">
+        <div className="mb-8 flex flex-wrap gap-4">
+          <Card className="p-4 border-slate-200">
             <p className="text-sm text-slate-500">סה״כ צוותים</p>
             <p className="text-2xl font-bold text-slate-800">{squads.length}</p>
           </Card>
+          {[...new Set(squads.map(s => s.platoon_name))].sort().map(platoon => {
+            const count = squads.filter(s => s.platoon_name === platoon).length;
+            const colors = getPlatoonColor(platoon);
+            return (
+              <Card key={platoon} className={`p-4 border-2 ${colors.bg}`}>
+                <p className={`text-sm font-medium ${colors.text}`}>{platoon}</p>
+                <p className={`text-2xl font-bold ${colors.text}`}>{count}</p>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Add Button */}
