@@ -4,8 +4,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,8 +14,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import { Key, Users, AlertCircle } from 'lucide-react';
 
 export default function CheckoutModal({ open, onClose, keyItem, crews, squads, onConfirm }) {
@@ -52,83 +52,83 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-  dir="rtl"
-  className="sm:max-w-md text-right"
->
+        dir="rtl"
+        className="sm:max-w-md text-right">
+
         <DialogHeader className="text-right">
-  <DialogTitle className="flex flex-row-reverse items-center gap-2">
-    משוך מפתח
-    <div className="p-2 bg-emerald-100 rounded-lg">
-      <Key className="w-5 h-5 text-emerald-600" />
-    </div>
-  </DialogTitle>
+  <DialogTitle className="text-lg font-semibold leading-none tracking-tight flex flex-row-reverse items-center gap-2 justify-end">משוך מפתח
+
+
+
+
+          </DialogTitle>
 
   <DialogDescription className="text-right">
     משיכת מפתח לחדר {keyItem.room_number} ({keyItem.room_type})
   </DialogDescription>
-</DialogHeader>
+        </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {!useCustom && (
-            <div className="space-y-2">
+          {!useCustom &&
+          <div className="space-y-2">
               <Label className="text-sm font-medium">בחר פלוגה או צוות</Label>
               <select
-                value={selectedCrew}
-                onChange={(e) => {
-                  const selectedValue = e.target.value;
-                  setSelectedCrew(selectedValue);
-                  
-                  // Check if a squad was selected and auto-fill platoon name
-                  const selectedSquad = squads?.find(s => s.squad_number === selectedValue);
-                  setPlatoonName(selectedSquad ? selectedSquad.platoon_name : '');
-                }}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
+              value={selectedCrew}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                setSelectedCrew(selectedValue);
+
+                // Check if a squad was selected and auto-fill platoon name
+                const selectedSquad = squads?.find((s) => s.squad_number === selectedValue);
+                setPlatoonName(selectedSquad ? selectedSquad.platoon_name : '');
+              }}
+              className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
+
                 <option value="">בחר פלוגה או צוות...</option>
                 
                 <optgroup label="פלוגות">
-                  {crews?.map((crew) => (
-                    <option key={crew.id} value={crew.name}>{crew.name}</option>
-                  ))}
+                  {crews?.map((crew) =>
+                <option key={crew.id} value={crew.name}>{crew.name}</option>
+                )}
                 </optgroup>
                 
                 <optgroup label="צוותים">
-                  {squads?.map((squad) => (
-                    <option key={squad.id} value={squad.squad_number}>
+                  {squads?.map((squad) =>
+                <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>
-                  ))}
+                )}
                 </optgroup>
               </select>
               <Button
-                variant="ghost"
-                size="sm"
-                className="text-slate-500 text-xs"
-                onClick={() => setUseCustom(true)}
-              >
+              variant="ghost"
+              size="sm"
+              className="text-slate-500 text-xs"
+              onClick={() => setUseCustom(true)}>
+
                 או הזן שם ידנית
               </Button>
             </div>
-          )}
+          }
 
-          {useCustom && (
-            <div className="space-y-2">
+          {useCustom &&
+          <div className="space-y-2">
               <Label className="text-sm font-medium">שם הצוות</Label>
               <Input
-                placeholder="למשל, סגל"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-              />
+              placeholder="למשל, סגל"
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)} />
+
               <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-slate-500 text-xs"
-                  onClick={() => setUseCustom(false)}
-                >
+              variant="ghost"
+              size="sm"
+              className="text-slate-500 text-xs"
+              onClick={() => setUseCustom(false)}>
+
                   בחר מצוותים קיימים
                 </Button>
             </div>
-          )}
+          }
 
           <div className="space-y-4 border-t pt-4">
             <div className="grid grid-cols-2 gap-3">
@@ -137,27 +137,27 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
                 <Input
                   type="time"
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                />
+                  onChange={(e) => setStartTime(e.target.value)} />
+
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">שעת סיום *</Label>
                 <Input
                   type="time"
                   value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                />
+                  onChange={(e) => setEndTime(e.target.value)} />
+
               </div>
             </div>
 
-            {endTime === '23:59' && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
+            {endTime === '23:59' &&
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
                 <p className="text-xs text-orange-800">
                   <strong>חשוב:</strong> אם לא ציינת שעת סיום מדויקת, יש לסמן את המפתח כהוחזר בעצמך כאשר מחזירים אותו.
                 </p>
               </div>
-            )}
+            }
           </div>
         </div>
 
@@ -168,12 +168,12 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
           <Button
             onClick={handleConfirm}
             disabled={(useCustom ? !customName : !selectedCrew) || !startTime || !endTime}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-          >
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700">
+
             אשר משיכה
           </Button>
         </div>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
+
 }
