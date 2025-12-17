@@ -346,6 +346,11 @@ export default function MySchedule() {
       return;
     }
 
+    if (formData.start_time >= formData.end_time) {
+      toast.error('שעת הסיום חייבת להיות מאוחרת יותר משעת ההתחלה');
+      return;
+    }
+
     if (editingLesson) {
       updateMutation.mutate({
         id: editingLesson.id,
