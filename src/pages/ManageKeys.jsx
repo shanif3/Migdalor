@@ -77,6 +77,12 @@ export default function ManageKeys() {
     enabled: isAdmin
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: isAdmin
+  });
+
   // Get current key holder for a room
   const getCurrentHolder = (roomNumber) => {
     const now = new Date();
@@ -95,7 +101,7 @@ export default function ManageKeys() {
   const getMisdarResponsible = (key) => {
     // Check for manual assignment first
     if (key.manual_misdar_assignment) {
-      return key.manual_misdar_assignment;
+      return { crewName: key.manual_misdar_assignment, platoon: null };
     }
     
     if (!wednesdayLessons.length) return null;
@@ -115,7 +121,10 @@ export default function ManageKeys() {
       
       // If no one took the key after this lesson, this crew is responsible
       if (!nextLesson) {
-        return lesson.crew_name;
+        // Find the user who created this lesson to get their platoon
+        const userWhoCreated = allUsers.find(u => u.email === lesson.crew_manager);
+        const platoon = userWhoCreated?.platoon_name || null;
+        return { crewName: lesson.crew_name, platoon };
       }
     }
     
@@ -312,9 +321,16 @@ export default function ManageKeys() {
                           {(() => {
                             const responsible = getMisdarResponsible(key);
                             return responsible ? (
-                              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                                🧹 {responsible}
-                              </Badge>
+                              <div className="flex flex-col items-center gap-1">
+                                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                                  🧹 {responsible.crewName}
+                                </Badge>
+                                {responsible.platoon && (
+                                  <span className="text-xs text-slate-500 font-medium">
+                                    {responsible.platoon}
+                                  </span>
+                                )}
+                              </div>
                             ) : (
                               <span className="text-slate-400 text-xs">—</span>
                             );
