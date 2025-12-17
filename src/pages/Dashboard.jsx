@@ -35,6 +35,11 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Crew.list()
   });
 
+  const { data: squads = [] } = useQuery({
+    queryKey: ['squads'],
+    queryFn: () => base44.entities.Squad.list('order')
+  });
+
   const { data: queue = [] } = useQuery({
     queryKey: ['queue'],
     queryFn: () => base44.entities.WaitingQueue.list('priority')
@@ -96,7 +101,7 @@ export default function Dashboard() {
     }
   });
 
-  const handleCheckout = async (key, holderName, startTime, endTime) => {
+  const handleCheckout = async (key, holderName, startTime, endTime, platoonName) => {
     // Check for time conflicts with existing lessons
     const today = new Date().toISOString().split('T')[0];
     const existingLessons = await base44.entities.Lesson.filter({ 
@@ -118,6 +123,7 @@ export default function Dashboard() {
     await base44.entities.Lesson.create({
       crew_manager: user?.email,
       crew_name: holderName,
+      platoon_name: platoonName || '',
       date: today,
       start_time: startTime,
       end_time: endTime,
@@ -381,6 +387,7 @@ export default function Dashboard() {
         onClose={() => setCheckoutKey(null)}
         keyItem={checkoutKey}
         crews={crews}
+        squads={squads}
         onConfirm={handleCheckout} />
 
 
