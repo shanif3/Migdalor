@@ -76,16 +76,15 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
           >
             משוך מפתח <ArrowRight className="w-4 h-4 mr-2" />
           </Button>
-        ) : (
+        ) : canReturn ? (
           <Button 
             onClick={() => onReturn(keyItem)}
             variant="outline"
-            disabled={!canReturn}
-            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
           >
             החזר מפתח
           </Button>
-        )}
+        ) : null}
       </Card>
     </motion.div>
   );
