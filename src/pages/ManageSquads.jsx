@@ -21,9 +21,10 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { Plus, Users, Trash2, Edit2, Phone } from 'lucide-react';
+import { Plus, Users, Trash2, Edit2, Phone, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function ManageSquads() {
   const [showModal, setShowModal] = useState(false);
@@ -40,7 +41,10 @@ export default function ManageSquads() {
 
   const { data: squads = [], isLoading } = useQuery({
     queryKey: ['squads'],
-    queryFn: () => base44.entities.Squad.list()
+    queryFn: async () => {
+      const data = await base44.entities.Squad.list();
+      return data.sort((a, b) => (a.order || 0) - (b.order || 0));
+    }
   });
 
   const createMutation = useMutation({
@@ -97,6 +101,23 @@ export default function ManageSquads() {
     setFormData({ squad_number: '', platoon_name: '', contact: '', notes: '' });
   };
 
+  const handleDragEnd = async (result) => {
+    if (!result.destination || !isAdmin) return;
+
+    const items = Array.from(squads);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Update order for all items
+    const updates = items.map((item, index) => 
+      base44.entities.Squad.update(item.id, { order: index })
+    );
+    
+    await Promise.all(updates);
+    queryClient.invalidateQueries({ queryKey: ['squads'] });
+    toast.success('הסדר עודכן');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -133,6 +154,7 @@ export default function ManageSquads() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
+                {isAdmin && <TableHead className="w-12"></TableHead>}
                 <TableHead className="text-center">מספר צוות</TableHead>
                 <TableHead className="text-center">פלוגה</TableHead>
                 <TableHead className="text-center">איש קשר</TableHead>
@@ -140,75 +162,95 @@ export default function ManageSquads() {
                 {isAdmin && <TableHead className="text-center">פעולות</TableHead>}
               </TableRow>
             </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-8 text-slate-400">
-                    טוען...
-                  </TableCell>
-                </TableRow>
-              ) : squads.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-8 text-slate-400">
-                    עדיין לא נוספו צוותים
-                  </TableCell>
-                </TableRow>
-              ) : (
-                squads.map((squad) => (
-                  <TableRow key={squad.id} className="hover:bg-slate-50/50 [&_td]:text-center">
-                    <TableCell className="font-medium text-center">
-                      <div className="flex flex-row-reverse items-center justify-between gap-2">
-                        <span className="flex-1 text-center">{squad.squad_number}</span>
-                        <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                          <Users className="w-4 h-4 text-teal-600" />
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center text-slate-600">
-                      {squad.platoon_name}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {squad.contact ? (
-                        <a
-                          href={`tel:${squad.contact}`}
-                          className="flex flex-row-reverse items-center justify-center gap-2 text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
-                        >
-                          <Phone className="w-4 h-4" />
-                          <span dir="ltr">{squad.contact}</span>
-                        </a>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-slate-500 max-w-xs truncate">
-                      {squad.notes || '—'}
-                    </TableCell>
-                    {isAdmin && (
-                      <TableCell className="text-center">
-                        <div className="flex justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(squad)}
-                            className="text-slate-400 hover:text-slate-600"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteMutation.mutate(squad.id)}
-                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="squads">
+                {(provided) => (
+                  <TableBody {...provided.droppableProps} ref={provided.innerRef}>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={isAdmin ? 6 : 4} className="text-center py-8 text-slate-400">
+                          טוען...
+                        </TableCell>
+                      </TableRow>
+                    ) : squads.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={isAdmin ? 6 : 4} className="text-center py-8 text-slate-400">
+                          עדיין לא נוספו צוותים
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      squads.map((squad, index) => (
+                        <Draggable key={squad.id} draggableId={squad.id} index={index} isDragDisabled={!isAdmin}>
+                          {(provided, snapshot) => (
+                            <TableRow
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={`hover:bg-slate-50/50 [&_td]:text-center ${snapshot.isDragging ? 'bg-slate-100' : ''}`}
+                            >
+                              {isAdmin && (
+                                <TableCell {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
+                                  <GripVertical className="w-4 h-4 text-slate-400 mx-auto" />
+                                </TableCell>
+                              )}
+                              <TableCell className="font-medium text-center">
+                                <div className="flex flex-row-reverse items-center justify-between gap-2">
+                                  <span className="flex-1 text-center">{squad.squad_number}</span>
+                                  <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                                    <Users className="w-4 h-4 text-teal-600" />
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-center text-slate-600">
+                                {squad.platoon_name}
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {squad.contact ? (
+                                  <a
+                                    href={`tel:${squad.contact}`}
+                                    className="flex flex-row-reverse items-center justify-center gap-2 text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
+                                  >
+                                    <Phone className="w-4 h-4" />
+                                    <span dir="ltr">{squad.contact}</span>
+                                  </a>
+                                ) : (
+                                  <span className="text-slate-400">—</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-slate-500 max-w-xs truncate">
+                                {squad.notes || '—'}
+                              </TableCell>
+                              {isAdmin && (
+                                <TableCell className="text-center">
+                                  <div className="flex justify-center gap-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => handleEdit(squad)}
+                                      className="text-slate-400 hover:text-slate-600"
+                                    >
+                                      <Edit2 className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => deleteMutation.mutate(squad.id)}
+                                      className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              )}
+                            </TableRow>
+                          )}
+                        </Draggable>
+                      ))
                     )}
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
+                    {provided.placeholder}
+                  </TableBody>
+                )}
+              </Droppable>
+            </DragDropContext>
           </Table>
         </Card>
       </div>

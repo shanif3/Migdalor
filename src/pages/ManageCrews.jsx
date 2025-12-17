@@ -21,9 +21,10 @@ import {
   TableHeader,
   TableRow } from
 "@/components/ui/table";
-import { Plus, Users, Trash2, Edit2, Phone } from 'lucide-react';
+import { Plus, Users, Trash2, Edit2, Phone, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function ManageCrews() {
   const [showModal, setShowModal] = useState(false);
@@ -40,7 +41,10 @@ export default function ManageCrews() {
 
   const { data: crews = [], isLoading } = useQuery({
     queryKey: ['crews'],
-    queryFn: () => base44.entities.Crew.list()
+    queryFn: async () => {
+      const data = await base44.entities.Crew.list();
+      return data.sort((a, b) => (a.order || 0) - (b.order || 0));
+    }
   });
 
   const createMutation = useMutation({
@@ -92,6 +96,23 @@ export default function ManageCrews() {
     setFormData({ name: '', contact: '', notes: '' });
   };
 
+  const handleDragEnd = async (result) => {
+    if (!result.destination || !isAdmin) return;
+
+    const items = Array.from(crews);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Update order for all items
+    const updates = items.map((item, index) => 
+      base44.entities.Crew.update(item.id, { order: index })
+    );
+    
+    await Promise.all(updates);
+    queryClient.invalidateQueries({ queryKey: ['crews'] });
+    toast.success('הסדר עודכן');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -128,37 +149,51 @@ export default function ManageCrews() {
           <Table>
             <TableHeader>
             <TableRow className="bg-slate-50">
+                {isAdmin && <TableHead className="w-12"></TableHead>}
                 <TableHead className="text-muted-foreground mx-64 my-8 px-2 font-medium text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פלוגות</TableHead>
                 <TableHead className="h-1 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">איש קשר</TableHead>
                 <TableHead className="text-center">הערות</TableHead>
                 {isAdmin && <TableHead className="text-center">פעולות</TableHead>}
             </TableRow>
             </TableHeader>
-            <TableBody>
-              {isLoading ?
-              <TableRow>
-                  <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-slate-400">
-                    טוען...
-                  </TableCell>
-                </TableRow> :
-              crews.length === 0 ?
-              <TableRow>
-                  <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-slate-400">
-                    עדיין לא נוספו פלוגות
-                  </TableCell>
-                </TableRow> :
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="crews">
+                {(provided) => (
+                  <TableBody {...provided.droppableProps} ref={provided.innerRef}>
+                    {isLoading ?
+                    <TableRow>
+                        <TableCell colSpan={isAdmin ? 5 : 3} className="text-center py-8 text-slate-400">
+                          טוען...
+                        </TableCell>
+                      </TableRow> :
+                    crews.length === 0 ?
+                    <TableRow>
+                        <TableCell colSpan={isAdmin ? 5 : 3} className="text-center py-8 text-slate-400">
+                          עדיין לא נוספו פלוגות
+                        </TableCell>
+                      </TableRow> :
 
-              crews.map((crew) =>
-              <TableRow key={crew.id} className="hover:bg-slate-50/50 [&_td]:text-center">
-                    <TableCell className="font-medium text-center">
-  <div className="flex flex-row-reverse items-center justify-between gap-2">
-    
-    <span className="flex-1 text-center">{crew.name}</span>
-    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-      <Users className="w-4 h-4 text-indigo-600" />
-    </div>
-  </div>
-</TableCell>
+                    crews.map((crew, index) =>
+                    <Draggable key={crew.id} draggableId={crew.id} index={index} isDragDisabled={!isAdmin}>
+                        {(provided, snapshot) => (
+                          <TableRow
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={`hover:bg-slate-50/50 [&_td]:text-center ${snapshot.isDragging ? 'bg-slate-100' : ''}`}
+                          >
+                            {isAdmin && (
+                              <TableCell {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
+                                <GripVertical className="w-4 h-4 text-slate-400 mx-auto" />
+                              </TableCell>
+                            )}
+                            <TableCell className="font-medium text-center">
+                              <div className="flex flex-row-reverse items-center justify-between gap-2">
+                                <span className="flex-1 text-center">{crew.name}</span>
+                                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                  <Users className="w-4 h-4 text-indigo-600" />
+                                </div>
+                              </div>
+                            </TableCell>
                     <TableCell className="text-center">
                       {crew.contact ?
                   <a
@@ -197,10 +232,16 @@ export default function ManageCrews() {
                         </div>
                       </TableCell>
                 }
-                  </TableRow>
-              )
-              }
-            </TableBody>
+                          </TableRow>
+                        )}
+                      </Draggable>
+                    )
+                    }
+                    {provided.placeholder}
+                  </TableBody>
+                )}
+              </Droppable>
+            </DragDropContext>
           </Table>
         </Card>
       </div>
