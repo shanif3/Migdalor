@@ -106,7 +106,7 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
               size="sm"
               className="text-slate-500 text-xs w-full"
               onClick={() => setUseExisting(true)}>
-                או הזן שם ידנית
+                 הזן שם ידנית
               </Button>
             </div> :
 
