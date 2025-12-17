@@ -48,8 +48,13 @@ export default function Dashboard() {
     }
   });
 
-  // Get current key holder for a room
+  // Get current key holder for a room (considering time filter if active)
   const getCurrentHolder = (roomNumber) => {
+    // If time filter is active, don't show current holder
+    if (timeFilter.start && timeFilter.end) {
+      return null;
+    }
+    
     const now = new Date();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     
@@ -323,6 +328,8 @@ export default function Dashboard() {
                   crews={crews}
                   currentUser={user}
                   currentHolder={getCurrentHolder(key.room_number)}
+                  isAvailableInTimeRange={isKeyAvailableInTimeRange(key)}
+                  timeFilterActive={!!(timeFilter.start && timeFilter.end)}
                   onCheckout={(key) => {
                     setCheckoutKey({ 
                       ...key, 

@@ -6,10 +6,11 @@ import { Key, User, Clock, ArrowRight, Monitor } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
-export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentUser, currentHolder }) {
-  const isAvailable = keyItem.status === 'available' && !currentHolder;
+export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentUser, currentHolder, isAvailableInTimeRange, timeFilterActive }) {
+  // If time filter is active, use time-range availability, otherwise use current status
+  const isAvailable = timeFilterActive ? isAvailableInTimeRange : (keyItem.status === 'available' && !currentHolder);
   const isAdmin = currentUser?.role === 'admin';
-  const canReturn = isAvailable || isAdmin || keyItem.checked_out_by === currentUser?.email;
+  const canReturn = !timeFilterActive && (!isAvailable && (isAdmin || keyItem.checked_out_by === currentUser?.email));
   const displayHolder = currentHolder || keyItem.current_holder;
   
   return (
