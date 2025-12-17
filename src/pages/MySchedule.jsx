@@ -62,6 +62,16 @@ export default function MySchedule() {
     enabled: !!user
   });
 
+  const { data: crews = [] } = useQuery({
+    queryKey: ['crews'],
+    queryFn: () => base44.entities.Crew.list('order')
+  });
+
+  const { data: squads = [] } = useQuery({
+    queryKey: ['squads'],
+    queryFn: () => base44.entities.Squad.list('order')
+  });
+
   const { data: allDayLessons = [] } = useQuery({
     queryKey: ['all-day-lessons', selectedDate],
     queryFn: () => base44.entities.Lesson.filter({
