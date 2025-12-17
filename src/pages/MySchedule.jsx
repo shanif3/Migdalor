@@ -75,13 +75,13 @@ export default function MySchedule() {
   });
 
   // Filter crews and squads based on user's platoon
-  const filteredCrews = user?.platoon_name 
-    ? crews.filter(crew => crew.name === user.platoon_name)
-    : crews;
-  
-  const filteredSquads = user?.platoon_name
-    ? squads.filter(squad => squad.platoon_name === user.platoon_name)
-    : squads;
+  const filteredCrews = user?.platoon_name ?
+  crews.filter((crew) => crew.name === user.platoon_name) :
+  crews;
+
+  const filteredSquads = user?.platoon_name ?
+  squads.filter((squad) => squad.platoon_name === user.platoon_name) :
+  squads;
 
   const { data: allDayLessons = [] } = useQuery({
     queryKey: ['all-day-lessons', selectedDate],
@@ -144,8 +144,8 @@ export default function MySchedule() {
       // Otherwise, use automatic assignment logic
       // Get only my lessons for this room
       const myLessons = allUsersLessons.filter((lesson) =>
-        lesson.crew_manager === user.email && 
-        lesson.assigned_key === key.room_number
+      lesson.crew_manager === user.email &&
+      lesson.assigned_key === key.room_number
       );
 
       myLessons.forEach((myLesson) => {
@@ -153,9 +153,9 @@ export default function MySchedule() {
 
         // Check if there's another crew that took this key after me
         const nextLesson = allUsersLessons.find((lesson) =>
-          lesson.assigned_key === myLesson.assigned_key &&
-          lesson.crew_manager !== user.email &&
-          lesson.start_time >= myLesson.end_time
+        lesson.assigned_key === myLesson.assigned_key &&
+        lesson.crew_manager !== user.email &&
+        lesson.start_time >= myLesson.end_time
         );
 
         // If no one took the key after me, I need to clean it
@@ -365,7 +365,7 @@ export default function MySchedule() {
       });
     } else {
       // Check if it's a platoon (crew) with multiple rooms
-      const isPlatoon = filteredCrews.some(c => c.name === formData.crew_name);
+      const isPlatoon = filteredCrews.some((c) => c.name === formData.crew_name);
       const roomCount = isPlatoon && formData.room_count > 1 ? formData.room_count : 1;
 
       createMutation.mutate({
@@ -430,8 +430,8 @@ export default function MySchedule() {
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             לוח הזמנים של {user?.platoon_name || 'הפלוגה'} 📅
           </h1>
-          <p className="text-slate-500">
-            לוח זמנים משותף לכל קה"דים באותה פלוגה
+          <p className="text-slate-500">הגש את לוח הזמנים שלך להקצאת מפתחות
+
           </p>
         </motion.div>
 
@@ -465,9 +465,9 @@ export default function MySchedule() {
                       <div className="flex items-center gap-2 text-orange-800 mb-1">
                         <Key className="w-5 h-5" />
                         <span className="text-xl font-bold">חדר {assignment.roomNumber}</span>
-                        {assignment.manual && (
-                          <span className="text-xs bg-orange-200 px-2 py-0.5 rounded">ידני</span>
-                        )}
+                        {assignment.manual &&
+                    <span className="text-xs bg-orange-200 px-2 py-0.5 rounded">ידני</span>
+                    }
                       </div>
                       <p className="text-xs text-orange-600">
                         {assignment.manual ? 'הקצאה ידנית' : `סיום בשעה ${assignment.endTime}`}
@@ -763,24 +763,24 @@ export default function MySchedule() {
             </div>
 
             {/* Room Count - only for platoons when not editing */}
-            {!editingLesson && filteredCrews.some(c => c.name === formData.crew_name) && (
-              <div className="space-y-2">
+            {!editingLesson && filteredCrews.some((c) => c.name === formData.crew_name) &&
+            <div className="space-y-2">
                 <Label className="text-sm font-medium">כמות כיתות</Label>
                 <Input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={formData.room_count}
-                  onChange={(e) => setFormData({ ...formData, room_count: parseInt(e.target.value) || 1 })}
-                  className="text-right"
-                />
-                {formData.room_count > 1 && (
-                  <p className="text-xs text-blue-600">
+                type="number"
+                min="1"
+                max="10"
+                value={formData.room_count}
+                onChange={(e) => setFormData({ ...formData, room_count: parseInt(e.target.value) || 1 })}
+                className="text-right" />
+
+                {formData.room_count > 1 &&
+              <p className="text-xs text-blue-600">
                     יווצרו {formData.room_count} שיעורים בחדרים צוותיים
                   </p>
-                )}
+              }
               </div>
-            )}
+            }
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
