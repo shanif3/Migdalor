@@ -179,21 +179,20 @@ export default function MySchedule() {
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
 
-    // Find who we receive from - lesson that ends exactly when this one starts
-    const previousLesson = allDayLessons.find((l) =>
-    l.assigned_key === lesson.assigned_key &&
-    l.id !== lesson.id &&
-    l.platoon_name !== lesson.platoon_name &&
-    l.end_time === lesson.start_time
-    );
+    // Get all lessons for the same room, sorted by start time
+    const roomLessons = allDayLessons
+      .filter((l) => l.assigned_key === lesson.assigned_key && l.id !== lesson.id)
+      .sort((a, b) => a.start_time.localeCompare(b.start_time));
 
-    // Find who we pass to - lesson that starts exactly when this one ends
-    const nextLesson = allDayLessons.find((l) =>
-    l.assigned_key === lesson.assigned_key &&
-    l.id !== lesson.id &&
-    l.platoon_name !== lesson.platoon_name &&
-    l.start_time === lesson.end_time
-    );
+    // Find the lesson immediately before this one (ends when or before this starts)
+    const previousLesson = roomLessons
+      .filter((l) => l.end_time <= lesson.start_time && l.platoon_name !== lesson.platoon_name)
+      .sort((a, b) => b.end_time.localeCompare(a.end_time))[0];
+
+    // Find the lesson immediately after this one (starts when or after this ends)
+    const nextLesson = roomLessons
+      .filter((l) => l.start_time >= lesson.end_time && l.platoon_name !== lesson.platoon_name)
+      .sort((a, b) => a.start_time.localeCompare(b.start_time))[0];
 
     const receiveFrom = previousLesson?.platoon_name || null;
     const passTo = nextLesson?.platoon_name || null;
