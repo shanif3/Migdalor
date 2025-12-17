@@ -392,14 +392,20 @@ export default function ManageKeys() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label className="text-right block">שם הפלוגה האחראית</Label>
-              <Input
-                placeholder="הזן שם פלוגה או השאר ריק לחזור לחישוב אוטומטי"
+              <select
                 value={misdarValue}
                 onChange={(e) => setMisdarValue(e.target.value)}
-                className="text-right"
-              />
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="">חישוב אוטומטי</option>
+                <option value="פלוגה א - סהר">פלוגה א - סהר</option>
+                <option value="פלוגה ב - יפתח">פלוגה ב - יפתח</option>
+                <option value="פלוגה ג - אייל">פלוגה ג - אייל</option>
+                <option value="פלוגה ד - אסף">פלוגה ד - אסף</option>
+                <option value="פלוגה ה - איתן">פלוגה ה - איתן</option>
+              </select>
               <p className="text-xs text-slate-500 text-right">
-                השאר ריק כדי להשתמש בחישוב אוטומטי לפי לוח השיעורים ביום רביעי
+                בחר "חישוב אוטומטי" כדי להשתמש בחישוב לפי לוח השיעורים ביום רביעי
               </p>
             </div>
           </div>
