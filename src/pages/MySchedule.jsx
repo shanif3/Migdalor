@@ -73,6 +73,15 @@ export default function MySchedule() {
     queryFn: () => base44.entities.Squad.list('order')
   });
 
+  // Filter crews and squads based on user's platoon
+  const filteredCrews = user?.platoon_name 
+    ? crews.filter(crew => crew.name === user.platoon_name)
+    : crews;
+  
+  const filteredSquads = user?.platoon_name
+    ? squads.filter(squad => squad.platoon_name === user.platoon_name)
+    : squads;
+
   const { data: allDayLessons = [] } = useQuery({
     queryKey: ['all-day-lessons', selectedDate],
     queryFn: () => base44.entities.Lesson.filter({
@@ -672,13 +681,13 @@ export default function MySchedule() {
                 <option value="">בחר פלוגה או צוות...</option>
                 
                 <optgroup label="פלוגות">
-                  {crews.map((crew) =>
+                  {filteredCrews.map((crew) =>
                   <option key={crew.id} value={crew.name}>{crew.name}</option>
                   )}
                 </optgroup>
                 
                 <optgroup label="צוותים">
-                  {squads.map((squad) =>
+                  {filteredSquads.map((squad) =>
                   <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>
