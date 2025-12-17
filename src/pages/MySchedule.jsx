@@ -593,12 +593,12 @@ export default function MySchedule() {
 
                     return (
                       <div className="flex flex-col gap-1 items-center">
-                            {handoff.receiveFrom &&
+                            {handoff.receiveFrom && handoff.receiveFrom.platoon &&
                         <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
                                 🔽 מקבל מ{handoff.receiveFrom.platoon}
                               </Badge>
                         }
-                            {handoff.passTo &&
+                            {handoff.passTo && handoff.passTo.platoon &&
                         <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
                                 🔼 מעביר ל{handoff.passTo.platoon}
                               </Badge>
