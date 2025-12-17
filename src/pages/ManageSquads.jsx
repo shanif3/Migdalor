@@ -118,6 +118,21 @@ export default function ManageSquads() {
     toast.success('הסדר עודכן');
   };
 
+  // Get unique platoon names and assign colors
+  const getPlatoonColor = (platoonName) => {
+    const colors = [
+      { bg: 'bg-blue-100', text: 'text-blue-700', icon: 'bg-blue-200', iconText: 'text-blue-700' },
+      { bg: 'bg-purple-100', text: 'text-purple-700', icon: 'bg-purple-200', iconText: 'text-purple-700' },
+      { bg: 'bg-green-100', text: 'text-green-700', icon: 'bg-green-200', iconText: 'text-green-700' },
+      { bg: 'bg-orange-100', text: 'text-orange-700', icon: 'bg-orange-200', iconText: 'text-orange-700' },
+      { bg: 'bg-pink-100', text: 'text-pink-700', icon: 'bg-pink-200', iconText: 'text-pink-700' },
+    ];
+    
+    const uniquePlatoons = [...new Set(squads.map(s => s.platoon_name))].sort();
+    const index = uniquePlatoons.indexOf(platoonName);
+    return colors[index % colors.length];
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -195,13 +210,15 @@ export default function ManageSquads() {
                               <TableCell className="font-medium text-center">
                                 <div className="flex flex-row-reverse items-center justify-between gap-2">
                                   <span className="flex-1 text-center">{squad.squad_number}</span>
-                                  <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                                    <Users className="w-4 h-4 text-teal-600" />
+                                  <div className={`w-8 h-8 rounded-full ${getPlatoonColor(squad.platoon_name).icon} flex items-center justify-center flex-shrink-0`}>
+                                    <Users className={`w-4 h-4 ${getPlatoonColor(squad.platoon_name).iconText}`} />
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell className="text-center text-slate-600">
-                                {squad.platoon_name}
+                              <TableCell className="text-center">
+                                <span className={`inline-block px-3 py-1 rounded-full font-medium ${getPlatoonColor(squad.platoon_name).bg} ${getPlatoonColor(squad.platoon_name).text}`}>
+                                  {squad.platoon_name}
+                                </span>
                               </TableCell>
                               <TableCell className="text-center">
                                 {squad.contact ? (
