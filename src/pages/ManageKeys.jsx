@@ -51,6 +51,28 @@ export default function ManageKeys() {
     queryFn: () => base44.entities.ClassroomKey.list()
   });
 
+  const { data: todayLessons = [] } = useQuery({
+    queryKey: ['today-lessons'],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      return base44.entities.Lesson.filter({ date: today, status: 'assigned' });
+    }
+  });
+
+  // Get current key holder for a room
+  const getCurrentHolder = (roomNumber) => {
+    const now = new Date();
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    const currentLesson = todayLessons.find(lesson => 
+      lesson.assigned_key === roomNumber &&
+      lesson.start_time <= currentTime &&
+      lesson.end_time > currentTime
+    );
+    
+    return currentLesson ? currentLesson.crew_name : null;
+  };
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.ClassroomKey.create(data),
     onSuccess: () => {
@@ -155,21 +177,22 @@ export default function ManageKeys() {
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מספר חדר</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סוג</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחשבים</TableHead>
-                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס</TableHead>
-                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחזיק נוכחי</TableHead>
-                <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס / מחזיק</TableHead>
+                {isAdmin && (
+                  <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ?
               <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow> :
               keys.length === 0 ?
               <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-8 text-slate-400">
                     עדיין לא נוספו מפתחות
                   </TableCell>
                 </TableRow> :
@@ -199,39 +222,42 @@ export default function ManageKeys() {
                   }
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-                      <Badge className={
-                  key.status === 'available' ?
-                  'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' :
-                  'bg-amber-100 text-amber-700 hover:bg-amber-100'
-                  }>
-                        {key.status === 'available' ? 'זמין' : 'תפוס'}
-                      </Badge>
+                      {(() => {
+                        const holder = getCurrentHolder(key.room_number);
+                        return holder ? (
+                          <div className="flex flex-col items-center gap-1">
+                            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
+                              תפוס
+                            </Badge>
+                            <span className="text-xs text-slate-600">{holder}</span>
+                          </div>
+                        ) : (
+                          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                            זמין
+                          </Badge>
+                        );
+                      })()}
                     </TableCell>
-                    <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-slate-500">
-                      {key.current_holder || '—'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {isAdmin &&
-                  <div className="flex justify-center gap-2">
+                    {isAdmin && (
+                      <TableCell className="text-right">
+                        <div className="flex justify-center gap-2">
                           <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(key)}
-                      className="text-slate-400 hover:text-slate-600">
-
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(key)}
+                            className="text-slate-400 hover:text-slate-600">
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMutation.mutate(key.id)}
-                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
-
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(key.id)}
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                  }
-                    </TableCell>
+                      </TableCell>
+                    )}
                   </TableRow>
               )
               }
