@@ -41,6 +41,7 @@ export default function MySchedule() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [formData, setFormData] = useState({
     crew_name: '',
+    platoon_name: '',
     start_time: '',
     end_time: '',
     room_type_needed: 'צוותי',
@@ -175,6 +176,7 @@ export default function MySchedule() {
       setEditingLesson(null);
       setFormData({
         crew_name: '',
+        platoon_name: '',
         start_time: '',
         end_time: '',
         room_type_needed: 'צוותי',
@@ -264,6 +266,7 @@ export default function MySchedule() {
       setEditingLesson(null);
       setFormData({
         crew_name: '',
+        platoon_name: '',
         start_time: '',
         end_time: '',
         room_type_needed: 'צוותי',
@@ -308,6 +311,7 @@ export default function MySchedule() {
     setEditingLesson(lesson);
     setFormData({
       crew_name: lesson.crew_name,
+      platoon_name: lesson.platoon_name || '',
       start_time: lesson.start_time,
       end_time: lesson.end_time,
       room_type_needed: lesson.room_type_needed,
@@ -653,7 +657,15 @@ export default function MySchedule() {
                 value={formData.crew_name}
                 onChange={(e) => {
                   const selectedValue = e.target.value;
-                  setFormData({ ...formData, crew_name: selectedValue });
+                  
+                  // Check if a squad was selected and auto-fill platoon name
+                  const selectedSquad = squads.find(s => s.squad_number === selectedValue);
+                  
+                  setFormData({ 
+                    ...formData, 
+                    crew_name: selectedValue,
+                    platoon_name: selectedSquad ? selectedSquad.platoon_name : ''
+                  });
                 }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
               >
