@@ -274,7 +274,7 @@ export default function ManageSquads() {
             <div className="space-y-2">
               <Label className="text-right block">מספר צוות</Label>
               <Input
-                placeholder="למשל, צוות 1..."
+                placeholder="למשל, צוות 5..."
                 value={formData.squad_number}
                 onChange={(e) => setFormData({ ...formData, squad_number: e.target.value })}
                 className="text-right"
