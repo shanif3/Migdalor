@@ -80,9 +80,18 @@ export default function MySchedule() {
     enabled: !!selectedDate && new Date(selectedDate).getDay() === 3 // רק ביום רביעי
   });
 
-  // Get classroom assignments for Misdar (Wednesday only)
+  // Get classroom assignments for Misdar (Wednesday only, from 9:00 AM)
   const getMyMisdarAssignments = () => {
-    if (new Date(selectedDate).getDay() !== 3 || !user?.email) return null;
+    const selectedDay = new Date(selectedDate);
+    const now = new Date();
+    const currentHour = now.getHours();
+    
+    // Only show on Wednesday from 9:00 AM onwards
+    if (selectedDay.getDay() !== 3 || !user?.email) return null;
+    
+    // If it's today (Wednesday), only show from 9:00 AM
+    const isToday = selectedDate === now.toISOString().split('T')[0];
+    if (isToday && currentHour < 9) return null;
 
     // Get only my lessons for the day
     const myLessons = allUsersLessons.filter(lesson => 
@@ -357,6 +366,9 @@ export default function MySchedule() {
                     <h3 className="font-bold text-orange-900 text-lg">מסדר כיתות - יום רביעי 22:00</h3>
                     <p className="text-sm text-orange-700">
                       הפלוגה שלך מנקה את כל החדרים שהמפתחות נשארו אצלכם ({myMisdarAssignments.length} חדרים)
+                    </p>
+                    <p className="text-xs text-orange-600 mt-1">
+                      מתעדכן ביום רביעי בשעה 9:00 בבוקר
                     </p>
                   </div>
                 </div>
