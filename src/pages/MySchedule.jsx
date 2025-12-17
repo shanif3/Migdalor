@@ -81,7 +81,7 @@ export default function MySchedule() {
   });
 
   // Get classroom assignments for Misdar (Wednesday only)
-  const getMyMisdarAssignment = () => {
+  const getMyMisdarAssignments = () => {
     if (new Date(selectedDate).getDay() !== 3 || !user?.email) return null;
 
     // Get only my lessons for the day
@@ -91,17 +91,35 @@ export default function MySchedule() {
 
     if (myLessons.length === 0) return null;
 
-    // Already sorted by -end_time, so first one is the last lesson
-    const lastLesson = myLessons[0];
-    
-    return {
-      crewName: lastLesson.crew_name,
-      roomNumber: lastLesson.assigned_key,
-      endTime: lastLesson.end_time
-    };
+    // For each of my lessons, check if the key was passed to another crew
+    const roomsToClean = [];
+    const seenRooms = new Set();
+
+    myLessons.forEach(myLesson => {
+      if (seenRooms.has(myLesson.assigned_key)) return;
+      
+      // Check if there's another crew that took this key after me
+      const nextLesson = allUsersLessons.find(lesson => 
+        lesson.assigned_key === myLesson.assigned_key &&
+        lesson.crew_manager !== user.email &&
+        lesson.start_time >= myLesson.end_time
+      );
+
+      // If no one took the key after me, I need to clean it
+      if (!nextLesson) {
+        roomsToClean.push({
+          roomNumber: myLesson.assigned_key,
+          crewName: myLesson.crew_name,
+          endTime: myLesson.end_time
+        });
+        seenRooms.add(myLesson.assigned_key);
+      }
+    });
+
+    return roomsToClean.length > 0 ? roomsToClean : null;
   };
 
-  const myMisdarAssignment = getMyMisdarAssignment();
+  const myMisdarAssignments = getMyMisdarAssignments();
 
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
@@ -324,7 +342,7 @@ export default function MySchedule() {
         </motion.div>
 
         {/* Misdar Kitot Alert - Wednesday Only */}
-        {myMisdarAssignment && (
+        {myMisdarAssignments && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -338,21 +356,24 @@ export default function MySchedule() {
                   </div>
                   <div>
                     <h3 className="font-bold text-orange-900 text-lg">מסדר כיתות - יום רביעי 22:00</h3>
-                    <p className="text-sm text-orange-700">הפלוגה שלך מנקה את הכיתה שסיימה איתה את הלוז</p>
+                    <p className="text-sm text-orange-700">
+                      הפלוגה שלך מנקה את כל החדרים שהמפתחות נשארו אצלכם ({myMisdarAssignments.length} חדרים)
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-lg bg-orange-100 border-2 border-orange-400">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-semibold text-orange-900">{myMisdarAssignment.crewName}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-orange-800">
-                    <Key className="w-4 h-4" />
-                    <span className="text-lg font-bold">חדר {myMisdarAssignment.roomNumber}</span>
-                  </div>
-                  <p className="text-xs text-orange-600 mt-1">
-                    סיום בשעה {myMisdarAssignment.endTime}
-                  </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {myMisdarAssignments.map((assignment, idx) => (
+                    <div key={idx} className="p-4 rounded-lg bg-orange-100 border-2 border-orange-400">
+                      <div className="flex items-center gap-2 text-orange-800 mb-1">
+                        <Key className="w-5 h-5" />
+                        <span className="text-xl font-bold">חדר {assignment.roomNumber}</span>
+                      </div>
+                      <p className="text-xs text-orange-600">
+                        סיום בשעה {assignment.endTime}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </Card>
