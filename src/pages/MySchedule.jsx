@@ -56,12 +56,12 @@ export default function MySchedule() {
   }, []);
 
   const { data: lessons = [], isLoading } = useQuery({
-    queryKey: ['my-lessons', user?.email, selectedDate],
+    queryKey: ['my-lessons', user?.platoon_name, selectedDate],
     queryFn: () => base44.entities.Lesson.filter({
-      crew_manager: user?.email,
+      platoon_name: user?.platoon_name,
       date: selectedDate
     }, 'start_time'),
-    enabled: !!user
+    enabled: !!user?.platoon_name
   });
 
   const { data: crews = [] } = useQuery({
@@ -415,10 +415,10 @@ export default function MySchedule() {
           className="mb-8">
 
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            לוח הזמנים שלי 📅
+            לוח הזמנים של {user?.platoon_name || 'הפלוגה'} 📅
           </h1>
           <p className="text-slate-500">
-            הגש את לוח הזמנים שלך להקצאת מפתחות
+            לוח זמנים משותף לכל קה"דים באותה פלוגה
           </p>
         </motion.div>
 
@@ -607,8 +607,7 @@ export default function MySchedule() {
                       variant="ghost"
                       size="icon"
                       onClick={() => deleteMutation.mutate(lesson.id)}
-                      disabled={lesson.status === 'assigned'}
-                      className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50">
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
