@@ -19,14 +19,14 @@ export default function Layout({ children, currentPageName }) {
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard' },
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
-    { name: 'צוותים', icon: Users, page: 'ManageCrews' },
+    { name: 'פלוגות', icon: Users, page: 'ManageCrews' },
   ];
 
   const userNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard' },
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
-    { name: 'צוותים', icon: Users, page: 'ManageCrews' },
+    { name: 'פלוגות', icon: Users, page: 'ManageCrews' },
   ];
 
   const navItems = isAdmin ? adminNavItems : userNavItems;
