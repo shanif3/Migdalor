@@ -56,12 +56,12 @@ export default function MySchedule() {
   }, []);
 
   const { data: lessons = [], isLoading } = useQuery({
-    queryKey: ['my-lessons', user?.platoon_name, selectedDate],
+    queryKey: ['my-lessons', user?.email, selectedDate],
     queryFn: () => base44.entities.Lesson.filter({
-      platoon_name: user?.platoon_name,
+      crew_manager: user?.email,
       date: selectedDate
     }, 'start_time'),
-    enabled: !!user?.platoon_name
+    enabled: !!user?.email
   });
 
   const { data: crews = [] } = useQuery({
