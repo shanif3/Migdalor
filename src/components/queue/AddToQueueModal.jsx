@@ -19,7 +19,7 @@ import {
 "@/components/ui/select";
 import { Clock, Users } from 'lucide-react';
 
-export default function AddToQueueModal({ open, onClose, crews, squads, onConfirm }) {
+export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
   const [crewName, setCrewName] = useState('');
   const [preferredType, setPreferredType] = useState('any');
   const [notes, setNotes] = useState('');
@@ -68,54 +68,50 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {!useExisting ?
+          {crews.length > 0 && useExisting ?
           <div className="space-y-2">
-              <Label className="text-sm font-medium text-right block">החדר עבור *</Label>
-              <select
-                value={crewName}
-                onChange={(e) => setCrewName(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
-
-                <option value="">בחר פלוגה או צוות...</option>
-                
-                <optgroup label="פלוגות">
-                  {crews?.map((crew) =>
-                    <option key={crew.id} value={crew.name}>{crew.name}</option>
-                  )}
-                </optgroup>
-                
-                <optgroup label="צוותים">
-                  {squads?.map((squad) =>
-                    <option key={squad.id} value={squad.squad_number}>
-                      {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
-                    </option>
-                  )}
-                </optgroup>
-              </select>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">החדר עבור *</Label>
+              <Select value={crewName} onValueChange={setCrewName}>
+                <SelectTrigger className="text-right" dir="rtl">
+                  <SelectValue placeholder="בחר צוות..." className="text-right" />
+                </SelectTrigger>
+                <SelectContent align="end" dir="rtl">
+                  {crews.map((crew) =>
+                <SelectItem key={crew.id} value={crew.name}>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-slate-400" />
+                        {crew.name}
+                      </div>
+                    </SelectItem>
+                )}
+                </SelectContent>
+              </Select>
               <Button
-                variant="ghost"
-                size="sm"
-                className="text-slate-500 text-xs"
-                onClick={() => setUseExisting(true)}>
+              variant="ghost"
+              size="sm"
+              className="text-slate-500 text-xs w-full"
+              onClick={() => setUseExisting(false)}>
                 או הזן שם ידנית
               </Button>
             </div> :
 
           <div className="space-y-2">
-              <Label className="text-sm font-medium text-right block">שם הצוות</Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">החדר עבור *</Label>
               <Input
-                placeholder="למשל, סגל"
-                value={crewName}
-                onChange={(e) => setCrewName(e.target.value)}
-                className="text-right" />
+              placeholder="הזן שם צוות..."
+              value={crewName}
+              onChange={(e) => setCrewName(e.target.value)}
+              className="text-right" />
 
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-slate-500 text-xs"
-                onClick={() => setUseExisting(false)}>
-                בחר מצוותים קיימים
-              </Button>
+              {crews.length > 0 &&
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-500 text-xs w-full"
+              onClick={() => setUseExisting(true)}>
+                  בחר מצוותים קיימים
+                </Button>
+            }
             </div>
           }
 
