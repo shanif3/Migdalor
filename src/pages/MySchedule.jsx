@@ -71,6 +71,52 @@ export default function MySchedule() {
     enabled: !!selectedDate
   });
 
+  const { data: allUsersLessons = [] } = useQuery({
+    queryKey: ['all-users-lessons', selectedDate],
+    queryFn: () => base44.entities.Lesson.filter({
+      date: selectedDate,
+      status: 'assigned'
+    }, '-end_time'),
+    enabled: !!selectedDate && new Date(selectedDate).getDay() === 3 // רק ביום רביעי
+  });
+
+  // Get classroom assignments for Misdar (Wednesday only)
+  const getMisdarAssignments = () => {
+    if (new Date(selectedDate).getDay() !== 3) return null;
+
+    // Group lessons by crew_manager
+    const byManager = {};
+    allUsersLessons.forEach(lesson => {
+      if (!lesson.assigned_key) return;
+      
+      const manager = lesson.crew_manager;
+      if (!byManager[manager]) {
+        byManager[manager] = [];
+      }
+      byManager[manager].push(lesson);
+    });
+
+    // For each manager, find the last lesson of the day (latest end_time)
+    const assignments = [];
+    Object.keys(byManager).forEach(manager => {
+      const managerLessons = byManager[manager];
+      // Already sorted by -end_time, so first one is the last lesson
+      const lastLesson = managerLessons[0];
+      
+      assignments.push({
+        manager: manager,
+        crewName: lastLesson.crew_name,
+        roomNumber: lastLesson.assigned_key,
+        endTime: lastLesson.end_time,
+        isMyAssignment: manager === user?.email
+      });
+    });
+
+    return assignments;
+  };
+
+  const misdarAssignments = getMisdarAssignments();
+
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
     
@@ -290,6 +336,56 @@ export default function MySchedule() {
             הגש את לוח הזמנים שלך להקצאת מפתחות
           </p>
         </motion.div>
+
+        {/* Misdar Kitot Alert - Wednesday Only */}
+        {misdarAssignments && misdarAssignments.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <Card className="border-orange-200 bg-orange-50">
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                    🧹
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-orange-900 text-lg">מסדר כיתות - יום רביעי 22:00</h3>
+                    <p className="text-sm text-orange-700">כל פלוגה מנקה את הכיתה שסיימה איתה את הלוז</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {misdarAssignments.map((assignment, idx) => (
+                    <div 
+                      key={idx}
+                      className={`p-4 rounded-lg border-2 ${
+                        assignment.isMyAssignment 
+                          ? 'bg-orange-100 border-orange-400' 
+                          : 'bg-white border-orange-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        {assignment.isMyAssignment && (
+                          <Badge className="bg-orange-600 text-white hover:bg-orange-600">אתה</Badge>
+                        )}
+                        <span className="font-semibold text-orange-900">{assignment.crewName}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-orange-800">
+                        <Key className="w-4 h-4" />
+                        <span className="text-lg font-bold">חדר {assignment.roomNumber}</span>
+                      </div>
+                      <p className="text-xs text-orange-600 mt-1">
+                        סיום בשעה {assignment.endTime}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Date Selector */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
