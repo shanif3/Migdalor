@@ -100,6 +100,11 @@ export default function MySchedule() {
     enabled: !!selectedDate && new Date(selectedDate).getDay() === 3 // רק ביום רביעי
   });
 
+  const { data: allKeys = [] } = useQuery({
+    queryKey: ['keys'],
+    queryFn: () => base44.entities.ClassroomKey.list()
+  });
+
   // Get classroom assignments for Misdar (Wednesday only, from 9:00 AM)
   const getMyMisdarAssignments = () => {
     const selectedDay = new Date(selectedDate);
@@ -107,42 +112,62 @@ export default function MySchedule() {
     const currentHour = now.getHours();
 
     // Only show on Wednesday from 9:00 AM onwards
-    if (selectedDay.getDay() !== 3 || !user?.email) return null;
+    if (selectedDay.getDay() !== 3 || !user?.email || !user?.platoon_name) return null;
 
     // If it's today (Wednesday), only show from 9:00 AM
     const isToday = selectedDate === now.toISOString().split('T')[0];
     if (isToday && currentHour < 9) return null;
 
-    // Get only my lessons for the day
-    const myLessons = allUsersLessons.filter((lesson) =>
-    lesson.crew_manager === user.email && lesson.assigned_key
-    );
-
-    if (myLessons.length === 0) return null;
-
-    // For each of my lessons, check if the key was passed to another crew
     const roomsToClean = [];
     const seenRooms = new Set();
 
-    myLessons.forEach((myLesson) => {
-      if (seenRooms.has(myLesson.assigned_key)) return;
+    // Check all keys for manual assignments or automatic assignments
+    allKeys.forEach((key) => {
+      if (seenRooms.has(key.room_number)) return;
 
-      // Check if there's another crew that took this key after me
-      const nextLesson = allUsersLessons.find((lesson) =>
-      lesson.assigned_key === myLesson.assigned_key &&
-      lesson.crew_manager !== user.email &&
-      lesson.start_time >= myLesson.end_time
+      // Check if there's a manual assignment for this room
+      if (key.manual_misdar_assignment) {
+        // If manual assignment matches my platoon, I'm responsible
+        if (key.manual_misdar_assignment === user.platoon_name) {
+          roomsToClean.push({
+            roomNumber: key.room_number,
+            crewName: user.platoon_name,
+            endTime: '—',
+            manual: true
+          });
+          seenRooms.add(key.room_number);
+        }
+        return;
+      }
+
+      // Otherwise, use automatic assignment logic
+      // Get only my lessons for this room
+      const myLessons = allUsersLessons.filter((lesson) =>
+        lesson.crew_manager === user.email && 
+        lesson.assigned_key === key.room_number
       );
 
-      // If no one took the key after me, I need to clean it
-      if (!nextLesson) {
-        roomsToClean.push({
-          roomNumber: myLesson.assigned_key,
-          crewName: myLesson.crew_name,
-          endTime: myLesson.end_time
-        });
-        seenRooms.add(myLesson.assigned_key);
-      }
+      myLessons.forEach((myLesson) => {
+        if (seenRooms.has(myLesson.assigned_key)) return;
+
+        // Check if there's another crew that took this key after me
+        const nextLesson = allUsersLessons.find((lesson) =>
+          lesson.assigned_key === myLesson.assigned_key &&
+          lesson.crew_manager !== user.email &&
+          lesson.start_time >= myLesson.end_time
+        );
+
+        // If no one took the key after me, I need to clean it
+        if (!nextLesson) {
+          roomsToClean.push({
+            roomNumber: myLesson.assigned_key,
+            crewName: myLesson.crew_name,
+            endTime: myLesson.end_time,
+            manual: false
+          });
+          seenRooms.add(myLesson.assigned_key);
+        }
+      });
     });
 
     return roomsToClean.length > 0 ? roomsToClean : null;
@@ -402,9 +427,12 @@ export default function MySchedule() {
                       <div className="flex items-center gap-2 text-orange-800 mb-1">
                         <Key className="w-5 h-5" />
                         <span className="text-xl font-bold">חדר {assignment.roomNumber}</span>
+                        {assignment.manual && (
+                          <span className="text-xs bg-orange-200 px-2 py-0.5 rounded">ידני</span>
+                        )}
                       </div>
                       <p className="text-xs text-orange-600">
-                        סיום בשעה {assignment.endTime}
+                        {assignment.manual ? 'הקצאה ידנית' : `סיום בשעה ${assignment.endTime}`}
                       </p>
                     </div>
                 )}
