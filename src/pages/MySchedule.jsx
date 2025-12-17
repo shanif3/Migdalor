@@ -195,18 +195,8 @@ export default function MySchedule() {
     l.start_time >= lesson.end_time
     );
 
-    // Helper function to format crew name with platoon
-    const formatCrewName = (crewName, platoonName) => {
-      if (!crewName) return null;
-      // Check if it's a squad (has platoon_name)
-      if (platoonName && platoonName !== crewName) {
-        return `${crewName} (${platoonName})`;
-      }
-      return crewName;
-    };
-
-    const receiveFrom = previousLesson ? formatCrewName(previousLesson.crew_name, previousLesson.platoon_name) : null;
-    const passTo = nextLesson ? formatCrewName(nextLesson.crew_name, nextLesson.platoon_name) : null;
+    const receiveFrom = previousLesson?.platoon_name || null;
+    const passTo = nextLesson?.platoon_name || null;
 
     if (!receiveFrom && !passTo) return null;
 
