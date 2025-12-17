@@ -44,7 +44,7 @@ export default function Dashboard() {
     queryKey: ['today-lessons'],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
-      return base44.entities.Lesson.filter({ date: today, status: 'assigned' });
+      return base44.entities.Lesson.filter({ date: today });
     }
   });
 
