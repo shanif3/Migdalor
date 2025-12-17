@@ -49,12 +49,13 @@ const [endTime, setEndTime] = useState('');
 <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md" dir="rtl">
         <DialogHeader className="text-right">
-          <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
-           בקשה מיוחדת למפתח
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Clock className="w-5 h-5 text-blue-600" />
-            </div>
-          </DialogTitle>
+          <DialogTitle className="flex items-center gap-2 justify-end text-right">
+  בקשה מיוחדת למפתח
+  <div className="p-2 bg-blue-100 rounded-lg">
+    <Clock className="w-5 h-5 text-blue-600" />
+  </div>
+</DialogTitle>
+
           <DialogDescription className="text-right">
             הוסף צוות לבקשה מיוחדת למפתח
           </DialogDescription>
