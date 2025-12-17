@@ -71,7 +71,7 @@ export default function ManageKeys() {
       const nextWednesday = new Date(today);
       nextWednesday.setDate(today.getDate() + daysUntilWednesday);
       const wednesdayDate = nextWednesday.toISOString().split('T')[0];
-      
+
       return base44.entities.Lesson.filter({ date: wednesdayDate, status: 'assigned' }, '-end_time');
     },
     enabled: isAdmin
@@ -87,13 +87,13 @@ export default function ManageKeys() {
   const getCurrentHolder = (roomNumber) => {
     const now = new Date();
     const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-    
-    const currentLesson = todayLessons.find(lesson => 
-      lesson.assigned_key === roomNumber &&
-      lesson.start_time <= currentTime &&
-      lesson.end_time > currentTime
+
+    const currentLesson = todayLessons.find((lesson) =>
+    lesson.assigned_key === roomNumber &&
+    lesson.start_time <= currentTime &&
+    lesson.end_time > currentTime
     );
-    
+
     return currentLesson ? currentLesson.crew_name : null;
   };
 
@@ -103,31 +103,31 @@ export default function ManageKeys() {
     if (key.manual_misdar_assignment) {
       return { crewName: key.manual_misdar_assignment, platoon: null };
     }
-    
+
     if (!wednesdayLessons.length) return null;
-    
+
     // Find all lessons for this room
-    const roomLessons = wednesdayLessons.filter(l => l.assigned_key === key.room_number);
+    const roomLessons = wednesdayLessons.filter((l) => l.assigned_key === key.room_number);
     if (roomLessons.length === 0) return null;
-    
+
     // Check each lesson to see if the key was passed to another crew
     for (const lesson of roomLessons) {
       // Check if there's another lesson that took this key after this one
-      const nextLesson = wednesdayLessons.find(l => 
-        l.assigned_key === key.room_number &&
-        l.crew_manager !== lesson.crew_manager &&
-        l.start_time >= lesson.end_time
+      const nextLesson = wednesdayLessons.find((l) =>
+      l.assigned_key === key.room_number &&
+      l.crew_manager !== lesson.crew_manager &&
+      l.start_time >= lesson.end_time
       );
-      
+
       // If no one took the key after this lesson, this crew is responsible
       if (!nextLesson) {
         // Find the user who created this lesson to get their platoon
-        const userWhoCreated = allUsers.find(u => u.email === lesson.crew_manager);
+        const userWhoCreated = allUsers.find((u) => u.email === lesson.crew_manager);
         const platoon = userWhoCreated?.platoon_name || null;
         return { crewName: lesson.crew_name, platoon };
       }
     }
-    
+
     return null;
   };
 
@@ -252,12 +252,12 @@ export default function ManageKeys() {
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סוג</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחשבים</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס / מחזיק</TableHead>
-                {isAdmin && (
-                  <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מסדר כיתות 🧹</TableHead>
-                )}
-                {isAdmin && (
-                  <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
-                )}
+                {isAdmin &&
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מסדר כיתות 🧹</TableHead>
+                }
+                {isAdmin &&
+                <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
+                }
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -300,72 +300,72 @@ export default function ManageKeys() {
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                       {(() => {
-                        const holder = getCurrentHolder(key.room_number);
-                        return holder ? (
-                          <div className="flex flex-col items-center gap-1">
+                    const holder = getCurrentHolder(key.room_number);
+                    return holder ?
+                    <div className="flex flex-col items-center gap-1">
                             <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
                               תפוס
                             </Badge>
                             <span className="text-xs text-slate-600">{holder}</span>
-                          </div>
-                        ) : (
-                          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                          </div> :
+
+                    <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
                             זמין
-                          </Badge>
-                        );
-                      })()}
+                          </Badge>;
+
+                  })()}
                     </TableCell>
-                    {isAdmin && (
-                      <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                    {isAdmin &&
+                <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                         <div className="flex items-center justify-center gap-2">
                           {(() => {
-                            const responsible = getMisdarResponsible(key);
-                            return responsible ? (
-                              <div className="flex flex-col items-center gap-1">
+                      const responsible = getMisdarResponsible(key);
+                      return responsible ?
+                      <div className="flex flex-col items-center gap-1">
                                 <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
                                   🧹 {responsible.crewName}
                                 </Badge>
-                                {responsible.platoon && (
-                                  <span className="text-xs text-slate-500 font-medium">
+                                {responsible.platoon &&
+                        <span className="text-xs text-slate-500 font-medium">
                                     {responsible.platoon}
                                   </span>
-                                )}
-                              </div>
-                            ) : (
-                              <span className="text-slate-400 text-xs">—</span>
-                            );
-                          })()}
+                        }
+                              </div> :
+
+                      <span className="text-slate-400 text-xs">—</span>;
+
+                    })()}
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleMisdarEdit(key)}
-                            className="h-6 w-6 text-slate-400 hover:text-orange-600"
-                          >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleMisdarEdit(key)}
+                      className="h-6 w-6 text-slate-400 hover:text-orange-600">
+
                             <Edit2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </TableCell>
-                    )}
-                    {isAdmin && (
-                      <TableCell className="text-right">
+                }
+                    {isAdmin &&
+                <TableCell className="text-right">
                         <div className="flex justify-center gap-2">
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(key)}
-                            className="text-slate-400 hover:text-slate-600">
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(key)}
+                      className="text-slate-400 hover:text-slate-600">
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteMutation.mutate(key.id)}
-                            className="text-red-400 hover:text-red-600 hover:bg-red-50">
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteMutation.mutate(key.id)}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
                       </TableCell>
-                    )}
+                }
                   </TableRow>
               )
               }
@@ -375,7 +375,7 @@ export default function ManageKeys() {
       </div>
 
       {/* Misdar Edit Modal */}
-      <Dialog open={!!misdarEditKey} onOpenChange={() => { setMisdarEditKey(null); setMisdarValue(''); }}>
+      <Dialog open={!!misdarEditKey} onOpenChange={() => {setMisdarEditKey(null);setMisdarValue('');}}>
         <DialogContent className="sm:max-w-md" dir="rtl">
           <DialogHeader className="text-right">
             <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
@@ -395,8 +395,8 @@ export default function ManageKeys() {
               <select
                 value={misdarValue}
                 onChange={(e) => setMisdarValue(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
+
                 <option value="">חישוב אוטומטי</option>
                 <option value="פלוגה א - סהר">פלוגה א - סהר</option>
                 <option value="פלוגה ב - יפתח">פלוגה ב - יפתח</option>
@@ -411,13 +411,13 @@ export default function ManageKeys() {
           </div>
 
           <div className="flex flex-row-reverse gap-3">
-            <Button variant="outline" onClick={() => { setMisdarEditKey(null); setMisdarValue(''); }} className="flex-1">
+            <Button variant="outline" onClick={() => {setMisdarEditKey(null);setMisdarValue('');}} className="flex-1">
               ביטול
             </Button>
             <Button
               onClick={handleMisdarSave}
-              className="flex-1 bg-orange-600 hover:bg-orange-700"
-            >
+              className="flex-1 bg-orange-600 hover:bg-orange-700">
+
               שמור
             </Button>
           </div>
@@ -444,7 +444,7 @@ export default function ManageKeys() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label className="text-right block">מספר חדר</Label>
+              <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-right block">מספר חדר *</Label>
               <Input
                 placeholder="למשל, 101..."
                 value={formData.room_number}
