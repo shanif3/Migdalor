@@ -63,7 +63,7 @@ const [endTime, setEndTime] = useState('');
 
 
           <DialogDescription className="text-right">
-            הוסף צוות לבקשה מיוחדת למפתח
+            הוסף בקשה מיוחדת למפתח
           </DialogDescription>
         </DialogHeader>
 
