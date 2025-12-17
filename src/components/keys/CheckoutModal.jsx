@@ -134,7 +134,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
 
               onClick={() => setUseCustom(false)}>
 
-                  בחר מצוותים קיימים
+                  בחר מאפשרויות קיימות
                 </Button>
             </div>
           }
