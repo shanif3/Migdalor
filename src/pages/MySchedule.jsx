@@ -636,7 +636,7 @@ export default function MySchedule() {
 
 
 
-    שם הצוות *
+    השיעור עבור *
   </Label>
 
   <Input
