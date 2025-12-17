@@ -102,7 +102,7 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
             </div> :
 
           <div className="space-y-2">
-              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">החדר עבור </Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">החדר עבור *</Label>
               <Input
               placeholder="למשל, סגל"
               value={crewName}
