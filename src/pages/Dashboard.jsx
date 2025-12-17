@@ -39,6 +39,28 @@ export default function Dashboard() {
     queryFn: () => base44.entities.WaitingQueue.list('priority')
   });
 
+  const { data: todayLessons = [] } = useQuery({
+    queryKey: ['today-lessons'],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      return base44.entities.Lesson.filter({ date: today, status: 'assigned' });
+    }
+  });
+
+  // Get current key holder for a room
+  const getCurrentHolder = (roomNumber) => {
+    const now = new Date();
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    const currentLesson = todayLessons.find(lesson => 
+      lesson.assigned_key === roomNumber &&
+      lesson.start_time <= currentTime &&
+      lesson.end_time > currentTime
+    );
+    
+    return currentLesson ? currentLesson.crew_name : null;
+  };
+
   const updateKeyMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.ClassroomKey.update(id, data),
     onSuccess: () => {
@@ -203,6 +225,7 @@ export default function Dashboard() {
                   keyItem={key}
                   crews={crews}
                   currentUser={user}
+                  currentHolder={getCurrentHolder(key.room_number)}
                   onCheckout={setCheckoutKey}
                   onReturn={handleReturn} />
 
