@@ -154,17 +154,6 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
             </Select>
           </div>
 
- <div className="flex flex-row-reverse gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
-            ביטול
-          </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={!crewName || !startTime || !endTime}
-            className="flex-1 bg-blue-600 hover:bg-blue-700">
-            הוסף לתור
-          </Button>
-        </div>
         
           <div className="space-y-2">
             <Label className="text-sm font-medium text-right block">הערות (אופציונלי)</Label>
@@ -177,6 +166,17 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
         </div>
 
        
+ <div className="flex flex-row-reverse gap-3">
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            ביטול
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            disabled={!crewName || !startTime || !endTime}
+            className="flex-1 bg-blue-600 hover:bg-blue-700">
+            הוסף לתור
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>);
 
