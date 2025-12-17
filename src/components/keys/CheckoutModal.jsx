@@ -71,7 +71,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
         <div className="space-y-4 py-4">
           {!useCustom &&
           <div className="space-y-2">
-              <Label className="text-sm font-medium">בחר פלוגה או צוות</Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium">החדר עבור *</Label>
               <select
               value={selectedCrew}
               onChange={(e) => {
