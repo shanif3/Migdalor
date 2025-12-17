@@ -179,20 +179,20 @@ export default function MySchedule() {
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
 
-    // Find who we receive from (only if from a different platoon)
+    // Find who we receive from - lesson that ends exactly when this one starts
     const previousLesson = allDayLessons.find((l) =>
     l.assigned_key === lesson.assigned_key &&
     l.id !== lesson.id &&
     l.platoon_name !== lesson.platoon_name &&
-    l.end_time <= lesson.start_time
+    l.end_time === lesson.start_time
     );
 
-    // Find who we pass to (only if to a different platoon)
+    // Find who we pass to - lesson that starts exactly when this one ends
     const nextLesson = allDayLessons.find((l) =>
     l.assigned_key === lesson.assigned_key &&
     l.id !== lesson.id &&
     l.platoon_name !== lesson.platoon_name &&
-    l.start_time >= lesson.end_time
+    l.start_time === lesson.end_time
     );
 
     const receiveFrom = previousLesson?.platoon_name || null;
