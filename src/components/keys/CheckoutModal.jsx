@@ -51,18 +51,22 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            משוך מפתח
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <Key className="w-5 h-5 text-emerald-600" />
-            </div>
-          </DialogTitle>
-          <DialogDescription>
-            משיכת מפתח לחדר {keyItem.room_number} ({keyItem.room_type})
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent
+  dir="rtl"
+  className="sm:max-w-md text-right"
+>
+        <DialogHeader className="text-right">
+  <DialogTitle className="flex flex-row-reverse items-center gap-2">
+    משוך מפתח
+    <div className="p-2 bg-emerald-100 rounded-lg">
+      <Key className="w-5 h-5 text-emerald-600" />
+    </div>
+  </DialogTitle>
+
+  <DialogDescription className="text-right">
+    משיכת מפתח לחדר {keyItem.room_number} ({keyItem.room_type})
+  </DialogDescription>
+</DialogHeader>
 
         <div className="space-y-4 py-4">
           {!useCustom && (
@@ -111,7 +115,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
             <div className="space-y-2">
               <Label className="text-sm font-medium">שם הצוות</Label>
               <Input
-                placeholder="הזן שם צוות..."
+                placeholder="למשל, סגל"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
               />
