@@ -54,10 +54,10 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
+            משוך מפתח
             <div className="p-2 bg-emerald-100 rounded-lg">
               <Key className="w-5 h-5 text-emerald-600" />
             </div>
-            משוך מפתח
           </DialogTitle>
           <DialogDescription>
             משיכת מפתח לחדר {keyItem.room_number} ({keyItem.room_type})
