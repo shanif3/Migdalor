@@ -649,11 +649,30 @@ export default function MySchedule() {
     הכיתה עבור *
   </Label>
 
-  <Input
-                placeholder="למשל, צוות 5..."
-                className="text-right"
+              <select
                 value={formData.crew_name}
-                onChange={(e) => setFormData({ ...formData, crew_name: e.target.value })} />
+                onChange={(e) => {
+                  const selectedValue = e.target.value;
+                  setFormData({ ...formData, crew_name: selectedValue });
+                }}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="">בחר פלוגה או צוות...</option>
+                
+                <optgroup label="פלוגות">
+                  {crews.map((crew) => (
+                    <option key={crew.id} value={crew.name}>{crew.name}</option>
+                  ))}
+                </optgroup>
+                
+                <optgroup label="צוותים">
+                  {squads.map((squad) => (
+                    <option key={squad.id} value={squad.squad_number}>
+                      {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
 
             </div>
             <div className="grid grid-cols-2 gap-3">
