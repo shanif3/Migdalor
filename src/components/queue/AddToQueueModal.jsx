@@ -50,12 +50,12 @@ const [endTime, setEndTime] = useState('');
       <DialogContent dir="rtl" className="text-right">
 
 <DialogHeader className="text-right">
-<DialogTitle
-  className="w-full flex items-center justify-end gap-2 text-right"
->
-  בקשה מיוחדת למפתח
-  <div className="p-2 bg-blue-100 rounded-lg">
-    <Clock className="w-5 h-5 text-blue-600" />
+<DialogTitle className="w-full !text-right">
+  <div className="flex w-full items-center justify-end gap-2">
+    בקשה מיוחדת למפתח
+    <div className="p-2 bg-blue-100 rounded-lg">
+      <Clock className="w-5 h-5 text-blue-600" />
+    </div>
   </div>
 </DialogTitle>
 
