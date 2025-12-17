@@ -21,6 +21,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'מפתחות', icon: Key, page: 'ManageKeys' },
     { name: 'פלוגות', icon: Users, page: 'ManageCrews' },
     { name: 'צוותים', icon: Users, page: 'ManageSquads' },
+    { name: 'משתמשים', icon: Users, page: 'ManageUsers' },
   ];
 
   const userNavItems = [
