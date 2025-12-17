@@ -49,7 +49,7 @@ export default function ManageCrews() {
       queryClient.invalidateQueries({ queryKey: ['crews'] });
       setShowModal(false);
       setFormData({ name: '', contact: '', notes: '' });
-      toast.success('צוות נוסף בהצלחה');
+      toast.success('פלוגה נוספה בהצלחה');
     }
   });
 
@@ -60,7 +60,7 @@ export default function ManageCrews() {
       setShowModal(false);
       setEditingCrew(null);
       setFormData({ name: '', contact: '', notes: '' });
-      toast.success('צוות עודכן בהצלחה');
+      toast.success('פלוגה עודכנה בהצלחה');
     }
   });
 
@@ -68,7 +68,7 @@ export default function ManageCrews() {
     mutationFn: (id) => base44.entities.Crew.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['crews'] });
-      toast.success('צוות נמחק בהצלחה');
+      toast.success('פלוגה נמחקה בהצלחה');
     }
   });
 
@@ -144,7 +144,7 @@ export default function ManageCrews() {
               crews.length === 0 ?
               <TableRow>
                   <TableCell colSpan={isAdmin ? 4 : 3} className="text-center py-8 text-slate-400">
-                    עדיין לא נוספו צוותים
+                    עדיין לא נוספו פלוגות
                   </TableCell>
                 </TableRow> :
 
@@ -211,13 +211,13 @@ export default function ManageCrews() {
           <DialogHeader className="text-right">
             <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
 
-              {editingCrew ? 'ערוך צוות' : 'הוסף פלוגה חדשה'}
+              {editingCrew ? 'ערוך פלוגה' : 'הוסף פלוגה חדשה'}
                             <div className="p-2 bg-indigo-100 rounded-lg">
                 <Users className="w-5 h-5 text-indigo-600" />
               </div>
             </DialogTitle>
             <DialogDescription className="text-right">
-              {editingCrew ? 'עדכן את פרטי הצוות' : 'הוסף פלוגה חדשה למעקב'}
+              {editingCrew ? 'עדכן את פרטי הפלוגה' : 'הוסף פלוגה חדשה למעקב'}
             </DialogDescription>
           </DialogHeader>
 
@@ -263,7 +263,7 @@ export default function ManageCrews() {
               disabled={!formData.name}
               className="flex-1 bg-indigo-600 hover:bg-indigo-700">
 
-              {editingCrew ? 'עדכן צוות' : 'הוסף צוות'}
+              {editingCrew ? 'עדכן פלוגה' : 'הוסף פלוגה'}
             </Button>
             
             
