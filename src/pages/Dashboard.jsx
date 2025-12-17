@@ -388,6 +388,7 @@ export default function Dashboard() {
         keyItem={checkoutKey}
         crews={crews}
         squads={squads}
+        currentUser={user}
         onConfirm={handleCheckout} />
 
 
@@ -396,6 +397,7 @@ export default function Dashboard() {
         onClose={() => setShowQueueModal(false)}
         crews={crews}
         squads={squads}
+        currentUser={user}
         onConfirm={(data) => addToQueueMutation.mutate(data)} />
 
     </div>);

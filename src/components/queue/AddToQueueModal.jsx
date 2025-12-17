@@ -19,7 +19,7 @@ import {
 "@/components/ui/select";
 import { Clock, Users } from 'lucide-react';
 
-export default function AddToQueueModal({ open, onClose, crews, squads, onConfirm }) {
+export default function AddToQueueModal({ open, onClose, crews, squads, currentUser, onConfirm }) {
   const [crewName, setCrewName] = useState('');
   const [preferredType, setPreferredType] = useState('any');
   const [notes, setNotes] = useState('');
@@ -79,13 +79,13 @@ export default function AddToQueueModal({ open, onClose, crews, squads, onConfir
                 <option value="">בחר פלוגה או צוות...</option>
                 
                 <optgroup label="פלוגות">
-                  {crews?.map((crew) =>
+                  {filteredCrews?.map((crew) =>
                 <option key={crew.id} value={crew.name}>{crew.name}</option>
                 )}
                 </optgroup>
                 
                 <optgroup label="צוותים">
-                  {squads?.map((squad) =>
+                  {filteredSquads?.map((squad) =>
                 <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>

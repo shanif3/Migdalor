@@ -18,7 +18,7 @@ import {
 "@/components/ui/select";
 import { Key, Users, AlertCircle } from 'lucide-react';
 
-export default function CheckoutModal({ open, onClose, keyItem, crews, squads, onConfirm }) {
+export default function CheckoutModal({ open, onClose, keyItem, crews, squads, currentUser, onConfirm }) {
   const [selectedCrew, setSelectedCrew] = useState('');
   const [platoonName, setPlatoonName] = useState('');
   const [customName, setCustomName] = useState('');
@@ -48,6 +48,15 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
   };
 
   if (!keyItem) return null;
+
+  // Filter crews and squads based on user's platoon
+  const filteredCrews = currentUser?.platoon_name 
+    ? crews.filter(crew => crew.name === currentUser.platoon_name)
+    : crews;
+  
+  const filteredSquads = currentUser?.platoon_name
+    ? squads.filter(squad => squad.platoon_name === currentUser.platoon_name)
+    : squads;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -87,13 +96,13 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, o
                 <option value="">בחר פלוגה או צוות...</option>
                 
                 <optgroup label="פלוגות">
-                  {crews?.map((crew) =>
+                  {filteredCrews?.map((crew) =>
                 <option key={crew.id} value={crew.name}>{crew.name}</option>
                 )}
                 </optgroup>
                 
                 <optgroup label="צוותים">
-                  {squads?.map((squad) =>
+                  {filteredSquads?.map((squad) =>
                 <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>
