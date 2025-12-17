@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { Users, Edit2, Mail, Shield, User, Briefcase } from 'lucide-react';
+import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -51,6 +51,14 @@ export default function ManageUsers() {
       setEditingUser(null);
       setFormData({ platoon_name: '', position: '' });
       toast.success('פרטי משתמש עודכנו בהצלחה');
+    }
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (id) => base44.entities.User.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('משתמש נמחק בהצלחה');
     }
   });
 
@@ -210,14 +218,24 @@ export default function ManageUsers() {
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(user)}
-                        className="text-slate-400 hover:text-slate-600"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(user)}
+                          className="text-slate-400 hover:text-slate-600"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteUserMutation.mutate(user.id)}
+                          className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
