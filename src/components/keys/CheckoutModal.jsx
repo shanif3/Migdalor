@@ -18,8 +18,9 @@ import {
 } from "@/components/ui/select";
 import { Key, Users, AlertCircle } from 'lucide-react';
 
-export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm }) {
+export default function CheckoutModal({ open, onClose, keyItem, crews, squads, onConfirm }) {
   const [selectedCrew, setSelectedCrew] = useState('');
+  const [platoonName, setPlatoonName] = useState('');
   const [customName, setCustomName] = useState('');
   const [useCustom, setUseCustom] = useState(false);
   const [startTime, setStartTime] = useState('');
@@ -36,8 +37,9 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
   const handleConfirm = () => {
     const holderName = useCustom ? customName : selectedCrew;
     if (holderName && startTime && endTime) {
-      onConfirm(keyItem, holderName, startTime, endTime);
+      onConfirm(keyItem, holderName, startTime, endTime, platoonName);
       setSelectedCrew('');
+      setPlatoonName('');
       setCustomName('');
       setUseCustom(false);
       setStartTime('');
@@ -63,24 +65,37 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {crews.length > 0 && !useCustom && (
+          {!useCustom && (
             <div className="space-y-2">
-              <Label className="text-sm font-medium">בחר צוות</Label>
-              <Select value={selectedCrew} onValueChange={setSelectedCrew}>
-                <SelectTrigger>
-                  <SelectValue placeholder="בחר צוות..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {crews.map((crew) => (
-                    <SelectItem key={crew.id} value={crew.name}>
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-slate-400" />
-                        {crew.name}
-                      </div>
-                    </SelectItem>
+              <Label className="text-sm font-medium">בחר פלוגה או צוות</Label>
+              <select
+                value={selectedCrew}
+                onChange={(e) => {
+                  const selectedValue = e.target.value;
+                  setSelectedCrew(selectedValue);
+                  
+                  // Check if a squad was selected and auto-fill platoon name
+                  const selectedSquad = squads?.find(s => s.squad_number === selectedValue);
+                  setPlatoonName(selectedSquad ? selectedSquad.platoon_name : '');
+                }}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="">בחר פלוגה או צוות...</option>
+                
+                <optgroup label="פלוגות">
+                  {crews?.map((crew) => (
+                    <option key={crew.id} value={crew.name}>{crew.name}</option>
                   ))}
-                </SelectContent>
-              </Select>
+                </optgroup>
+                
+                <optgroup label="צוותים">
+                  {squads?.map((squad) => (
+                    <option key={squad.id} value={squad.squad_number}>
+                      {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
               <Button
                 variant="ghost"
                 size="sm"
@@ -92,7 +107,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
             </div>
           )}
 
-          {(useCustom || crews.length === 0) && (
+          {useCustom && (
             <div className="space-y-2">
               <Label className="text-sm font-medium">שם הצוות</Label>
               <Input
@@ -100,8 +115,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
               />
-              {crews.length > 0 && (
-                <Button
+              <Button
                   variant="ghost"
                   size="sm"
                   className="text-slate-500 text-xs"
@@ -109,7 +123,6 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, onConfirm
                 >
                   בחר מצוותים קיימים
                 </Button>
-              )}
             </div>
           )}
 
