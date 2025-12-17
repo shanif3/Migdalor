@@ -36,6 +36,8 @@ import { motion } from 'framer-motion';
 export default function ManageKeys() {
   const [showModal, setShowModal] = useState(false);
   const [editingKey, setEditingKey] = useState(null);
+  const [misdarEditKey, setMisdarEditKey] = useState(null);
+  const [misdarValue, setMisdarValue] = useState('');
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({ room_number: '', room_type: 'צוותי', has_computers: false });
   const queryClient = useQueryClient();
@@ -90,18 +92,23 @@ export default function ManageKeys() {
   };
 
   // Get who's responsible for cleaning this room (Misdar)
-  const getMisdarResponsible = (roomNumber) => {
+  const getMisdarResponsible = (key) => {
+    // Check for manual assignment first
+    if (key.manual_misdar_assignment) {
+      return key.manual_misdar_assignment;
+    }
+    
     if (!wednesdayLessons.length) return null;
     
     // Find all lessons for this room
-    const roomLessons = wednesdayLessons.filter(l => l.assigned_key === roomNumber);
+    const roomLessons = wednesdayLessons.filter(l => l.assigned_key === key.room_number);
     if (roomLessons.length === 0) return null;
     
     // Check each lesson to see if the key was passed to another crew
     for (const lesson of roomLessons) {
       // Check if there's another lesson that took this key after this one
       const nextLesson = wednesdayLessons.find(l => 
-        l.assigned_key === roomNumber &&
+        l.assigned_key === key.room_number &&
         l.crew_manager !== lesson.crew_manager &&
         l.start_time >= lesson.end_time
       );
@@ -162,6 +169,22 @@ export default function ManageKeys() {
     setShowModal(false);
     setEditingKey(null);
     setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
+  };
+
+  const handleMisdarEdit = (key) => {
+    setMisdarEditKey(key);
+    setMisdarValue(key.manual_misdar_assignment || '');
+  };
+
+  const handleMisdarSave = async () => {
+    if (misdarEditKey) {
+      await updateMutation.mutateAsync({
+        id: misdarEditKey.id,
+        data: { manual_misdar_assignment: misdarValue || null }
+      });
+      setMisdarEditKey(null);
+      setMisdarValue('');
+    }
   };
 
   const smallCount = keys.filter((k) => k.room_type === 'צוותי').length;
@@ -285,16 +308,26 @@ export default function ManageKeys() {
                     </TableCell>
                     {isAdmin && (
                       <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-                        {(() => {
-                          const responsible = getMisdarResponsible(key.room_number);
-                          return responsible ? (
-                            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                              🧹 {responsible}
-                            </Badge>
-                          ) : (
-                            <span className="text-slate-400 text-xs">—</span>
-                          );
-                        })()}
+                        <div className="flex items-center justify-center gap-2">
+                          {(() => {
+                            const responsible = getMisdarResponsible(key);
+                            return responsible ? (
+                              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                                🧹 {responsible}
+                              </Badge>
+                            ) : (
+                              <span className="text-slate-400 text-xs">—</span>
+                            );
+                          })()}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleMisdarEdit(key)}
+                            className="h-6 w-6 text-slate-400 hover:text-orange-600"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </TableCell>
                     )}
                     {isAdmin && (
@@ -324,6 +357,50 @@ export default function ManageKeys() {
           </Table>
         </Card>
       </div>
+
+      {/* Misdar Edit Modal */}
+      <Dialog open={!!misdarEditKey} onOpenChange={() => { setMisdarEditKey(null); setMisdarValue(''); }}>
+        <DialogContent className="sm:max-w-md" dir="rtl">
+          <DialogHeader className="text-right">
+            <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
+              ערוך מסדר כיתות
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <span className="text-lg">🧹</span>
+              </div>
+            </DialogTitle>
+            <DialogDescription className="text-right">
+              הגדר ידנית איזו פלוגה אחראית על מסדר חדר {misdarEditKey?.room_number}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-right block">שם הפלוגה האחראית</Label>
+              <Input
+                placeholder="הזן שם פלוגה או השאר ריק לחזור לחישוב אוטומטי"
+                value={misdarValue}
+                onChange={(e) => setMisdarValue(e.target.value)}
+                className="text-right"
+              />
+              <p className="text-xs text-slate-500 text-right">
+                השאר ריק כדי להשתמש בחישוב אוטומטי לפי לוח השיעורים ביום רביעי
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-row-reverse gap-3">
+            <Button variant="outline" onClick={() => { setMisdarEditKey(null); setMisdarValue(''); }} className="flex-1">
+              ביטול
+            </Button>
+            <Button
+              onClick={handleMisdarSave}
+              className="flex-1 bg-orange-600 hover:bg-orange-700"
+            >
+              שמור
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Add/Edit Modal */}
       <Dialog open={showModal} onOpenChange={handleClose}>
