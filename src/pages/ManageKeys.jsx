@@ -59,6 +59,22 @@ export default function ManageKeys() {
     }
   });
 
+  const { data: wednesdayLessons = [] } = useQuery({
+    queryKey: ['wednesday-lessons'],
+    queryFn: async () => {
+      // Find the next Wednesday (or today if it's Wednesday)
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      const daysUntilWednesday = dayOfWeek === 3 ? 0 : (3 - dayOfWeek + 7) % 7;
+      const nextWednesday = new Date(today);
+      nextWednesday.setDate(today.getDate() + daysUntilWednesday);
+      const wednesdayDate = nextWednesday.toISOString().split('T')[0];
+      
+      return base44.entities.Lesson.filter({ date: wednesdayDate, status: 'assigned' }, '-end_time');
+    },
+    enabled: isAdmin
+  });
+
   // Get current key holder for a room
   const getCurrentHolder = (roomNumber) => {
     const now = new Date();
@@ -71,6 +87,32 @@ export default function ManageKeys() {
     );
     
     return currentLesson ? currentLesson.crew_name : null;
+  };
+
+  // Get who's responsible for cleaning this room (Misdar)
+  const getMisdarResponsible = (roomNumber) => {
+    if (!wednesdayLessons.length) return null;
+    
+    // Find all lessons for this room
+    const roomLessons = wednesdayLessons.filter(l => l.assigned_key === roomNumber);
+    if (roomLessons.length === 0) return null;
+    
+    // Check each lesson to see if the key was passed to another crew
+    for (const lesson of roomLessons) {
+      // Check if there's another lesson that took this key after this one
+      const nextLesson = wednesdayLessons.find(l => 
+        l.assigned_key === roomNumber &&
+        l.crew_manager !== lesson.crew_manager &&
+        l.start_time >= lesson.end_time
+      );
+      
+      // If no one took the key after this lesson, this crew is responsible
+      if (!nextLesson) {
+        return lesson.crew_name;
+      }
+    }
+    
+    return null;
   };
 
   const createMutation = useMutation({
@@ -179,6 +221,9 @@ export default function ManageKeys() {
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחשבים</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס / מחזיק</TableHead>
                 {isAdmin && (
+                  <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מסדר כיתות 🧹</TableHead>
+                )}
+                {isAdmin && (
                   <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
                 )}
               </TableRow>
@@ -186,13 +231,13 @@ export default function ManageKeys() {
             <TableBody>
               {isLoading ?
               <TableRow>
-                  <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 6 : 4} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow> :
               keys.length === 0 ?
               <TableRow>
-                  <TableCell colSpan={isAdmin ? 5 : 4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 6 : 4} className="text-center py-8 text-slate-400">
                     עדיין לא נוספו מפתחות
                   </TableCell>
                 </TableRow> :
@@ -238,6 +283,20 @@ export default function ManageKeys() {
                         );
                       })()}
                     </TableCell>
+                    {isAdmin && (
+                      <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                        {(() => {
+                          const responsible = getMisdarResponsible(key.room_number);
+                          return responsible ? (
+                            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                              🧹 {responsible}
+                            </Badge>
+                          ) : (
+                            <span className="text-slate-400 text-xs">—</span>
+                          );
+                        })()}
+                      </TableCell>
+                    )}
                     {isAdmin && (
                       <TableCell className="text-right">
                         <div className="flex justify-center gap-2">
