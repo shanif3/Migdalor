@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue } from
 "@/components/ui/select";
-import { Wand2, Calendar, Key, RefreshCw, Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Wand2, Calendar, Key, RefreshCw, Loader2, AlertTriangle, CheckCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -52,6 +52,26 @@ export default function KeyAllocation() {
     mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+    }
+  });
+
+  const deleteLessonMutation = useMutation({
+    mutationFn: (id) => base44.entities.Lesson.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+      toast.success('שיעור נמחק');
+    }
+  });
+
+  const deleteAllLessonsMutation = useMutation({
+    mutationFn: async () => {
+      for (const lesson of lessons) {
+        await base44.entities.Lesson.delete(lesson.id);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+      toast.success('כל השיעורים נמחקו');
     }
   });
 
@@ -368,20 +388,29 @@ export default function KeyAllocation() {
           <div className="flex flex-row-reverse items-center gap-2">
             <Button
               variant="outline"
+              onClick={() => {
+                if (confirm('האם למחוק את כל השיעורים?')) {
+                  deleteAllLessonsMutation.mutate();
+                }
+              }}
+              disabled={lessons.length === 0}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50">
+              <Trash2 className="w-4 h-4 ml-2" />
+              מחק הכל
+            </Button>
+            <Button
+              variant="outline"
               onClick={resetAllocations}
               disabled={assignedCount === 0}>
-
               <RefreshCw className="w-4 h-4 ml-2" />
-              אפס
+              אפס הקצאות
             </Button>
             <Button
               onClick={allocateKeys}
               disabled={selectedKeys.length === 0 || (pendingCount === 0 && specialRequestsCount === 0) || isAllocating}
               className="bg-emerald-600 hover:bg-emerald-700">
-
               {isAllocating ?
               <Loader2 className="w-4 h-4 ml-2 animate-spin" /> :
-
               <Wand2 className="w-4 h-4 ml-2" />
               }
               שבץ אוטומטית
@@ -476,18 +505,19 @@ export default function KeyAllocation() {
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">סטטוס</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">חדר</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">הקצאה ידנית</TableHead>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">מחק</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {isLoading ?
                   <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                       </TableCell>
                     </TableRow> :
                   lessons.length === 0 ?
                   <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-slate-400">
+                      <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                         אין שיעורים מתוכננים לתאריך זה
                       </TableCell>
                     </TableRow> :
@@ -556,6 +586,15 @@ export default function KeyAllocation() {
                               ))}
                             </SelectContent>
                           </Select>
+                        </TableCell>
+                        <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteLessonMutation.mutate(lesson.id)}
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                   )
