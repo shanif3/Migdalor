@@ -395,6 +395,7 @@ export default function Dashboard() {
         open={showQueueModal}
         onClose={() => setShowQueueModal(false)}
         crews={crews}
+        squads={squads}
         onConfirm={(data) => addToQueueMutation.mutate(data)} />
 
     </div>);
