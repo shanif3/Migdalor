@@ -70,7 +70,7 @@ export default function AddToQueueModal({ open, onClose, crews, onConfirm }) {
         <div className="space-y-4 py-4">
           {crews.length > 0 && useExisting ?
           <div className="space-y-2">
-              <Label className="text-sm font-medium text-right block">בחר צוות</Label>
+              <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-right block">החדר עבור *</Label>
               <Select value={crewName} onValueChange={setCrewName}>
                 <SelectTrigger className="text-right" dir="rtl">
                   <SelectValue placeholder="בחר צוות..." className="text-right" />
