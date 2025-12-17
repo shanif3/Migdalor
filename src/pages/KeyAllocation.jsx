@@ -385,7 +385,7 @@ export default function KeyAllocation() {
               className="w-auto" />
 
   </div>
-          <div className="flex flex-row-reverse items-center gap-2">
+          <div className="flex flex-col sm:flex-row-reverse items-stretch sm:items-center gap-2">
             <Button
               variant="outline"
               onClick={() => {
