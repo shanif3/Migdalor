@@ -96,17 +96,17 @@ export default function MySchedule() {
     const selectedDay = new Date(selectedDate);
     const now = new Date();
     const currentHour = now.getHours();
-    
+
     // Only show on Wednesday from 9:00 AM onwards
     if (selectedDay.getDay() !== 3 || !user?.email) return null;
-    
+
     // If it's today (Wednesday), only show from 9:00 AM
     const isToday = selectedDate === now.toISOString().split('T')[0];
     if (isToday && currentHour < 9) return null;
 
     // Get only my lessons for the day
-    const myLessons = allUsersLessons.filter(lesson => 
-      lesson.crew_manager === user.email && lesson.assigned_key
+    const myLessons = allUsersLessons.filter((lesson) =>
+    lesson.crew_manager === user.email && lesson.assigned_key
     );
 
     if (myLessons.length === 0) return null;
@@ -115,14 +115,14 @@ export default function MySchedule() {
     const roomsToClean = [];
     const seenRooms = new Set();
 
-    myLessons.forEach(myLesson => {
+    myLessons.forEach((myLesson) => {
       if (seenRooms.has(myLesson.assigned_key)) return;
-      
+
       // Check if there's another crew that took this key after me
-      const nextLesson = allUsersLessons.find(lesson => 
-        lesson.assigned_key === myLesson.assigned_key &&
-        lesson.crew_manager !== user.email &&
-        lesson.start_time >= myLesson.end_time
+      const nextLesson = allUsersLessons.find((lesson) =>
+      lesson.assigned_key === myLesson.assigned_key &&
+      lesson.crew_manager !== user.email &&
+      lesson.start_time >= myLesson.end_time
       );
 
       // If no one took the key after me, I need to clean it
@@ -143,28 +143,28 @@ export default function MySchedule() {
 
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
-    
+
     // Find who we receive from (only if from a different user)
-    const previousLesson = allDayLessons.find(l => 
-      l.assigned_key === lesson.assigned_key && 
-      l.id !== lesson.id &&
-      l.crew_manager !== lesson.crew_manager &&
-      l.end_time <= lesson.start_time
+    const previousLesson = allDayLessons.find((l) =>
+    l.assigned_key === lesson.assigned_key &&
+    l.id !== lesson.id &&
+    l.crew_manager !== lesson.crew_manager &&
+    l.end_time <= lesson.start_time
     );
-    
+
     // Find who we pass to (only if to a different user)
-    const nextLesson = allDayLessons.find(l => 
-      l.assigned_key === lesson.assigned_key && 
-      l.id !== lesson.id &&
-      l.crew_manager !== lesson.crew_manager &&
-      l.start_time >= lesson.end_time
+    const nextLesson = allDayLessons.find((l) =>
+    l.assigned_key === lesson.assigned_key &&
+    l.id !== lesson.id &&
+    l.crew_manager !== lesson.crew_manager &&
+    l.start_time >= lesson.end_time
     );
-    
+
     const receiveFrom = previousLesson ? previousLesson.crew_name : null;
     const passTo = nextLesson ? nextLesson.crew_name : null;
-    
+
     if (!receiveFrom && !passTo) return null;
-    
+
     return { receiveFrom, passTo };
   };
 
@@ -191,65 +191,65 @@ export default function MySchedule() {
     mutationFn: async ({ id, data, originalLesson }) => {
       // Update the lesson first
       await base44.entities.Lesson.update(id, data);
-      
+
       // If times or room type changed, try to find a new key
-      const timesChanged = data.start_time !== originalLesson.start_time || 
-                          data.end_time !== originalLesson.end_time;
+      const timesChanged = data.start_time !== originalLesson.start_time ||
+      data.end_time !== originalLesson.end_time;
       const typeChanged = data.room_type_needed !== originalLesson.room_type_needed;
       const computersChanged = data.needs_computers !== originalLesson.needs_computers;
-      
+
       if (timesChanged || typeChanged || computersChanged) {
         // Fetch all keys and lessons for the day
         const [allKeys, allLessons] = await Promise.all([
-          base44.entities.ClassroomKey.list(),
-          base44.entities.Lesson.filter({ date: originalLesson.date })
-        ]);
-        
+        base44.entities.ClassroomKey.list(),
+        base44.entities.Lesson.filter({ date: originalLesson.date })]
+        );
+
         // Find available key
         let assignedKey = null;
-        
+
         // Try to find exact match
         for (const key of allKeys) {
           // Check if key matches requirements
           const matchesType = key.room_type === data.room_type_needed;
           const matchesComputers = !data.needs_computers || key.has_computers;
-          
+
           if (!matchesType || !matchesComputers) continue;
-          
+
           // Check if key is available during the new time slot
-          const isOccupied = allLessons.some(lesson => {
+          const isOccupied = allLessons.some((lesson) => {
             if (lesson.id === id) return false; // Skip the lesson we're editing
             if (!lesson.assigned_key || lesson.assigned_key !== key.room_number) return false;
-            
+
             // Check time overlap
             return lesson.start_time < data.end_time && data.start_time < lesson.end_time;
           });
-          
+
           if (!isOccupied) {
             assignedKey = key.room_number;
             break;
           }
         }
-        
+
         // If no exact match for צוותי, try פלוגתי (upgrade)
         if (!assignedKey && data.room_type_needed === 'צוותי') {
           for (const key of allKeys) {
             if (key.room_type !== 'פלוגתי') continue;
             if (data.needs_computers && !key.has_computers) continue;
-            
-            const isOccupied = allLessons.some(lesson => {
+
+            const isOccupied = allLessons.some((lesson) => {
               if (lesson.id === id) return false;
               if (!lesson.assigned_key || lesson.assigned_key !== key.room_number) return false;
               return lesson.start_time < data.end_time && data.start_time < lesson.end_time;
             });
-            
+
             if (!isOccupied) {
               assignedKey = key.room_number;
               break;
             }
           }
         }
-        
+
         // Update lesson with new key or set to pending if no key found
         if (assignedKey) {
           await base44.entities.Lesson.update(id, { assigned_key: assignedKey, status: 'assigned' });
@@ -257,7 +257,7 @@ export default function MySchedule() {
           await base44.entities.Lesson.update(id, { assigned_key: null, status: 'pending' });
         }
       }
-      
+
       return { success: true };
     },
     onSuccess: () => {
@@ -364,12 +364,12 @@ export default function MySchedule() {
         </motion.div>
 
         {/* Misdar Kitot Alert - Wednesday Only */}
-        {myMisdarAssignments && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
-          >
+        {myMisdarAssignments &&
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6">
+
             <Card className="border-orange-200 bg-orange-50">
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -388,8 +388,8 @@ export default function MySchedule() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {myMisdarAssignments.map((assignment, idx) => (
-                    <div key={idx} className="p-4 rounded-lg bg-orange-100 border-2 border-orange-400">
+                  {myMisdarAssignments.map((assignment, idx) =>
+                <div key={idx} className="p-4 rounded-lg bg-orange-100 border-2 border-orange-400">
                       <div className="flex items-center gap-2 text-orange-800 mb-1">
                         <Key className="w-5 h-5" />
                         <span className="text-xl font-bold">חדר {assignment.roomNumber}</span>
@@ -398,12 +398,12 @@ export default function MySchedule() {
                         סיום בשעה {assignment.endTime}
                       </p>
                     </div>
-                  ))}
+                )}
                 </div>
               </div>
             </Card>
           </motion.div>
-        )}
+        }
 
         {/* Date Selector */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -513,40 +513,40 @@ export default function MySchedule() {
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       {(() => {
-                        const handoff = getKeyHandoffNote(lesson);
-                        if (!handoff) return <span className="text-slate-400">—</span>;
+                    const handoff = getKeyHandoffNote(lesson);
+                    if (!handoff) return <span className="text-slate-400">—</span>;
 
-                        return (
-                          <div className="flex flex-col gap-1 items-center">
-                            {handoff.receiveFrom && (
-                              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                    return (
+                      <div className="flex flex-col gap-1 items-center">
+                            {handoff.receiveFrom &&
+                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
                                 🔽 מקבל מ{handoff.receiveFrom}
                               </Badge>
-                            )}
-                            {handoff.passTo && (
-                              <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
+                        }
+                            {handoff.passTo &&
+                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
                                 🔼 מעביר ל{handoff.passTo}
                               </Badge>
-                            )}
-                          </div>
-                        );
-                      })()}
+                        }
+                          </div>);
+
+                  })()}
                     </TableCell>
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(lesson)}
-                          className="text-slate-400 hover:text-slate-600">
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(lesson)}
+                      className="text-slate-400 hover:text-slate-600">
                           <Edit2 className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(lesson.id)}
-                          disabled={lesson.status === 'assigned'}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50">
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteMutation.mutate(lesson.id)}
+                      disabled={lesson.status === 'assigned'}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -579,12 +579,7 @@ export default function MySchedule() {
 
     <div className="space-y-4 py-4">
             <div className="space-y-2">
-  <Label
-                className="
-      text-sm font-medium leading-none 
-      peer-disabled:cursor-not-allowed peer-disabled:opacity-70 
-      ml-auto text-right
-    ">
+  <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 ml-auto text-right">החדר עבור *
 
 
 
@@ -650,39 +645,44 @@ export default function MySchedule() {
 
 
 
-    הכיתה עבור *
-  </Label>
+
+
+
+
+
+
+              </Label>
 
               <select
                 value={formData.crew_name}
                 onChange={(e) => {
                   const selectedValue = e.target.value;
-                  
+
                   // Check if a squad was selected and auto-fill platoon name
-                  const selectedSquad = squads.find(s => s.squad_number === selectedValue);
-                  
-                  setFormData({ 
-                    ...formData, 
+                  const selectedSquad = squads.find((s) => s.squad_number === selectedValue);
+
+                  setFormData({
+                    ...formData,
                     crew_name: selectedValue,
                     platoon_name: selectedSquad ? selectedSquad.platoon_name : ''
                   });
                 }}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
+
                 <option value="">בחר פלוגה או צוות...</option>
                 
                 <optgroup label="פלוגות">
-                  {crews.map((crew) => (
-                    <option key={crew.id} value={crew.name}>{crew.name}</option>
-                  ))}
+                  {crews.map((crew) =>
+                  <option key={crew.id} value={crew.name}>{crew.name}</option>
+                  )}
                 </optgroup>
                 
                 <optgroup label="צוותים">
-                  {squads.map((squad) => (
-                    <option key={squad.id} value={squad.squad_number}>
+                  {squads.map((squad) =>
+                  <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>
-                  ))}
+                  )}
                 </optgroup>
               </select>
 
