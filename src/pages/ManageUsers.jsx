@@ -43,11 +43,6 @@ export default function ManageUsers() {
     enabled: isAdmin
   });
 
-  const { data: crews = [] } = useQuery({
-    queryKey: ['crews'],
-    queryFn: () => base44.entities.Crew.list()
-  });
-
   const updateUserMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.User.update(id, data),
     onSuccess: () => {
@@ -80,8 +75,19 @@ export default function ManageUsers() {
     setFormData({ platoon_name: '', position: '' });
   };
 
-  // Get unique platoon names
-  const platoonNames = [...new Set(crews.map(c => c.name))].sort();
+  // Predefined platoon names and positions
+  const platoonNames = [
+    'פלוגה א - סהר',
+    'פלוגה ב - יפתח',
+    'פלוגה ג - אייל',
+    'פלוגה ד - אסף',
+    'פלוגה ה - איתן'
+  ];
+
+  const positions = [
+    'קה״ד צוותי',
+    'קה״ד פלוגתי'
+  ];
 
   // Group users by platoon
   const usersByPlatoon = users.reduce((acc, user) => {
@@ -253,12 +259,16 @@ export default function ManageUsers() {
 
             <div className="space-y-2">
               <Label className="text-right block">תפקיד</Label>
-              <Input
-                placeholder="למשל, קה״ד פלוגתי, מ״מ פלוגתי..."
+              <select
                 value={formData.position}
                 onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                className="text-right"
-              />
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="">בחר תפקיד...</option>
+                {positions.map((pos) => (
+                  <option key={pos} value={pos}>{pos}</option>
+                ))}
+              </select>
             </div>
           </div>
 
