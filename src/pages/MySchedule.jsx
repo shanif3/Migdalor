@@ -179,18 +179,24 @@ export default function MySchedule() {
   const getKeyHandoffNote = (lesson) => {
     if (!lesson.assigned_key || lesson.status !== 'assigned') return null;
 
-    // Get all lessons for the same room
-    const roomLessons = allDayLessons
-      .filter((l) => l.assigned_key === lesson.assigned_key && l.id !== lesson.id && l.platoon_name !== lesson.platoon_name);
+    // Find who we receive from (only if from a different user)
+    const previousLesson = allDayLessons.find((l) =>
+    l.assigned_key === lesson.assigned_key &&
+    l.id !== lesson.id &&
+    l.crew_manager !== lesson.crew_manager &&
+    l.end_time <= lesson.start_time
+    );
 
-    // Find who I receive from - someone who ends exactly when I start
-    const previousLesson = roomLessons.find((l) => l.end_time === lesson.start_time);
+    // Find who we pass to (only if to a different user)
+    const nextLesson = allDayLessons.find((l) =>
+    l.assigned_key === lesson.assigned_key &&
+    l.id !== lesson.id &&
+    l.crew_manager !== lesson.crew_manager &&
+    l.start_time >= lesson.end_time
+    );
 
-    // Find who I pass to - someone who starts exactly when I end
-    const nextLesson = roomLessons.find((l) => l.start_time === lesson.end_time);
-
-    const receiveFrom = previousLesson?.platoon_name || null;
-    const passTo = nextLesson?.platoon_name || null;
+    const receiveFrom = previousLesson ? previousLesson.crew_name : null;
+    const passTo = nextLesson ? nextLesson.crew_name : null;
 
     if (!receiveFrom && !passTo) return null;
 
