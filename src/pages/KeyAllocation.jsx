@@ -385,7 +385,7 @@ export default function KeyAllocation() {
               className="w-auto" />
 
   </div>
-          <div className="flex flex-col sm:flex-row-reverse items-stretch sm:items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Button
               onClick={allocateKeys}
               disabled={selectedKeys.length === 0 || (pendingCount === 0 && specialRequestsCount === 0) || isAllocating}
