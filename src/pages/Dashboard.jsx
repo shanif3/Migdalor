@@ -30,6 +30,11 @@ export default function Dashboard() {
         window.location.href = createPageUrl('Onboarding');
         return;
       }
+      console.log('👤 User loaded in Dashboard:', {
+        email: user.email,
+        platoon_name: user.platoon_name,
+        squad_name: user.squad_name
+      });
       setUser(user);
       setUserLoading(false);
     }).catch(() => {
