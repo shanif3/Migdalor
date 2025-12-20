@@ -63,6 +63,13 @@ export default function Dashboard() {
   });
 
   // Filter crews and squads based on user's platoon
+  console.log('🔍 Dashboard filtering:', {
+    userEmail: user?.email,
+    userPlatoon: user?.platoon_name,
+    allCrews: crews.length,
+    allSquads: squads.length
+  });
+
   const filteredCrews = user?.platoon_name 
     ? crews.filter((crew) => crew.name === user.platoon_name)
     : crews;
@@ -70,6 +77,13 @@ export default function Dashboard() {
   const filteredSquads = user?.platoon_name
     ? squads.filter((squad) => squad.platoon_name === user.platoon_name)
     : squads;
+
+  console.log('✅ After filtering:', {
+    filteredCrews: filteredCrews.length,
+    filteredCrewNames: filteredCrews.map(c => c.name),
+    filteredSquads: filteredSquads.length,
+    filteredSquadNames: filteredSquads.map(s => s.squad_number)
+  });
 
   const { data: todayLessons = [] } = useQuery({
     queryKey: ['today-lessons'],
