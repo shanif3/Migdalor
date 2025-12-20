@@ -355,6 +355,23 @@ export default function KeyAllocation() {
     toast.success('ההקצאות אופסו');
   };
 
+  // Combine lessons and special requests for display
+  const allItemsToDisplay = [
+    ...lessons,
+    ...specialRequests.map((req) => ({
+      id: `special_${req.id}`,
+      crew_name: req.crew_name,
+      start_time: req.start_time,
+      end_time: req.end_time,
+      room_type_needed: req.preferred_type === 'any' ? 'צוותי' : req.preferred_type,
+      needs_computers: false,
+      status: 'special_request',
+      notes: req.notes,
+      isSpecialRequest: true,
+      originalRequestId: req.id
+    }))
+  ].sort((a, b) => a.start_time.localeCompare(b.start_time));
+
   const pendingCount = lessons.filter((l) => l.status === 'pending').length;
   const assignedCount = lessons.filter((l) => l.status === 'assigned').length;
   const specialRequestsCount = specialRequests.length;
@@ -515,19 +532,24 @@ export default function KeyAllocation() {
                         <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                       </TableCell>
                     </TableRow> :
-                  lessons.length === 0 ?
+                  allItemsToDisplay.length === 0 ?
                   <TableRow>
                       <TableCell colSpan={8} className="text-center py-8 text-slate-400">
-                        אין שיעורים מתוכננים לתאריך זה
+                        אין שיעורים או בקשות מתוכננים לתאריך זה
                       </TableCell>
                     </TableRow> :
 
-                  lessons.map((lesson) =>
+                  allItemsToDisplay.map((lesson) =>
                   <TableRow key={lesson.id} className="hover:bg-slate-50/50">
                         <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-mono text-sm">
                           {lesson.start_time}-{lesson.end_time}
                         </TableCell>
-                        <TableCell className="p-2 text-center  align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium">{lesson.crew_name}</TableCell>
+                        <TableCell className="p-2 text-center  align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium">
+                          {lesson.crew_name}
+                          {lesson.isSpecialRequest && (
+                            <Badge className="mr-2 bg-purple-100 text-purple-700 text-xs">בקשה מיוחדת</Badge>
+                          )}
+                        </TableCell>
                         <TableCell className="p-2 flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]\n">
                           <Badge variant="outline" className="text-xs">
                             {lesson.room_type_needed === 'פלוגתי' ? '🏢' : '🏠'}
@@ -537,11 +559,13 @@ export default function KeyAllocation() {
                           {lesson.needs_computers ? '✅' : '—'}
                         </TableCell>
                         <TableCell className="p-2 flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]\n">
-                          {lesson.status === 'assigned' ?
-                      <CheckCircle className="w-4 h-4 text-green-600" /> :
-
-                      <AlertTriangle className="w-4 h-4 text-yellow-600" />
-                      }
+                          {lesson.status === 'assigned' ? (
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          ) : lesson.status === 'special_request' ? (
+                            <Badge className="bg-purple-100 text-purple-700 text-xs">תור</Badge>
+                          ) : (
+                            <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                          )}
                         </TableCell>
                         <TableCell className="p-2 text-center  align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                           {lesson.assigned_key ?
@@ -553,45 +577,58 @@ export default function KeyAllocation() {
                       }
                         </TableCell>
                         <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-                          <Select
-                            value={lesson.assigned_key || ''}
-                            onValueChange={(value) => {
-                              if (value === 'unassign') {
-                                updateLessonMutation.mutate({
-                                  id: lesson.id,
-                                  data: { assigned_key: null, status: 'pending' }
-                                });
-                              } else {
-                                manualAssignMutation.mutate({
-                                  lessonId: lesson.id,
-                                  roomNumber: value
-                                });
-                              }
-                            }}
-                          >
-                            <SelectTrigger className="h-8 w-[120px] text-xs">
-                              <SelectValue placeholder="בחר חדר" />
-                            </SelectTrigger>
-                            <SelectContent dir="rtl">
-                              {lesson.assigned_key && (
-                                <SelectItem value="unassign" className="text-red-600">
-                                  ❌ בטל הקצאה
-                                </SelectItem>
-                              )}
-                              {allKeys.map((key) => (
-                                <SelectItem key={key.id} value={key.room_number}>
-                                  {key.room_type === 'פלוגתי' ? '🏢' : '🏠'} חדר {key.room_number}
-                                  {key.has_computers && ' 💻'}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          {lesson.isSpecialRequest ? (
+                            <span className="text-xs text-slate-400">שבץ אוטומטית</span>
+                          ) : (
+                            <Select
+                              value={lesson.assigned_key || ''}
+                              onValueChange={(value) => {
+                                if (value === 'unassign') {
+                                  updateLessonMutation.mutate({
+                                    id: lesson.id,
+                                    data: { assigned_key: null, status: 'pending' }
+                                  });
+                                } else {
+                                  manualAssignMutation.mutate({
+                                    lessonId: lesson.id,
+                                    roomNumber: value
+                                  });
+                                }
+                              }}
+                            >
+                              <SelectTrigger className="h-8 w-[120px] text-xs">
+                                <SelectValue placeholder="בחר חדר" />
+                              </SelectTrigger>
+                              <SelectContent dir="rtl">
+                                {lesson.assigned_key && (
+                                  <SelectItem value="unassign" className="text-red-600">
+                                    ❌ בטל הקצאה
+                                  </SelectItem>
+                                )}
+                                {allKeys.map((key) => (
+                                  <SelectItem key={key.id} value={key.room_number}>
+                                    {key.room_type === 'פלוגתי' ? '🏢' : '🏠'} חדר {key.room_number}
+                                    {key.has_computers && ' 💻'}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
                         </TableCell>
                         <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => deleteLessonMutation.mutate(lesson.id)}
+                            onClick={() => {
+                              if (lesson.isSpecialRequest) {
+                                base44.entities.WaitingQueue.delete(lesson.originalRequestId).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: ['special-requests'] });
+                                  toast.success('בקשה מיוחדת נמחקה');
+                                });
+                              } else {
+                                deleteLessonMutation.mutate(lesson.id);
+                              }
+                            }}
                             className="text-red-400 hover:text-red-600 hover:bg-red-50">
                             <Trash2 className="w-4 h-4" />
                           </Button>
