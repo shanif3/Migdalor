@@ -109,6 +109,11 @@ export default function Dashboard() {
   });
 
   const handleCheckout = async (key, holderName, startTime, endTime, platoonName) => {
+    if (!user?.email) {
+      toast.error('שגיאה: משתמש לא מחובר');
+      return;
+    }
+
     // Check for time conflicts with existing lessons
     const today = new Date().toISOString().split('T')[0];
     const existingLessons = await base44.entities.Lesson.filter({ 
