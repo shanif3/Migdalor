@@ -10,17 +10,17 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
+  DialogDescription } from
+"@/components/ui/dialog";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
-} from "@/components/ui/table";
-import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2, X, Plus, Filter } from 'lucide-react';
+  TableRow } from
+"@/components/ui/table";
+import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -30,13 +30,6 @@ export default function ManageUsers() {
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({ platoon_name: '', positions: [], role: 'user' });
   const [newPosition, setNewPosition] = useState('');
-  const [filters, setFilters] = useState({
-    name: '',
-    email: '',
-    role: '',
-    platoon: '',
-    position: ''
-  });
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -111,38 +104,20 @@ export default function ManageUsers() {
   const handleRemovePosition = (positionToRemove) => {
     setFormData({
       ...formData,
-      positions: formData.positions.filter(p => p !== positionToRemove)
+      positions: formData.positions.filter((p) => p !== positionToRemove)
     });
   };
 
   // Predefined platoon names
   const platoonNames = [
-    'פלוגה א - סהר',
-    'פלוגה ב - יפתח',
-    'פלוגה ג - אייל',
-    'פלוגה ד - אסף',
-    'פלוגה ה - איתן'
-  ];
+  'פלוגה א - סהר',
+  'פלוגה ב - יפתח',
+  'פלוגה ג - אייל',
+  'פלוגה ד - אסף',
+  'פלוגה ה - איתן'];
 
-  const positionTitles = positions.map(p => p.title);
 
-  // Filter users
-  const filteredUsers = users.filter(user => {
-    const matchName = !filters.name || 
-      (user.full_name && user.full_name.toLowerCase().includes(filters.name.toLowerCase()));
-    
-    const matchEmail = !filters.email || 
-      (user.email && user.email.toLowerCase().includes(filters.email.toLowerCase()));
-    
-    const matchRole = !filters.role || user.role === filters.role;
-    
-    const matchPlatoon = !filters.platoon || user.platoon_name === filters.platoon;
-    
-    const matchPosition = !filters.position || 
-      (user.positions && user.positions.includes(filters.position));
-    
-    return matchName && matchEmail && matchRole && matchPlatoon && matchPosition;
-  });
+  const positionTitles = positions.map((p) => p.title);
 
   // Group users by platoon
   const usersByPlatoon = users.reduce((acc, user) => {
@@ -160,8 +135,8 @@ export default function ManageUsers() {
           <h2 className="text-xl font-semibold text-slate-700 mb-2">גישה מוגבלת</h2>
           <p className="text-slate-500">רק מנהלים יכולים לגשת לדף זה</p>
         </Card>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
@@ -170,8 +145,8 @@ export default function ManageUsers() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             ניהול משתמשים 👤
           </h1>
@@ -184,12 +159,12 @@ export default function ManageUsers() {
             <p className="text-sm text-slate-500">סה״כ משתמשים</p>
             <p className="text-2xl font-bold text-slate-800">{users.length}</p>
           </Card>
-          {Object.entries(usersByPlatoon).map(([platoon, platoonUsers]) => (
-            <Card key={platoon} className="p-4 border-slate-200">
+          {Object.entries(usersByPlatoon).map(([platoon, platoonUsers]) =>
+          <Card key={platoon} className="p-4 border-slate-200">
               <p className="text-sm text-slate-500">{platoon}</p>
               <p className="text-2xl font-bold text-slate-800">{platoonUsers.length}</p>
             </Card>
-          ))}
+          )}
         </div>
 
         {/* Users Table */}
@@ -197,91 +172,30 @@ export default function ManageUsers() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead className="text-center">
-                  <div className="flex flex-col gap-2">
-                    <span>משתמש</span>
-                    <Input
-                      placeholder="סנן..."
-                      value={filters.name}
-                      onChange={(e) => setFilters({ ...filters, name: e.target.value })}
-                      className="h-8 text-sm"
-                    />
-                  </div>
-                </TableHead>
-                <TableHead className="text-center">
-                  <div className="flex flex-col gap-2">
-                    <span>אימייל</span>
-                    <Input
-                      placeholder="סנן..."
-                      value={filters.email}
-                      onChange={(e) => setFilters({ ...filters, email: e.target.value })}
-                      className="h-8 text-sm"
-                    />
-                  </div>
-                </TableHead>
-                <TableHead className="text-center">
-                  <div className="flex flex-col gap-2">
-                    <span>תפקיד במערכת</span>
-                    <select
-                      value={filters.role}
-                      onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
-                    >
-                      <option value="">הכל</option>
-                      <option value="admin">מנהל</option>
-                      <option value="user">משתמש</option>
-                    </select>
-                  </div>
-                </TableHead>
-                <TableHead className="text-center">
-                  <div className="flex flex-col gap-2">
-                    <span>פלוגה</span>
-                    <select
-                      value={filters.platoon}
-                      onChange={(e) => setFilters({ ...filters, platoon: e.target.value })}
-                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
-                    >
-                      <option value="">הכל</option>
-                      {platoonNames.map((name) => (
-                        <option key={name} value={name}>{name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </TableHead>
-                <TableHead className="text-center">
-                  <div className="flex flex-col gap-2">
-                    <span>תפקיד</span>
-                    <select
-                      value={filters.position}
-                      onChange={(e) => setFilters({ ...filters, position: e.target.value })}
-                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
-                    >
-                      <option value="">הכל</option>
-                      {positionTitles.map((pos) => (
-                        <option key={pos} value={pos}>{pos}</option>
-                      ))}
-                    </select>
-                  </div>
-                </TableHead>
+                <TableHead className="text-center">משתמש</TableHead>
+                <TableHead className="text-center">אימייל</TableHead>
+                <TableHead className="text-center">תפקיד במערכת</TableHead>
+                <TableHead className="text-center">פלוגה</TableHead>
+                <TableHead className="text-center">תפקיד</TableHead>
                 <TableHead className="text-center">פעולות</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow>
+              {isLoading ?
+              <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
-                </TableRow>
-              ) : filteredUsers.length === 0 ? (
-                <TableRow>
+                </TableRow> :
+              users.length === 0 ?
+              <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-slate-400">
-                    אין משתמשים מתאימים לסינון
+                    אין משתמשים
                   </TableCell>
-                </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id} className="hover:bg-slate-50/50 [&_td]:text-center">
+                </TableRow> :
+
+              users.map((user) =>
+              <TableRow key={user.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
                       <div className="flex flex-row-reverse items-center justify-center gap-2">
                         <span>{user.full_name || 'ללא שם'}</span>
@@ -297,66 +211,66 @@ export default function ManageUsers() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      {user.role === 'admin' ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                      {user.role === 'admin' ?
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
                           <Shield className="w-3 h-3" />
                           מנהל
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                        </span> :
+
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
                           משתמש
                         </span>
-                      )}
+                  }
+                    </TableCell>
+                    <TableCell className="h-8 text-sm px-2 border border-slate-300 rounded-md text-cente">
+                      {user.platoon_name ?
+                  <span className="font-medium">{user.platoon_name}</span> :
+
+                  <span className="text-slate-400">—</span>
+                  }
                     </TableCell>
                     <TableCell className="text-center text-slate-600">
-                      {user.platoon_name ? (
-                        <span className="font-medium">{user.platoon_name}</span>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-center text-slate-600">
-                      {(user.positions && user.positions.length > 0) ? (
-                        <div className="flex flex-wrap items-center justify-center gap-1">
-                          {user.positions.map((pos, idx) => (
-                            <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
+                      {user.positions && user.positions.length > 0 ?
+                  <div className="flex flex-wrap items-center justify-center gap-1">
+                          {user.positions.map((pos, idx) =>
+                    <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
                               <Briefcase className="w-3 h-3" />
                               {pos}
                             </span>
-                          ))}
-                        </div>
-                      ) : user.position ? (
-                        <div className="flex items-center justify-center gap-2">
+                    )}
+                        </div> :
+                  user.position ?
+                  <div className="flex items-center justify-center gap-2">
                           <Briefcase className="w-4 h-4 text-slate-400" />
                           <span>{user.position}</span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400">—</span>
-                      )}
+                        </div> :
+
+                  <span className="text-slate-400">—</span>
+                  }
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(user)}
-                          className="text-slate-400 hover:text-slate-600"
-                        >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(user)}
+                      className="text-slate-400 hover:text-slate-600">
+
                           <Edit2 className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteUserMutation.mutate(user.id)}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                        >
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteUserMutation.mutate(user.id)}
+                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
+
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+              )
+              }
             </TableBody>
           </Table>
         </Card>
@@ -383,8 +297,8 @@ export default function ManageUsers() {
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
+
                 <option value="user">משתמש</option>
                 <option value="admin">מנהל</option>
               </select>
@@ -395,12 +309,12 @@ export default function ManageUsers() {
               <select
                 value={formData.platoon_name}
                 onChange={(e) => setFormData({ ...formData, platoon_name: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
+
                 <option value="">בחר פלוגה...</option>
-                {platoonNames.map((name) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
+                {platoonNames.map((name) =>
+                <option key={name} value={name}>{name}</option>
+                )}
               </select>
             </div>
 
@@ -408,22 +322,22 @@ export default function ManageUsers() {
               <Label className="text-right block">תפקידים</Label>
               
               {/* Display current positions */}
-              {formData.positions.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 border border-slate-200 rounded-md bg-slate-50">
-                  {formData.positions.map((pos, idx) => (
-                    <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
+              {formData.positions.length > 0 &&
+              <div className="flex flex-wrap gap-2 p-3 border border-slate-200 rounded-md bg-slate-50">
+                  {formData.positions.map((pos, idx) =>
+                <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
                       <span>{pos}</span>
                       <button
-                        type="button"
-                        onClick={() => handleRemovePosition(pos)}
-                        className="hover:bg-blue-200 rounded-full p-0.5"
-                      >
+                    type="button"
+                    onClick={() => handleRemovePosition(pos)}
+                    className="hover:bg-blue-200 rounded-full p-0.5">
+
                         <X className="w-3 h-3" />
                       </button>
                     </div>
-                  ))}
+                )}
                 </div>
-              )}
+              }
 
               {/* Add new position */}
               <div className="flex gap-2">
@@ -432,21 +346,21 @@ export default function ManageUsers() {
                   onClick={handleAddPosition}
                   disabled={!newPosition}
                   className="px-3"
-                  size="sm"
-                >
+                  size="sm">
+
                   <Plus className="w-4 h-4" />
                 </Button>
                 <select
                   value={newPosition}
                   onChange={(e) => setNewPosition(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-right text-sm"
-                >
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-right text-sm">
+
                   <option value="">בחר תפקיד להוספה...</option>
-                  {positionTitles
-                    .filter(pos => !formData.positions.includes(pos))
-                    .map((pos) => (
-                      <option key={pos} value={pos}>{pos}</option>
-                    ))}
+                  {positionTitles.
+                  filter((pos) => !formData.positions.includes(pos)).
+                  map((pos) =>
+                  <option key={pos} value={pos}>{pos}</option>
+                  )}
                 </select>
               </div>
             </div>
@@ -458,13 +372,13 @@ export default function ManageUsers() {
             </Button>
             <Button
               onClick={handleSubmit}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-            >
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+
               שמור שינויים
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>);
+
 }
