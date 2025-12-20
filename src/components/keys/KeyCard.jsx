@@ -24,8 +24,15 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
           ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white' 
           : 'border-amber-200 bg-gradient-to-br from-amber-50/50 to-white'
       }`}>
-<div className="flex flex-row-reverse items-start justify-between mb-4">
-          <div className="flex flex-row-reverse items-center gap-3">
+<div className="flex items-start justify-between mb-4">
+          <Badge className={`${
+            isAvailable 
+              ? 'bg-emerald-500 hover:bg-emerald-600' 
+              : 'bg-amber-500 hover:bg-amber-600'
+          }`}>
+            {isAvailable ? 'זמין' : 'תפוס'}
+          </Badge>
+          <div className="flex items-center gap-3">
             <div className={`p-3 rounded-xl ${
               isAvailable ? 'bg-emerald-100' : 'bg-amber-100'
             }`}>
@@ -49,13 +56,6 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
               </Badge>
             </div>
           </div>
-          <Badge className={`${
-            isAvailable 
-              ? 'bg-emerald-500 hover:bg-emerald-600' 
-              : 'bg-amber-500 hover:bg-amber-600'
-          }`}>
-            {isAvailable ? 'זמין' : 'תפוס'}
-          </Badge>
         </div>
 
         {!isAvailable && displayHolder && (
