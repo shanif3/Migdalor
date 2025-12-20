@@ -62,11 +62,11 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
   // Filter crews and squads based on user's platoon
   const filteredCrews = currentUser?.platoon_name 
     ? crews.filter(crew => crew.name === currentUser.platoon_name)
-    : crews;
+    : [];
   
   const filteredSquads = currentUser?.platoon_name
     ? squads.filter(squad => squad.platoon_name === currentUser.platoon_name)
-    : squads;
+    : [];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

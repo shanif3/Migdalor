@@ -61,12 +61,12 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
   // Filter crews and squads based on user's platoon - show only my platoon's crews and squads
   const filteredCrews = currentUser?.platoon_name 
     ? crews.filter(crew => crew.name === currentUser.platoon_name)
-    : crews;
+    : [];
   
   // Show only squads that belong to my platoon
   const filteredSquads = currentUser?.platoon_name
     ? squads.filter(squad => squad.platoon_name === currentUser.platoon_name)
-    : squads;
+    : [];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
