@@ -34,6 +34,12 @@ export default function ManagePositions() {
     enabled: isAdmin
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    enabled: isAdmin
+  });
+
   const createPositionMutation = useMutation({
     mutationFn: (data) => base44.entities.Position.create(data),
     onSuccess: () => {
@@ -59,6 +65,13 @@ export default function ManagePositions() {
         order: positions.length 
       });
     }
+  };
+
+  // Count users per position
+  const getUserCountForPosition = (positionTitle) => {
+    return users.filter(user => 
+      user.positions && user.positions.includes(positionTitle)
+    ).length;
   };
 
   if (!isAdmin) {
@@ -119,29 +132,35 @@ export default function ManagePositions() {
             </div>
           ) : (
             <div className="space-y-3">
-              {positions.map((position) => (
-                <div
-                  key={position.id}
-                  className="flex items-center justify-between p-4 bg-white rounded-lg border-2 border-slate-200 hover:border-slate-300 transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <Briefcase className="w-5 h-5 text-indigo-600" />
-                    <span className="text-lg font-medium text-slate-800">
-                      {position.title}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (confirm(`למחוק את התפקיד "${position.title}"?`)) {
-                        deletePositionMutation.mutate(position.id);
-                      }
-                    }}
-                    className="hover:bg-red-50 rounded-full p-2 transition-colors"
+              {positions.map((position) => {
+                const userCount = getUserCountForPosition(position.title);
+                return (
+                  <div
+                    key={position.id}
+                    className="flex items-center justify-between p-4 bg-white rounded-lg border-2 border-slate-200 hover:border-slate-300 transition-all"
                   >
-                    <X className="w-4 h-4 text-red-500" />
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center gap-3">
+                      <Briefcase className="w-5 h-5 text-indigo-600" />
+                      <span className="text-lg font-medium text-slate-800">
+                        {position.title}
+                      </span>
+                      <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                        {userCount} {userCount === 1 ? 'משתמש' : 'משתמשים'}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (confirm(`למחוק את התפקיד "${position.title}"?`)) {
+                          deletePositionMutation.mutate(position.id);
+                        }
+                      }}
+                      className="hover:bg-red-50 rounded-full p-2 transition-colors"
+                    >
+                      <X className="w-4 h-4 text-red-500" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
         </Card>
