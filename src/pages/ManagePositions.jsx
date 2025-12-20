@@ -15,7 +15,6 @@ import {
 import { Briefcase, X, Plus, Shield, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function ManagePositions() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -53,13 +52,6 @@ export default function ManagePositions() {
     }
   });
 
-  const updatePositionMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Position.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['positions'] });
-    }
-  });
-
   const handleAddPosition = () => {
     if (newPositionTitle && newPositionTitle.trim()) {
       createPositionMutation.mutate({ 
@@ -67,26 +59,6 @@ export default function ManagePositions() {
         order: positions.length 
       });
     }
-  };
-
-  const handleDragEnd = async (result) => {
-    if (!result.destination) return;
-
-    const items = Array.from(positions);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    // Update order for all affected items
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].order !== i) {
-        await updatePositionMutation.mutateAsync({
-          id: items[i].id,
-          data: { order: i }
-        });
-      }
-    }
-
-    queryClient.invalidateQueries({ queryKey: ['positions'] });
   };
 
   if (!isAdmin) {
@@ -146,67 +118,33 @@ export default function ManagePositions() {
               <p className="text-slate-400">אין תפקידים. הוסף את התפקיד הראשון</p>
             </div>
           ) : (
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="positions">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-3"
-                  >
-                    {positions.map((position, index) => (
-                      <Draggable
-                        key={position.id}
-                        draggableId={position.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`flex items-center justify-between p-4 bg-white rounded-lg border-2 transition-all ${
-                              snapshot.isDragging
-                                ? 'border-indigo-400 shadow-lg'
-                                : 'border-slate-200 hover:border-slate-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="flex flex-col gap-0.5">
-                                <div className="w-1 h-1 bg-slate-400 rounded-full" />
-                                <div className="w-1 h-1 bg-slate-400 rounded-full" />
-                                <div className="w-1 h-1 bg-slate-400 rounded-full" />
-                              </div>
-                              <Briefcase className="w-5 h-5 text-indigo-600" />
-                              <span className="text-lg font-medium text-slate-800">
-                                {position.title}
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => {
-                                if (confirm(`למחוק את התפקיד "${position.title}"?`)) {
-                                  deletePositionMutation.mutate(position.id);
-                                }
-                              }}
-                              className="hover:bg-red-50 rounded-full p-2 transition-colors"
-                            >
-                              <X className="w-4 h-4 text-red-500" />
-                            </button>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
+            <div className="space-y-3">
+              {positions.map((position) => (
+                <div
+                  key={position.id}
+                  className="flex items-center justify-between p-4 bg-white rounded-lg border-2 border-slate-200 hover:border-slate-300 transition-all"
+                >
+                  <div className="flex items-center gap-3">
+                    <Briefcase className="w-5 h-5 text-indigo-600" />
+                    <span className="text-lg font-medium text-slate-800">
+                      {position.title}
+                    </span>
                   </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+                  <button
+                    onClick={() => {
+                      if (confirm(`למחוק את התפקיד "${position.title}"?`)) {
+                        deletePositionMutation.mutate(position.id);
+                      }
+                    }}
+                    className="hover:bg-red-50 rounded-full p-2 transition-colors"
+                  >
+                    <X className="w-4 h-4 text-red-500" />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </Card>
-
-        <p className="text-xs text-slate-400 mt-4 text-center">
-          💡 גרור לשינוי סדר התפקידים
-        </p>
       </div>
 
       {/* Add Position Modal */}
