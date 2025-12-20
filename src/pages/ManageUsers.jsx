@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2, X, Plus } from 'lucide-react';
+import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2, X, Plus, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -30,6 +30,13 @@ export default function ManageUsers() {
   const [currentUser, setCurrentUser] = useState(null);
   const [formData, setFormData] = useState({ platoon_name: '', positions: [], role: 'user' });
   const [newPosition, setNewPosition] = useState('');
+  const [filters, setFilters] = useState({
+    name: '',
+    email: '',
+    role: '',
+    platoon: '',
+    position: ''
+  });
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -119,6 +126,24 @@ export default function ManageUsers() {
 
   const positionTitles = positions.map(p => p.title);
 
+  // Filter users
+  const filteredUsers = users.filter(user => {
+    const matchName = !filters.name || 
+      (user.full_name && user.full_name.toLowerCase().includes(filters.name.toLowerCase()));
+    
+    const matchEmail = !filters.email || 
+      (user.email && user.email.toLowerCase().includes(filters.email.toLowerCase()));
+    
+    const matchRole = !filters.role || user.role === filters.role;
+    
+    const matchPlatoon = !filters.platoon || user.platoon_name === filters.platoon;
+    
+    const matchPosition = !filters.position || 
+      (user.positions && user.positions.includes(filters.position));
+    
+    return matchName && matchEmail && matchRole && matchPlatoon && matchPosition;
+  });
+
   // Group users by platoon
   const usersByPlatoon = users.reduce((acc, user) => {
     const platoon = user.platoon_name || 'ללא פלוגה';
@@ -172,11 +197,72 @@ export default function ManageUsers() {
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-50">
-                <TableHead className="text-center">משתמש</TableHead>
-                <TableHead className="text-center">אימייל</TableHead>
-                <TableHead className="text-center">תפקיד במערכת</TableHead>
-                <TableHead className="text-center">פלוגה</TableHead>
-                <TableHead className="text-center">תפקיד</TableHead>
+                <TableHead className="text-center">
+                  <div className="flex flex-col gap-2">
+                    <span>משתמש</span>
+                    <Input
+                      placeholder="סנן..."
+                      value={filters.name}
+                      onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </TableHead>
+                <TableHead className="text-center">
+                  <div className="flex flex-col gap-2">
+                    <span>אימייל</span>
+                    <Input
+                      placeholder="סנן..."
+                      value={filters.email}
+                      onChange={(e) => setFilters({ ...filters, email: e.target.value })}
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                </TableHead>
+                <TableHead className="text-center">
+                  <div className="flex flex-col gap-2">
+                    <span>תפקיד במערכת</span>
+                    <select
+                      value={filters.role}
+                      onChange={(e) => setFilters({ ...filters, role: e.target.value })}
+                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
+                    >
+                      <option value="">הכל</option>
+                      <option value="admin">מנהל</option>
+                      <option value="user">משתמש</option>
+                    </select>
+                  </div>
+                </TableHead>
+                <TableHead className="text-center">
+                  <div className="flex flex-col gap-2">
+                    <span>פלוגה</span>
+                    <select
+                      value={filters.platoon}
+                      onChange={(e) => setFilters({ ...filters, platoon: e.target.value })}
+                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
+                    >
+                      <option value="">הכל</option>
+                      {platoonNames.map((name) => (
+                        <option key={name} value={name}>{name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </TableHead>
+                <TableHead className="text-center">
+                  <div className="flex flex-col gap-2">
+                    <span>תפקיד</span>
+                    <select
+                      value={filters.position}
+                      onChange={(e) => setFilters({ ...filters, position: e.target.value })}
+                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
+                    >
+                      <option value="">הכל</option>
+                      {positionTitles.map((pos) => (
+                        <option key={pos} value={pos}>{pos}</option>
+                      ))}
+                    </select>
+                  </div>
+                </TableHead>
                 <TableHead className="text-center">פעולות</TableHead>
               </TableRow>
             </TableHeader>
@@ -187,14 +273,14 @@ export default function ManageUsers() {
                     טוען...
                   </TableCell>
                 </TableRow>
-              ) : users.length === 0 ? (
+              ) : filteredUsers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-slate-400">
-                    אין משתמשים
+                    אין משתמשים מתאימים לסינון
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user) => (
+                filteredUsers.map((user) => (
                   <TableRow key={user.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
                       <div className="flex flex-row-reverse items-center justify-center gap-2">
