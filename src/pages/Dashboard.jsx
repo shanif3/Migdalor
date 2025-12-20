@@ -117,7 +117,8 @@ export default function Dashboard() {
   const addToQueueMutation = useMutation({
     mutationFn: (data) => base44.entities.WaitingQueue.create({
       ...data,
-      priority: queue.length + 1
+      priority: queue.length + 1,
+      crew_manager: user?.email
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] });

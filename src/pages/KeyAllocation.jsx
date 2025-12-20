@@ -278,7 +278,7 @@ export default function KeyAllocation() {
           const originalRequest = specialRequests.find(r => r.id === requestId);
           
           await base44.entities.Lesson.create({
-            crew_manager: 'special_request',
+            crew_manager: originalRequest?.crew_manager || 'special_request',
             crew_name: assignment.crewName,
             platoon_name: '',
             date: selectedDate,
