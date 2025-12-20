@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { UserCheck, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { createPageUrl } from './utils';
+import { createPageUrl } from '../utils';
 
 export default function Onboarding() {
   const [user, setUser] = useState(null);
