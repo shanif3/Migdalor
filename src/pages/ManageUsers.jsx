@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2 } from 'lucide-react';
+import { Users, Edit2, Mail, Shield, User, Briefcase, Trash2, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -28,7 +28,8 @@ export default function ManageUsers() {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-  const [formData, setFormData] = useState({ platoon_name: '', position: '', role: 'user' });
+  const [formData, setFormData] = useState({ platoon_name: '', positions: [], role: 'user' });
+  const [newPosition, setNewPosition] = useState('');
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -49,7 +50,8 @@ export default function ManageUsers() {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowModal(false);
       setEditingUser(null);
-      setFormData({ platoon_name: '', position: '', role: 'user' });
+      setFormData({ platoon_name: '', positions: [], role: 'user' });
+      setNewPosition('');
       toast.success('פרטי משתמש עודכנו בהצלחה');
     }
   });
@@ -72,16 +74,32 @@ export default function ManageUsers() {
     setEditingUser(user);
     setFormData({
       platoon_name: user.platoon_name || '',
-      position: user.position || '',
+      positions: user.positions || (user.position ? [user.position] : []),
       role: user.role || 'user'
     });
+    setNewPosition('');
     setShowModal(true);
   };
 
   const handleClose = () => {
     setShowModal(false);
     setEditingUser(null);
-    setFormData({ platoon_name: '', position: '', role: 'user' });
+    setFormData({ platoon_name: '', positions: [], role: 'user' });
+    setNewPosition('');
+  };
+
+  const handleAddPosition = () => {
+    if (newPosition && !formData.positions.includes(newPosition)) {
+      setFormData({ ...formData, positions: [...formData.positions, newPosition] });
+      setNewPosition('');
+    }
+  };
+
+  const handleRemovePosition = (positionToRemove) => {
+    setFormData({
+      ...formData,
+      positions: formData.positions.filter(p => p !== positionToRemove)
+    });
   };
 
   // Predefined platoon names and positions
@@ -209,7 +227,16 @@ export default function ManageUsers() {
                       )}
                     </TableCell>
                     <TableCell className="text-center text-slate-600">
-                      {user.position ? (
+                      {(user.positions && user.positions.length > 0) ? (
+                        <div className="flex flex-wrap items-center justify-center gap-1">
+                          {user.positions.map((pos, idx) => (
+                            <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
+                              <Briefcase className="w-3 h-3" />
+                              {pos}
+                            </span>
+                          ))}
+                        </div>
+                      ) : user.position ? (
                         <div className="flex items-center justify-center gap-2">
                           <Briefcase className="w-4 h-4 text-slate-400" />
                           <span>{user.position}</span>
@@ -289,17 +316,50 @@ export default function ManageUsers() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">תפקיד</Label>
-              <select
-                value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
-                <option value="">בחר תפקיד...</option>
-                {positions.map((pos) => (
-                  <option key={pos} value={pos}>{pos}</option>
-                ))}
-              </select>
+              <Label className="text-right block">תפקידים</Label>
+              
+              {/* Display current positions */}
+              {formData.positions.length > 0 && (
+                <div className="flex flex-wrap gap-2 p-3 border border-slate-200 rounded-md bg-slate-50">
+                  {formData.positions.map((pos, idx) => (
+                    <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
+                      <span>{pos}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePosition(pos)}
+                        className="hover:bg-blue-200 rounded-full p-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add new position */}
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={handleAddPosition}
+                  disabled={!newPosition}
+                  className="px-3"
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+                <select
+                  value={newPosition}
+                  onChange={(e) => setNewPosition(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-right text-sm"
+                >
+                  <option value="">בחר תפקיד להוספה...</option>
+                  {positions
+                    .filter(pos => !formData.positions.includes(pos))
+                    .map((pos) => (
+                      <option key={pos} value={pos}>{pos}</option>
+                    ))}
+                </select>
+              </div>
             </div>
           </div>
 
