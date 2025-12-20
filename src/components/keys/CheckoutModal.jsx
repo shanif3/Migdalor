@@ -171,8 +171,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
         </div>
 
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
-            ביטול
+          
           </Button>
           <Button
             onClick={handleConfirm}
@@ -181,6 +180,8 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
 
             אשר משיכה
           </Button>
+          <Button variant="outline" onClick={onClose} className="flex-1">
+            ביטול
         </div>
       </DialogContent>
     </Dialog>);
