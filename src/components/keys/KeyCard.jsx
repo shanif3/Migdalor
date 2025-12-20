@@ -69,7 +69,7 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
             {keyItem.checkout_start_time && keyItem.checkout_end_time && (
               <div className="flex items-center gap-2 text-slate-400 text-xs">
                 <Clock className="w-3 h-3" />
-                <span>{keyItem.checkout_end_time}-{keyItem.checkout_start_time}-{keyItem.checkout_end_time}</span>
+                <span>{keyItem.checkout_end_time} - {keyItem.checkout_start_time}</span>
               </div>
             )}
           </div>
