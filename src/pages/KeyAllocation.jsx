@@ -595,7 +595,47 @@ export default function KeyAllocation() {
                         </TableCell>
                         <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                           {lesson.isSpecialRequest ? (
-                            <span className="text-xs text-slate-400">שבץ אוטומטית</span>
+                            <Select
+                              value=""
+                              onValueChange={async (value) => {
+                                // Create lesson from special request
+                                const requestId = lesson.originalRequestId;
+                                const originalRequest = specialRequests.find(r => r.id === requestId);
+                                
+                                await base44.entities.Lesson.create({
+                                  crew_manager: originalRequest?.crew_manager || 'special_request',
+                                  crew_name: lesson.crew_name,
+                                  platoon_name: originalRequest?.platoon_name || '',
+                                  date: selectedDate,
+                                  start_time: lesson.start_time,
+                                  end_time: lesson.end_time,
+                                  room_type_needed: originalRequest?.preferred_type === 'any' ? 'צוותי' : originalRequest?.preferred_type,
+                                  needs_computers: false,
+                                  assigned_key: value,
+                                  status: 'assigned',
+                                  notes: originalRequest?.notes || 'בקשה מיוחדת'
+                                });
+                                
+                                // Delete the special request from queue
+                                await base44.entities.WaitingQueue.delete(requestId);
+                                
+                                queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+                                queryClient.invalidateQueries({ queryKey: ['special-requests'] });
+                                toast.success(`בקשה מיוחדת של ${lesson.crew_name} שובצה ידנית`);
+                              }}
+                            >
+                              <SelectTrigger className="h-8 w-[120px] text-xs">
+                                <SelectValue placeholder="שבץ ידנית" />
+                              </SelectTrigger>
+                              <SelectContent dir="rtl">
+                                {allKeys.map((key) => (
+                                  <SelectItem key={key.id} value={key.room_number}>
+                                    {key.room_type === 'פלוגתי' ? '🏢' : '🏠'} חדר {key.room_number}
+                                    {key.has_computers && ' 💻'}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           ) : (
                             <Select
                               value={lesson.assigned_key || ''}
