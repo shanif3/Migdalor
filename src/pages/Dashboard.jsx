@@ -181,6 +181,8 @@ export default function Dashboard() {
         status: 'taken',
         current_holder: holderName,
         checkout_time: new Date().toISOString(),
+        checkout_start_time: startTime,
+        checkout_end_time: endTime,
         checked_out_by: user?.email
       }
     });
@@ -208,6 +210,8 @@ export default function Dashboard() {
         status: 'available',
         current_holder: null,
         checkout_time: null,
+        checkout_start_time: null,
+        checkout_end_time: null,
         checked_out_by: null
       }
     });
