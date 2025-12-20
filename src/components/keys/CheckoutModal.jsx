@@ -180,7 +180,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
             אשר משיכה
           </Button>
           <Button variant="outline" onClick={onClose} className="flex-1">
-            ביטול
+           ביטול
           </Button>
         </div>
       </DialogContent>
