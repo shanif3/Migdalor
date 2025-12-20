@@ -18,6 +18,7 @@ import {
   SelectValue } from
 "@/components/ui/select";
 import { Clock, Users } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AddToQueueModal({ open, onClose, crews, squads, currentUser, onConfirm }) {
   const [crewName, setCrewName] = useState('');
@@ -29,6 +30,19 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
 
   const handleConfirm = () => {
     if (crewName && startTime && endTime) {
+      // Check if time has already passed
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (startTime < currentTime) {
+        toast.error('לא ניתן להוסיף בקשה בזמן שכבר חלף');
+        return;
+      }
+
+      if (startTime >= endTime) {
+        toast.error('שעת הסיום חייבת להיות מאוחרת משעת ההתחלה');
+        return;
+      }
+
       onConfirm({
         crew_name: crewName,
         preferred_type: preferredType,
