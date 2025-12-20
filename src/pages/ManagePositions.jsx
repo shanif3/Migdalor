@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
 import { Briefcase, X, Plus, Shield, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -10,6 +19,8 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function ManagePositions() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [newPositionTitle, setNewPositionTitle] = useState('');
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -28,6 +39,8 @@ export default function ManagePositions() {
     mutationFn: (data) => base44.entities.Position.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['positions'] });
+      setShowModal(false);
+      setNewPositionTitle('');
       toast.success('תפקיד נוסף בהצלחה');
     }
   });
@@ -48,10 +61,9 @@ export default function ManagePositions() {
   });
 
   const handleAddPosition = () => {
-    const title = prompt('שם התפקיד החדש:');
-    if (title && title.trim()) {
+    if (newPositionTitle && newPositionTitle.trim()) {
       createPositionMutation.mutate({ 
-        title: title.trim(), 
+        title: newPositionTitle.trim(), 
         order: positions.length 
       });
     }
@@ -114,7 +126,7 @@ export default function ManagePositions() {
         {/* Add Button */}
         <div className="mb-6">
           <Button
-            onClick={handleAddPosition}
+            onClick={() => setShowModal(true)}
             className="bg-indigo-600 hover:bg-indigo-700"
           >
             <Plus className="w-4 h-4 ml-2" />
@@ -196,6 +208,61 @@ export default function ManagePositions() {
           💡 גרור לשינוי סדר התפקידים
         </p>
       </div>
+
+      {/* Add Position Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="sm:max-w-md" dir="rtl">
+          <DialogHeader className="text-right">
+            <DialogTitle className="flex flex-row-reverse items-center gap-2 justify-end">
+              הוסף תפקיד חדש
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <Briefcase className="w-5 h-5 text-indigo-600" />
+              </div>
+            </DialogTitle>
+            <DialogDescription className="text-right">
+              הזן את שם התפקיד החדש
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-right block">שם התפקיד *</Label>
+              <Input
+                value={newPositionTitle}
+                onChange={(e) => setNewPositionTitle(e.target.value)}
+                placeholder="לדוגמה: קה״ד צוותי"
+                className="text-right"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newPositionTitle.trim()) {
+                    handleAddPosition();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-row-reverse gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowModal(false);
+                setNewPositionTitle('');
+              }} 
+              className="flex-1"
+            >
+              ביטול
+            </Button>
+            <Button
+              onClick={handleAddPosition}
+              disabled={!newPositionTitle.trim()}
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+            >
+              הוסף תפקיד
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
