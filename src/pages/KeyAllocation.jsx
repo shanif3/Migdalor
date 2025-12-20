@@ -273,8 +273,25 @@ export default function KeyAllocation() {
       for (const assignment of assignments) {
         // Check if it's a special request
         if (assignment.lessonId.startsWith('special_')) {
-          // Delete the special request from queue
+          // Create a new lesson for the special request
           const requestId = assignment.lessonId.replace('special_', '');
+          const originalRequest = specialRequests.find(r => r.id === requestId);
+          
+          await base44.entities.Lesson.create({
+            crew_manager: 'special_request',
+            crew_name: assignment.crewName,
+            platoon_name: '',
+            date: selectedDate,
+            start_time: assignment.startTime,
+            end_time: assignment.endTime,
+            room_type_needed: originalRequest?.preferred_type === 'any' ? 'צוותי' : originalRequest?.preferred_type,
+            needs_computers: false,
+            assigned_key: assignment.roomNumber,
+            status: 'assigned',
+            notes: originalRequest?.notes || 'בקשה מיוחדת'
+          });
+          
+          // Delete the special request from queue
           await base44.entities.WaitingQueue.delete(requestId);
           toast.success(`בקשה מיוחדת של ${assignment.crewName} שובצה`);
         } else {
