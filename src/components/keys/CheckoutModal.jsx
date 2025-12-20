@@ -172,7 +172,6 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
 
         <div className="flex gap-3">
           
-          </Button>
           <Button
             onClick={handleConfirm}
             disabled={(useCustom ? !customName : !selectedCrew) || !startTime || !endTime}
@@ -182,6 +181,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
           </Button>
           <Button variant="outline" onClick={onClose} className="flex-1">
             ביטול
+          </Button>
         </div>
       </DialogContent>
     </Dialog>);
