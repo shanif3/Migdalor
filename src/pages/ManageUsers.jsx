@@ -44,6 +44,12 @@ export default function ManageUsers() {
     enabled: isAdmin
   });
 
+  const { data: positions = [], isLoading: positionsLoading } = useQuery({
+    queryKey: ['positions'],
+    queryFn: () => base44.entities.Position.list('order'),
+    enabled: isAdmin
+  });
+
   const updateUserMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.User.update(id, data),
     onSuccess: () => {
@@ -61,6 +67,22 @@ export default function ManageUsers() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('משתמש נמחק בהצלחה');
+    }
+  });
+
+  const createPositionMutation = useMutation({
+    mutationFn: (data) => base44.entities.Position.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['positions'] });
+      toast.success('תפקיד נוסף בהצלחה');
+    }
+  });
+
+  const deletePositionMutation = useMutation({
+    mutationFn: (id) => base44.entities.Position.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['positions'] });
+      toast.success('תפקיד נמחק');
     }
   });
 
@@ -102,7 +124,7 @@ export default function ManageUsers() {
     });
   };
 
-  // Predefined platoon names and positions
+  // Predefined platoon names
   const platoonNames = [
     'פלוגה א - סהר',
     'פלוגה ב - יפתח',
@@ -111,10 +133,7 @@ export default function ManageUsers() {
     'פלוגה ה - איתן'
   ];
 
-  const positions = [
-    'קה״ד צוותי',
-    'קה״ד פלוגתי'
-  ];
+  const positionTitles = positions.map(p => p.title);
 
   // Group users by platoon
   const usersByPlatoon = users.reduce((acc, user) => {
@@ -145,10 +164,64 @@ export default function ManageUsers() {
           className="mb-8"
         >
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            ניהול משתמשים 👤
+            ניהול משתמשים ותפקידים 👤
           </h1>
-          <p className="text-slate-500">עדכן פרטים של משתמשים - פלוגה ותפקיד</p>
+          <p className="text-slate-500">עדכן פרטים של משתמשים ונהל תפקידים</p>
         </motion.div>
+
+        {/* Position Management */}
+        <Card className="mb-6 p-6 border-slate-200">
+          <h2 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <Briefcase className="w-5 h-5" />
+            ניהול תפקידים
+          </h2>
+          
+          {/* Add new position */}
+          <div className="mb-4 flex gap-2">
+            <Button
+              onClick={() => {
+                const title = prompt('שם התפקיד החדש:');
+                if (title && title.trim()) {
+                  createPositionMutation.mutate({ title: title.trim(), order: positions.length });
+                }
+              }}
+              className="bg-indigo-600 hover:bg-indigo-700"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 ml-2" />
+              הוסף תפקיד
+            </Button>
+          </div>
+
+          {/* List of positions */}
+          <div className="flex flex-wrap gap-2">
+            {positionsLoading ? (
+              <p className="text-sm text-slate-400">טוען...</p>
+            ) : positions.length === 0 ? (
+              <p className="text-sm text-slate-400">אין תפקידים. הוסף את התפקיד הראשון</p>
+            ) : (
+              positions.map((position) => (
+                <div
+                  key={position.id}
+                  className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg border border-slate-200"
+                >
+                  <Briefcase className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm font-medium text-slate-700">{position.title}</span>
+                  <button
+                    onClick={() => {
+                      if (confirm(`למחוק את התפקיד "${position.title}"?`)) {
+                        deletePositionMutation.mutate(position.id);
+                      }
+                    }}
+                    className="hover:bg-slate-200 rounded-full p-1"
+                  >
+                    <X className="w-3 h-3 text-slate-500" />
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
 
         {/* Stats */}
         <div className="mb-8 flex flex-wrap gap-4">
@@ -353,7 +426,7 @@ export default function ManageUsers() {
                   className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-right text-sm"
                 >
                   <option value="">בחר תפקיד להוספה...</option>
-                  {positions
+                  {positionTitles
                     .filter(pos => !formData.positions.includes(pos))
                     .map((pos) => (
                       <option key={pos} value={pos}>{pos}</option>
