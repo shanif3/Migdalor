@@ -73,7 +73,11 @@ export default function Dashboard() {
   const filteredSquads = (isAdmin || !user?.platoon_name
     ? squads
     : squads.filter((squad) => squad.platoon_name === user.platoon_name))
-    .sort((a, b) => a.squad_number.localeCompare(b.squad_number, 'he'));
+    .sort((a, b) => {
+      const numA = parseInt(a.squad_number.match(/\d+/)?.[0] || 0);
+      const numB = parseInt(b.squad_number.match(/\d+/)?.[0] || 0);
+      return numA - numB;
+    });
 
   const { data: todayLessons = [] } = useQuery({
     queryKey: ['today-lessons'],
