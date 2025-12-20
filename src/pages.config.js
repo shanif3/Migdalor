@@ -7,6 +7,7 @@ import ManageSquads from './pages/ManageSquads';
 import ManageUsers from './pages/ManageUsers';
 import ManagePositions from './pages/ManagePositions';
 import Onboarding from './pages/Onboarding';
+import MyProfile from './pages/MyProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "ManageUsers": ManageUsers,
     "ManagePositions": ManagePositions,
     "Onboarding": Onboarding,
+    "MyProfile": MyProfile,
 }
 
 export const pagesConfig = {

@@ -31,6 +31,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
+    { name: 'אזור אישי', icon: Target, page: 'MyProfile', tooltip: 'אזור אישי' },
   ];
 
   const managementPages = isAdmin 
