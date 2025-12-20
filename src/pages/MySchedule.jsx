@@ -74,14 +74,16 @@ export default function MySchedule() {
     queryFn: () => base44.entities.Squad.list('order')
   });
 
-  // Filter crews and squads based on user's platoon
-  const filteredCrews = user?.platoon_name ?
-  crews.filter((crew) => crew.name === user.platoon_name) :
-  crews;
+  // Filter crews and squads based on user's platoon (admins see all)
+  const isAdmin = user?.role === 'admin';
 
-  const filteredSquads = user?.platoon_name ?
-  squads.filter((squad) => squad.platoon_name === user.platoon_name) :
-  squads;
+  const filteredCrews = isAdmin || !user?.platoon_name
+    ? crews
+    : crews.filter((crew) => crew.name === user.platoon_name);
+
+  const filteredSquads = isAdmin || !user?.platoon_name
+    ? squads
+    : squads.filter((squad) => squad.platoon_name === user.platoon_name);
 
   const { data: allDayLessons = [] } = useQuery({
     queryKey: ['all-day-lessons', selectedDate],

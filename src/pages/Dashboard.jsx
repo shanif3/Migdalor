@@ -62,28 +62,16 @@ export default function Dashboard() {
     queryFn: () => base44.entities.WaitingQueue.list('priority')
   });
 
-  // Filter crews and squads based on user's platoon
-  console.log('🔍 Dashboard filtering:', {
-    userEmail: user?.email,
-    userPlatoon: user?.platoon_name,
-    allCrews: crews.length,
-    allSquads: squads.length
-  });
+  // Filter crews and squads based on user's platoon (admins see all)
+  const isAdmin = user?.role === 'admin';
 
-  const filteredCrews = user?.platoon_name 
-    ? crews.filter((crew) => crew.name === user.platoon_name)
-    : crews;
+  const filteredCrews = isAdmin || !user?.platoon_name
+    ? crews
+    : crews.filter((crew) => crew.name === user.platoon_name);
 
-  const filteredSquads = user?.platoon_name
-    ? squads.filter((squad) => squad.platoon_name === user.platoon_name)
-    : squads;
-
-  console.log('✅ After filtering:', {
-    filteredCrews: filteredCrews.length,
-    filteredCrewNames: filteredCrews.map(c => c.name),
-    filteredSquads: filteredSquads.length,
-    filteredSquadNames: filteredSquads.map(s => s.squad_number)
-  });
+  const filteredSquads = isAdmin || !user?.platoon_name
+    ? squads
+    : squads.filter((squad) => squad.platoon_name === user.platoon_name);
 
   const { data: todayLessons = [] } = useQuery({
     queryKey: ['today-lessons'],

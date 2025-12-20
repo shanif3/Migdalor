@@ -27,17 +27,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('23:59');
 
-  React.useEffect(() => {
-    if (open) {
-      console.log('🔑 CheckoutModal received:', {
-        crews: crews?.length,
-        crewNames: crews?.map(c => c.name),
-        squads: squads?.length,
-        squadNames: squads?.map(s => s.squad_number),
-        userPlatoon: currentUser?.platoon_name
-      });
-    }
-  }, [open, crews, squads, currentUser]);
+
 
   // Prefill times if provided
   React.useEffect(() => {
