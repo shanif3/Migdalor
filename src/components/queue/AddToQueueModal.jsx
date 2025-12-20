@@ -59,14 +59,7 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
     }
   };
 
-  // Filter crews and squads based on user's platoon
-  const filteredCrews = currentUser?.platoon_name 
-    ? crews.filter(crew => crew.name === currentUser.platoon_name)
-    : crews;
-  
-  const filteredSquads = currentUser?.platoon_name
-    ? squads.filter(squad => squad.platoon_name === currentUser.platoon_name)
-    : squads;
+
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -100,15 +93,15 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
               className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
 
                 <option value="">בחר פלוגה או צוות...</option>
-                
+
                 <optgroup label="פלוגות">
-                  {filteredCrews?.map((crew) =>
+                  {crews?.map((crew) =>
                 <option key={crew.id} value={crew.name}>{crew.name}</option>
                 )}
                 </optgroup>
-                
+
                 <optgroup label="צוותים">
-                  {filteredSquads?.map((squad) =>
+                  {squads?.map((squad) =>
                 <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>

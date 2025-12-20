@@ -57,6 +57,15 @@ export default function Dashboard() {
     queryFn: () => base44.entities.WaitingQueue.list('priority')
   });
 
+  // Filter crews and squads based on user's platoon
+  const filteredCrews = user?.platoon_name 
+    ? crews.filter(crew => crew.name === user.platoon_name)
+    : crews;
+
+  const filteredSquads = user?.platoon_name
+    ? squads.filter(squad => squad.platoon_name === user.platoon_name)
+    : squads;
+
   const { data: todayLessons = [] } = useQuery({
     queryKey: ['today-lessons'],
     queryFn: async () => {
@@ -411,8 +420,8 @@ export default function Dashboard() {
         open={!!checkoutKey}
         onClose={() => setCheckoutKey(null)}
         keyItem={checkoutKey}
-        crews={crews}
-        squads={squads}
+        crews={filteredCrews}
+        squads={filteredSquads}
         currentUser={user}
         onConfirm={handleCheckout} />
 
@@ -420,8 +429,8 @@ export default function Dashboard() {
       <AddToQueueModal
         open={showQueueModal}
         onClose={() => setShowQueueModal(false)}
-        crews={crews}
-        squads={squads}
+        crews={filteredCrews}
+        squads={filteredSquads}
         currentUser={user}
         onConfirm={(data) => addToQueueMutation.mutate(data)} />
 

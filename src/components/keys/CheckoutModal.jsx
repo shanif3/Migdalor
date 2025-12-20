@@ -58,15 +58,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
 
   if (!keyItem) return null;
 
-  // Filter crews and squads based on user's platoon - show only my platoon's crews and squads
-  const filteredCrews = currentUser?.platoon_name 
-    ? crews.filter(crew => crew.name === currentUser.platoon_name)
-    : crews;
-  
-  // Show only squads that belong to my platoon
-  const filteredSquads = currentUser?.platoon_name
-    ? squads.filter(squad => squad.platoon_name === currentUser.platoon_name)
-    : squads;
+
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -98,7 +90,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
                 setSelectedCrew(selectedValue);
 
                 // Check if a squad was selected and auto-fill platoon name
-                const selectedSquad = filteredSquads?.find((s) => s.squad_number === selectedValue);
+                const selectedSquad = squads?.find((s) => s.squad_number === selectedValue);
                 setPlatoonName(selectedSquad ? selectedSquad.platoon_name : '');
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
@@ -106,13 +98,13 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
                 <option value="">בחר פלוגה או צוות...</option>
                 
                 <optgroup label="פלוגות">
-                  {filteredCrews?.map((crew) =>
+                  {crews?.map((crew) =>
                 <option key={crew.id} value={crew.name}>{crew.name}</option>
                 )}
                 </optgroup>
                 
                 <optgroup label="צוותים">
-                  {filteredSquads?.map((squad) =>
+                  {squads?.map((squad) =>
                 <option key={squad.id} value={squad.squad_number}>
                       {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                     </option>
