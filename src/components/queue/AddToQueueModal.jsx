@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 
 export default function AddToQueueModal({ open, onClose, crews, squads, currentUser, onConfirm }) {
   const [crewName, setCrewName] = useState('');
+  const [platoonName, setPlatoonName] = useState('');
   const [preferredType, setPreferredType] = useState('any');
   const [notes, setNotes] = useState('');
   const [useExisting, setUseExisting] = useState(false);
@@ -47,12 +48,14 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
 
       onConfirm({
         crew_name: crewName,
+        platoon_name: platoonName,
         preferred_type: preferredType,
         start_time: startTime,
         end_time: endTime,
         notes: notes
       });
       setCrewName('');
+      setPlatoonName('');
       setPreferredType('any');
       setStartTime('');
       setEndTime('');
@@ -91,7 +94,14 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
               <Label className="text-sm font-medium text-right block">החדר עבור *</Label>
               <select
               value={crewName}
-              onChange={(e) => setCrewName(e.target.value)}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                setCrewName(selectedValue);
+
+                // Check if a squad was selected and auto-fill platoon name
+                const selectedSquad = squads?.find((s) => s.squad_number === selectedValue);
+                setPlatoonName(selectedSquad ? selectedSquad.platoon_name : '');
+              }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
 
                 <option value="">בחר פלוגה או צוות...</option>

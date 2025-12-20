@@ -280,7 +280,7 @@ export default function KeyAllocation() {
           await base44.entities.Lesson.create({
             crew_manager: originalRequest?.crew_manager || 'special_request',
             crew_name: assignment.crewName,
-            platoon_name: '',
+            platoon_name: originalRequest?.platoon_name || '',
             date: selectedDate,
             start_time: assignment.startTime,
             end_time: assignment.endTime,
