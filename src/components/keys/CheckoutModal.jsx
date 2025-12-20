@@ -98,7 +98,7 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
                 setSelectedCrew(selectedValue);
 
                 // Check if a squad was selected and auto-fill platoon name
-                const selectedSquad = squads?.find((s) => s.squad_number === selectedValue);
+                const selectedSquad = filteredSquads?.find((s) => s.squad_number === selectedValue);
                 setPlatoonName(selectedSquad ? selectedSquad.platoon_name : '');
               }}
               className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
