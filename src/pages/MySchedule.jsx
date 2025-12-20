@@ -357,6 +357,17 @@ export default function MySchedule() {
       return;
     }
 
+    // Check if time has already passed (only for today)
+    const isToday = selectedDate === format(new Date(), 'yyyy-MM-dd');
+    if (isToday) {
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      if (formData.start_time < currentTime) {
+        toast.error('לא ניתן להוסיף שיעור בזמן שכבר חלף');
+        return;
+      }
+    }
+
     if (editingLesson) {
       updateMutation.mutate({
         id: editingLesson.id,
