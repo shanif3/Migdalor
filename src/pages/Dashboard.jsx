@@ -22,7 +22,14 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(user => {
+      // Check if onboarding is needed
+      if (!user.onboarding_completed) {
+        window.location.href = createPageUrl('Onboarding');
+        return;
+      }
+      setUser(user);
+    }).catch(() => {});
   }, []);
 
   const { data: keys = [], isLoading: keysLoading } = useQuery({

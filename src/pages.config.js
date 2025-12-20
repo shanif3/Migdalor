@@ -6,6 +6,7 @@ import KeyAllocation from './pages/KeyAllocation';
 import ManageSquads from './pages/ManageSquads';
 import ManageUsers from './pages/ManageUsers';
 import ManagePositions from './pages/ManagePositions';
+import Onboarding from './pages/Onboarding';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "ManageSquads": ManageSquads,
     "ManageUsers": ManageUsers,
     "ManagePositions": ManagePositions,
+    "Onboarding": Onboarding,
 }
 
 export const pagesConfig = {

@@ -28,12 +28,13 @@ export default function ManageUsers() {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-  const [formData, setFormData] = useState({ platoon_name: '', positions: [], role: 'user' });
+  const [formData, setFormData] = useState({ squad_name: '', platoon_name: '', positions: [], role: 'user' });
   const [newPosition, setNewPosition] = useState('');
   const [filters, setFilters] = useState({
     name: '',
     email: '',
     role: '',
+    squad: '',
     platoon: '',
     position: ''
   });
@@ -57,13 +58,19 @@ export default function ManageUsers() {
     enabled: isAdmin
   });
 
+  const { data: squads = [] } = useQuery({
+    queryKey: ['squads'],
+    queryFn: () => base44.entities.Squad.list('order'),
+    enabled: isAdmin
+  });
+
   const updateUserMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.User.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowModal(false);
       setEditingUser(null);
-      setFormData({ platoon_name: '', positions: [], role: 'user' });
+      setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user' });
       setNewPosition('');
       toast.success('פרטי משתמש עודכנו בהצלחה');
     }
@@ -86,6 +93,7 @@ export default function ManageUsers() {
   const handleEdit = (user) => {
     setEditingUser(user);
     setFormData({
+      squad_name: user.squad_name || '',
       platoon_name: user.platoon_name || '',
       positions: user.positions || (user.position ? [user.position] : []),
       role: user.role || 'user'
@@ -97,7 +105,7 @@ export default function ManageUsers() {
   const handleClose = () => {
     setShowModal(false);
     setEditingUser(null);
-    setFormData({ platoon_name: '', positions: [], role: 'user' });
+    setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user' });
     setNewPosition('');
   };
 
@@ -136,12 +144,15 @@ export default function ManageUsers() {
     
     const matchRole = !filters.role || user.role === filters.role;
     
+    const matchSquad = !filters.squad || 
+      (user.squad_name && user.squad_name.toLowerCase().includes(filters.squad.toLowerCase()));
+    
     const matchPlatoon = !filters.platoon || user.platoon_name === filters.platoon;
     
     const matchPosition = !filters.position || 
       (user.positions && user.positions.includes(filters.position));
     
-    return matchName && matchEmail && matchRole && matchPlatoon && matchPosition;
+    return matchName && matchEmail && matchRole && matchSquad && matchPlatoon && matchPosition;
   });
 
   // Group users by platoon
@@ -199,7 +210,7 @@ export default function ManageUsers() {
               <TableRow className="bg-slate-50">
                 <TableHead className="text-center">
                   <div className="flex flex-col gap-2">
-                    <span>משתמש</span>
+                    <span>שם מלא</span>
                     <Input
                       placeholder="סנן..."
                       value={filters.name}
@@ -231,6 +242,17 @@ export default function ManageUsers() {
                       <option value="admin">מנהל</option>
                       <option value="user">משתמש</option>
                     </select>
+                  </div>
+                </TableHead>
+                <TableHead className="text-center">
+                  <div className="flex flex-col gap-2">
+                    <span>צוות</span>
+                    <Input
+                      placeholder="סנן..."
+                      value={filters.squad || ''}
+                      onChange={(e) => setFilters({ ...filters, squad: e.target.value })}
+                      className="h-8 text-sm"
+                    />
                   </div>
                 </TableHead>
                 <TableHead className="text-center">
@@ -269,13 +291,13 @@ export default function ManageUsers() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
                     אין משתמשים מתאימים לסינון
                   </TableCell>
                 </TableRow>
@@ -306,6 +328,13 @@ export default function ManageUsers() {
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
                           משתמש
                         </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center text-slate-600">
+                      {user.squad_name ? (
+                        <span className="font-medium">{user.squad_name}</span>
+                      ) : (
+                        <span className="text-slate-400">—</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center text-slate-600">
@@ -391,17 +420,35 @@ export default function ManageUsers() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">פלוגה</Label>
+              <Label className="text-right block">צוות</Label>
               <select
-                value={formData.platoon_name}
-                onChange={(e) => setFormData({ ...formData, platoon_name: e.target.value })}
+                value={formData.squad_name}
+                onChange={(e) => {
+                  const selectedSquad = squads.find(s => s.squad_number === e.target.value);
+                  setFormData({ 
+                    ...formData, 
+                    squad_name: e.target.value,
+                    platoon_name: selectedSquad?.platoon_name || ''
+                  });
+                }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
               >
-                <option value="">בחר פלוגה...</option>
-                {platoonNames.map((name) => (
-                  <option key={name} value={name}>{name}</option>
+                <option value="">בחר צוות...</option>
+                {squads.map((squad) => (
+                  <option key={squad.id} value={squad.squad_number}>
+                    {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
+                  </option>
                 ))}
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-right block">פלוגה</Label>
+              <Input
+                value={formData.platoon_name}
+                disabled
+                className="bg-slate-50 text-slate-600"
+              />
             </div>
 
             <div className="space-y-2">
