@@ -17,10 +17,10 @@ export default function Onboarding() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then(user => {
+    base44.auth.me().then((user) => {
       setUser(user);
       setFullName(user.full_name || '');
-      
+
       // If already completed onboarding, redirect
       if (user.onboarding_completed) {
         window.location.href = createPageUrl('Dashboard');
@@ -54,14 +54,14 @@ export default function Onboarding() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!fullName.trim() || !squadName) {
       toast.error('אנא מלא את כל השדות');
       return;
     }
 
     // Get platoon from squad
-    const selectedSquad = squads.find(s => s.squad_number === squadName);
+    const selectedSquad = squads.find((s) => s.squad_number === squadName);
     const platoonName = selectedSquad?.platoon_name || '';
 
     updateMutation.mutate({
@@ -76,8 +76,8 @@ export default function Onboarding() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    );
+      </div>);
+
   }
 
   return (
@@ -85,15 +85,15 @@ export default function Onboarding() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
+        className="w-full max-w-md">
+
         <Card className="p-8 shadow-xl">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <UserCheck className="w-8 h-8 text-indigo-600" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-2">
-              ברוך הבא למערכת! 👋
+            <h1 className="text-2xl font-bold text-slate-800 mb-2">צוער יקר, ברוך הבא למגדלור 👋
+
             </h1>
             <p className="text-slate-500">
               בבקשה השלם את הפרטים הבאים
@@ -108,8 +108,8 @@ export default function Onboarding() {
                 type="email"
                 value={user?.email || ''}
                 disabled
-                className="bg-slate-50 text-slate-600"
-              />
+                className="bg-slate-50 text-slate-600" />
+
             </div>
 
             {/* Full Name */}
@@ -121,8 +121,8 @@ export default function Onboarding() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="text-right"
-                required
-              />
+                required />
+
             </div>
 
             {/* Squad Selection */}
@@ -132,34 +132,34 @@ export default function Onboarding() {
                 value={squadName}
                 onChange={(e) => setSquadName(e.target.value)}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-                required
-              >
+                required>
+
                 <option value="">בחר צוות...</option>
-                {squads.map((squad) => (
-                  <option key={squad.id} value={squad.squad_number}>
+                {squads.map((squad) =>
+                <option key={squad.id} value={squad.squad_number}>
                     {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
                   </option>
-                ))}
+                )}
               </select>
             </div>
 
             <Button
               type="submit"
               className="w-full bg-indigo-600 hover:bg-indigo-700"
-              disabled={updateMutation.isPending}
-            >
-              {updateMutation.isPending ? (
-                <>
+              disabled={updateMutation.isPending}>
+
+              {updateMutation.isPending ?
+              <>
                   <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                   שומר...
-                </>
-              ) : (
-                'המשך לאפליקציה'
-              )}
+                </> :
+
+              'המשך לאפליקציה'
+              }
             </Button>
           </form>
         </Card>
       </motion.div>
-    </div>
-  );
+    </div>);
+
 }
