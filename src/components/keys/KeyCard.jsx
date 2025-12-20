@@ -19,45 +19,45 @@ export default function KeyCard({ keyItem, onCheckout, onReturn, crews, currentU
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={`p-5 border-2 transition-all duration-300 hover:shadow-lg ${
-        isAvailable 
-          ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white' 
-          : 'border-amber-200 bg-gradient-to-br from-amber-50/50 to-white'
+    <Card className={`p-5 border-2 transition-all duration-300 hover:shadow-lg ${
+  isAvailable 
+    ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white' 
+    : 'border-amber-200 bg-gradient-to-br from-amber-50/50 to-white'
+}`}>
+  <div className="flex flex-row items-start justify-between mb-4">
+    <Badge className={`${
+      isAvailable 
+        ? 'bg-emerald-500 hover:bg-emerald-600' 
+        : 'bg-amber-500 hover:bg-amber-600'
+    }`}>
+      {isAvailable ? 'זמין' : 'תפוס'}
+    </Badge>
+    
+    <div className="flex flex-row items-center gap-3">
+      <div>
+        <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2 text-right">
+          חדר {keyItem.room_number}
+          {keyItem.has_computers && (
+            <Monitor className="w-4 h-4 text-blue-600" />
+          )}
+        </h3>
+        <Badge variant="outline" className={`mt-1 ${
+          keyItem.room_type === 'פלוגתי' 
+            ? 'border-purple-300 text-purple-700 bg-purple-50' 
+            : 'border-blue-300 text-blue-700 bg-blue-50'
+        }`}>
+          {keyItem.room_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
+        </Badge>
+      </div>
+      <div className={`p-3 rounded-xl ${
+        isAvailable ? 'bg-emerald-100' : 'bg-amber-100'
       }`}>
-<div className="flex flex-row-reverse items-start justify-between mb-4">
-          <div className="flex flex-row-reverse items-center gap-3">
-            <div className={`p-3 rounded-xl ${
-              isAvailable ? 'bg-emerald-100' : 'bg-amber-100'
-            }`}>
-              <Key className={`w-5 h-5 ${
-                isAvailable ? 'text-emerald-600' : 'text-amber-600'
-              }`} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-800 text-lg flex items-center gap-2">
-                חדר {keyItem.room_number}
-                {keyItem.has_computers && (
-                  <Monitor className="w-4 h-4 text-blue-600" />
-                )}
-              </h3>
-              <Badge variant="outline" className={`mt-1 ${
-                keyItem.room_type === 'פלוגתי' 
-                  ? 'border-purple-300 text-purple-700 bg-purple-50' 
-                  : 'border-blue-300 text-blue-700 bg-blue-50'
-              }`}>
-                {keyItem.room_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
-              </Badge>
-            </div>
-          </div>
-          <Badge className={`${
-            isAvailable 
-              ? 'bg-emerald-500 hover:bg-emerald-600' 
-              : 'bg-amber-500 hover:bg-amber-600'
-          }`}>
-            {isAvailable ? 'זמין' : 'תפוס'}
-          </Badge>
-        </div>
-
+        <Key className={`w-5 h-5 ${
+          isAvailable ? 'text-emerald-600' : 'text-amber-600'
+        }`} />
+      </div>
+    </div>
+  </div>
         {!isAvailable && displayHolder && (
           <div className="mb-4 p-3 bg-white/80 rounded-lg border border-slate-100">
             <div className="flex items-center gap-2 text-slate-600 mb-1">
