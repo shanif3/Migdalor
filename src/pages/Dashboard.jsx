@@ -191,6 +191,7 @@ export default function Dashboard() {
     queryClient.invalidateQueries({ queryKey: ['today-lessons'] });
     queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
     queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+    queryClient.invalidateQueries({ queryKey: ['lessons'] });
     
     setCheckoutKey(null);
   };
