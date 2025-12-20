@@ -109,11 +109,6 @@ export default function Dashboard() {
   });
 
   const handleCheckout = async (key, holderName, startTime, endTime, platoonName) => {
-    if (!user?.email) {
-      toast.error('שגיאה: משתמש לא מחובר');
-      return;
-    }
-
     // Check for time conflicts with existing lessons
     const today = new Date().toISOString().split('T')[0];
     const existingLessons = await base44.entities.Lesson.filter({ 
@@ -145,7 +140,7 @@ export default function Dashboard() {
       status: 'assigned',
       notes: 'משיכה ידנית מלוח בקרה'
     });
-
+    
     // Update key status
     updateKeyMutation.mutate({
       id: key.id,
@@ -156,13 +151,11 @@ export default function Dashboard() {
         checked_out_by: user?.email
       }
     });
-
-    // Refresh all lesson queries including allocation page
+    
+    // Refresh lessons
     queryClient.invalidateQueries({ queryKey: ['today-lessons'] });
     queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
     queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
-
-    toast.success(`מפתח ${key.room_number} נמשך בהצלחה והתווסף להקצאות`);
     
     setCheckoutKey(null);
   };
