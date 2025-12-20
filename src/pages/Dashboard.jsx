@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
 
+  const [userLoading, setUserLoading] = React.useState(true);
+
   React.useEffect(() => {
     base44.auth.me().then(user => {
       // Check if onboarding is needed
@@ -29,7 +31,10 @@ export default function Dashboard() {
         return;
       }
       setUser(user);
-    }).catch(() => {});
+      setUserLoading(false);
+    }).catch(() => {
+      setUserLoading(false);
+    });
   }, []);
 
   const { data: keys = [], isLoading: keysLoading } = useQuery({
@@ -218,6 +223,14 @@ export default function Dashboard() {
   const filteredKeys = keys
     .filter((k) => filter === 'all' || k.room_type === filter)
     .filter((k) => isKeyAvailableInTimeRange(k));
+
+  if (userLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
