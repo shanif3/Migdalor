@@ -154,7 +154,7 @@ export default function Onboarding() {
                   שומר...
                 </> :
 
-              'המשך לאפליקציה'
+              'המשך למגדלור'
               }
             </Button>
           </form>
