@@ -65,13 +65,15 @@ export default function Dashboard() {
   // Filter crews and squads based on user's platoon (admins see all)
   const isAdmin = user?.role === 'admin';
 
-  const filteredCrews = isAdmin || !user?.platoon_name
+  const filteredCrews = (isAdmin || !user?.platoon_name
     ? crews
-    : crews.filter((crew) => crew.name === user.platoon_name);
+    : crews.filter((crew) => crew.name === user.platoon_name))
+    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
 
-  const filteredSquads = isAdmin || !user?.platoon_name
+  const filteredSquads = (isAdmin || !user?.platoon_name
     ? squads
-    : squads.filter((squad) => squad.platoon_name === user.platoon_name);
+    : squads.filter((squad) => squad.platoon_name === user.platoon_name))
+    .sort((a, b) => a.squad_number.localeCompare(b.squad_number, 'he'));
 
   const { data: todayLessons = [] } = useQuery({
     queryKey: ['today-lessons'],
