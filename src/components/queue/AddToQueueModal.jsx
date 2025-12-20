@@ -28,6 +28,18 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
+  React.useEffect(() => {
+    if (open) {
+      console.log('📋 AddToQueueModal received:', {
+        crews: crews?.length,
+        crewNames: crews?.map(c => c.name),
+        squads: squads?.length,
+        squadNames: squads?.map(s => s.squad_number),
+        userPlatoon: currentUser?.platoon_name
+      });
+    }
+  }, [open, crews, squads, currentUser]);
+
   const handleConfirm = () => {
     if (crewName && startTime && endTime) {
       // Check if time has already passed
