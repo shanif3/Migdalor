@@ -140,7 +140,7 @@ export default function Dashboard() {
       status: 'assigned',
       notes: 'משיכה ידנית מלוח בקרה'
     });
-    
+
     // Update key status
     updateKeyMutation.mutate({
       id: key.id,
@@ -151,11 +151,13 @@ export default function Dashboard() {
         checked_out_by: user?.email
       }
     });
-    
-    // Refresh lessons
+
+    // Refresh all lesson queries including allocation page
     queryClient.invalidateQueries({ queryKey: ['today-lessons'] });
     queryClient.invalidateQueries({ queryKey: ['my-lessons'] });
     queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+
+    toast.success(`מפתח ${key.room_number} נמשך בהצלחה והתווסף להקצאות`);
     
     setCheckoutKey(null);
   };
