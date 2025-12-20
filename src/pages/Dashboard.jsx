@@ -68,9 +68,13 @@ export default function Dashboard() {
       console.log('❌ No platoon_name for user:', user);
       return crews;
     }
-    console.log('✅ Filtering by platoon:', user.platoon_name);
-    console.log('📋 All crews:', crews.map(c => c.name));
-    const filtered = crews.filter(crew => crew.name === user.platoon_name);
+    console.log('✅ User platoon_name:', `"${user.platoon_name}"`);
+    console.log('📋 All crews:', crews.map(c => `"${c.name}"`));
+    const filtered = crews.filter(crew => {
+      const match = crew.name?.trim() === user.platoon_name?.trim();
+      console.log(`Comparing crew "${crew.name}" with user platoon "${user.platoon_name}": ${match}`);
+      return match;
+    });
     console.log('🎯 Filtered crews:', filtered.map(c => c.name));
     return filtered;
   }, [user?.platoon_name, crews]);
@@ -80,8 +84,12 @@ export default function Dashboard() {
       console.log('❌ No platoon_name for user:', user);
       return squads;
     }
-    console.log('📋 All squads:', squads.map(s => ({ num: s.squad_number, platoon: s.platoon_name })));
-    const filtered = squads.filter(squad => squad.platoon_name === user.platoon_name);
+    console.log('📋 All squads:', squads.map(s => ({ num: s.squad_number, platoon: `"${s.platoon_name}"` })));
+    const filtered = squads.filter(squad => {
+      const match = squad.platoon_name?.trim() === user.platoon_name?.trim();
+      console.log(`Comparing squad platoon "${squad.platoon_name}" with user platoon "${user.platoon_name}": ${match}`);
+      return match;
+    });
     console.log('🎯 Filtered squads:', filtered.map(s => ({ num: s.squad_number, platoon: s.platoon_name })));
     return filtered;
   }, [user?.platoon_name, squads]);
