@@ -63,13 +63,13 @@ export default function Dashboard() {
   });
 
   // Filter crews and squads based on user's platoon
-  const filteredCrews = user?.platoon_name ?
-    crews.filter((crew) => crew.name === user.platoon_name) :
-    crews;
+  const filteredCrews = user?.platoon_name 
+    ? crews.filter((crew) => crew.name === user.platoon_name)
+    : crews;
 
-  const filteredSquads = user?.platoon_name ?
-    squads.filter((squad) => squad.platoon_name === user.platoon_name) :
-    squads;
+  const filteredSquads = user?.platoon_name
+    ? squads.filter((squad) => squad.platoon_name === user.platoon_name)
+    : squads;
 
   const { data: todayLessons = [] } = useQuery({
     queryKey: ['today-lessons'],
