@@ -94,19 +94,23 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
 
                 <option value="">בחר פלוגה או צוות...</option>
 
-                <optgroup label="פלוגות">
-                  {crews?.map((crew) =>
-                <option key={crew.id} value={crew.name}>{crew.name}</option>
+                {crews && crews.length > 0 && (
+                  <optgroup label="פלוגות">
+                    {crews.map((crew) => (
+                      <option key={crew.id} value={crew.name}>{crew.name}</option>
+                    ))}
+                  </optgroup>
                 )}
-                </optgroup>
 
-                <optgroup label="צוותים">
-                  {squads?.map((squad) =>
-                <option key={squad.id} value={squad.squad_number}>
-                      {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
-                    </option>
+                {squads && squads.length > 0 && (
+                  <optgroup label="צוותים">
+                    {squads.map((squad) => (
+                      <option key={squad.id} value={squad.squad_number}>
+                        {squad.squad_number} {squad.platoon_name ? `(${squad.platoon_name})` : ''}
+                      </option>
+                    ))}
+                  </optgroup>
                 )}
-                </optgroup>
               </select>
               <Button
               variant="ghost"
