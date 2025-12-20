@@ -276,8 +276,8 @@ export default function ManageKeys() {
 
               keys.map((key) =>
               <TableRow key={key.id} className="hover:bg-slate-50/50">
-                    <TableCell className="p-2 text-center flex items-center justify-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium">
-                      <div className="flex items-center gap-2">
+                    <TableCell className="p-2 text-center flex items-center justify-end align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium">
+                      <div className="flex items-center gap-2 flex-row-reverse">
                         <Key className="w-4 h-4 text-slate-400" />
                         {key.room_number}
                       </div>
@@ -309,9 +309,11 @@ export default function ManageKeys() {
                             <span className="text-xs text-slate-600">{holder}</span>
                           </div> :
 
-                    <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                            זמין
-                          </Badge>;
+                    <div className="flex justify-start">
+                            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                              זמין
+                            </Badge>
+                          </div>;
 
                   })()}
                     </TableCell>
