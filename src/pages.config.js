@@ -5,6 +5,7 @@ import MySchedule from './pages/MySchedule';
 import KeyAllocation from './pages/KeyAllocation';
 import ManageSquads from './pages/ManageSquads';
 import ManageUsers from './pages/ManageUsers';
+import ManagePositions from './pages/ManagePositions';
 import __Layout from './Layout.jsx';
 
 
@@ -16,6 +17,7 @@ export const PAGES = {
     "KeyAllocation": KeyAllocation,
     "ManageSquads": ManageSquads,
     "ManageUsers": ManageUsers,
+    "ManagePositions": ManagePositions,
 }
 
 export const pagesConfig = {
