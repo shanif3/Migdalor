@@ -421,23 +421,26 @@ export default function Dashboard() {
       </div>
 
       {/* Modals */}
-      <CheckoutModal
-        open={!!checkoutKey}
-        onClose={() => setCheckoutKey(null)}
-        keyItem={checkoutKey}
-        crews={filteredCrews}
-        squads={filteredSquads}
-        currentUser={user}
-        onConfirm={handleCheckout} />
+      {checkoutKey && (
+        <CheckoutModal
+          open={!!checkoutKey}
+          onClose={() => setCheckoutKey(null)}
+          keyItem={checkoutKey}
+          crews={filteredCrews}
+          squads={filteredSquads}
+          currentUser={user}
+          onConfirm={handleCheckout} />
+      )}
 
-
-      <AddToQueueModal
-        open={showQueueModal}
-        onClose={() => setShowQueueModal(false)}
-        crews={filteredCrews}
-        squads={filteredSquads}
-        currentUser={user}
-        onConfirm={(data) => addToQueueMutation.mutate(data)} />
+      {showQueueModal && (
+        <AddToQueueModal
+          open={showQueueModal}
+          onClose={() => setShowQueueModal(false)}
+          crews={filteredCrews}
+          squads={filteredSquads}
+          currentUser={user}
+          onConfirm={(data) => addToQueueMutation.mutate(data)} />
+      )}
 
     </div>);
 
