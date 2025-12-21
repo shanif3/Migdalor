@@ -59,7 +59,10 @@ export default function Dashboard() {
 
   const { data: allQueue = [] } = useQuery({
     queryKey: ['queue'],
-    queryFn: () => base44.entities.WaitingQueue.list('priority')
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      return base44.entities.WaitingQueue.filter({ date: today }, 'priority');
+    }
   });
 
   // Filter crews and squads based on user's platoon (admins see all)
