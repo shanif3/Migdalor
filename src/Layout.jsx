@@ -19,6 +19,11 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  // Hide navigation for onboarding page
+  if (currentPageName === 'Onboarding') {
+    return <div className="min-h-screen bg-slate-50">{children}</div>;
+  }
+
   const isAdmin = user?.role === 'admin';
 
   const adminNavItems = [
