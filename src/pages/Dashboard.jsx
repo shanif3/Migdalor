@@ -69,7 +69,7 @@ export default function Dashboard() {
   const isAdmin = user?.role === 'admin';
 
   // Filter queue by platoon and squad (admins see all)
-  const queue = (isAdmin
+  const queue = (isAdmin || !user
     ? allQueue
     : allQueue.filter(item => 
         item.platoon_name === user.platoon_name || 
