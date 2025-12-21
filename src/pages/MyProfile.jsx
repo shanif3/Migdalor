@@ -124,14 +124,6 @@ export default function MyProfile() {
                 )}
               </div>
             </div>
-
-            {/* Debug Info */}
-            <div className="mt-8 p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-xs text-slate-500 mb-2 font-mono">נתוני DEBUG:</p>
-              <pre className="text-xs text-slate-600 whitespace-pre-wrap font-mono">
-                {JSON.stringify(user, null, 2)}
-              </pre>
-            </div>
           </div>
         </Card>
       </div>
