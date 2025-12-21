@@ -25,11 +25,6 @@ export default function Dashboard() {
 
   React.useEffect(() => {
     base44.auth.me().then(user => {
-      // Check if onboarding is needed
-      if (!user.onboarding_completed) {
-        window.location.href = createPageUrl('Onboarding');
-        return;
-      }
       console.log('👤 User loaded in Dashboard:', {
         email: user.email,
         platoon_name: user.platoon_name,

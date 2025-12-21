@@ -14,10 +14,31 @@ import {
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
+    base44.auth.me()
+      .then(user => {
+        setUser(user);
+        // Redirect to onboarding if not completed
+        if (!user.onboarding_completed && currentPageName !== 'Onboarding') {
+          window.location.href = createPageUrl('Onboarding');
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [currentPageName]);
+
+  // Show loading while checking onboarding status
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+      </div>
+    );
+  }
 
   // Hide navigation for onboarding page
   if (currentPageName === 'Onboarding') {
