@@ -705,6 +705,8 @@ export default function MySchedule() {
                   </TableRow>
               )
               }
+              </>
+              }
             </TableBody>
           </Table>
         </Card>
