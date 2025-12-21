@@ -122,7 +122,7 @@ export default function MySchedule() {
   });
 
   // Filter special requests by platoon and squad (admins see all)
-  const specialRequests = (isAdmin
+  const specialRequests = (isAdmin || !user
     ? allSpecialRequests
     : allSpecialRequests.filter(item => 
         item.platoon_name === user.platoon_name || 
