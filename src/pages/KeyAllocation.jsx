@@ -44,8 +44,9 @@ export default function KeyAllocation() {
   });
 
   const { data: specialRequests = [] } = useQuery({
-    queryKey: ['special-requests'],
-    queryFn: () => base44.entities.WaitingQueue.list('priority')
+    queryKey: ['special-requests', selectedDate],
+    queryFn: () => base44.entities.WaitingQueue.filter({ date: selectedDate }, 'priority'),
+    enabled: !!selectedDate
   });
 
   const updateLessonMutation = useMutation({
