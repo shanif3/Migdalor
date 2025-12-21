@@ -631,86 +631,9 @@ export default function MySchedule() {
               {/* Regular Lessons */}
               {lessons.map((lesson) =>
               <TableRow key={lesson.id} className="hover:bg-slate-50/50">
-                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium text-center">{lesson.crew_name}</TableCell>
-                    <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="w-4 h-4 text-slate-400" />
-                         {lesson.end_time} - {lesson.start_time}
-                      </div>
-                    </TableCell>
-                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      <Badge variant="outline" className={
-                  lesson.room_type_needed === 'פלוגתי' ?
-                  'border-purple-300 text-purple-700' :
-                  'border-blue-300 text-blue-700'
-                  }>
-                        {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      {lesson.needs_computers ?
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                          💻 כן
-                        </Badge> :
-
-                  <span className="text-slate-400 text-sm">לא</span>
-                  }
-                    </TableCell>
-                    <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">{getStatusBadge(lesson.status)}</TableCell>
-                    <TableCell className="p-2 justify-centeralign-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      {lesson.assigned_key ?
-                  <div className="flex items-center gap-2">
-                          <Key className="w-4 h-4 text-emerald-600" />
-                          <span className="font-medium text-emerald-700">
-                            חדר {lesson.assigned_key}
-                          </span>
-                        </div> :
-
-                  <span className="text-slate-400">—</span>
-                  }
-                    </TableCell>
-                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      {(() => {
-                    const handoff = getKeyHandoffNote(lesson);
-                    if (!handoff) return <span className="text-slate-400">—</span>;
-
-                    return (
-                      <div className="flex flex-col gap-1 items-center">
-                            {handoff.receiveFrom && handoff.receiveFrom.platoon &&
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
-                                 מקבל מ{handoff.receiveFrom.platoon}
-                              </Badge>
-                        }
-                            {handoff.passTo && handoff.passTo.platoon &&
-                        <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
-                                 מעביר ל{handoff.passTo.platoon}
-                              </Badge>
-                        }
-                          </div>);
-
-                  })()}
-                    </TableCell>
-                    <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(lesson)}
-                      className="text-slate-400 hover:text-slate-600">
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteMutation.mutate(lesson.id)}
-                      className="text-red-400 hover:text-red-600 hover:bg-red-50">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+...
                   </TableRow>
-              )
-              }
+              )}
               </>
               }
             </TableBody>
