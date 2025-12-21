@@ -126,11 +126,15 @@ export default function Dashboard() {
   });
 
   const addToQueueMutation = useMutation({
-    mutationFn: (data) => base44.entities.WaitingQueue.create({
-      ...data,
-      priority: queue.length + 1,
-      crew_manager: user?.email
-    }),
+    mutationFn: (data) => {
+      const today = new Date().toISOString().split('T')[0];
+      return base44.entities.WaitingQueue.create({
+        ...data,
+        date: today,
+        priority: queue.length + 1,
+        crew_manager: user?.email
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['queue'] });
       queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
