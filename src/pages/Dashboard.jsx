@@ -98,6 +98,41 @@ export default function Dashboard() {
     }
   });
 
+  // Auto-return keys after end time
+  React.useEffect(() => {
+    if (!keys.length) return;
+
+    const checkAndReturnKeys = async () => {
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      const keysToReturn = keys.filter(key => 
+        key.status === 'taken' && 
+        key.checkout_end_time && 
+        currentTime >= key.checkout_end_time
+      );
+
+      for (const key of keysToReturn) {
+        await updateKeyMutation.mutateAsync({
+          id: key.id,
+          data: {
+            status: 'available',
+            current_holder: null,
+            checkout_time: null,
+            checkout_start_time: null,
+            checkout_end_time: null,
+            checked_out_by: null
+          }
+        });
+      }
+    };
+
+    const interval = setInterval(checkAndReturnKeys, 60000); // Check every minute
+    checkAndReturnKeys(); // Check immediately on mount
+
+    return () => clearInterval(interval);
+  }, [keys]);
+
   // Get current key holder for a room (considering time filter if active)
   const getCurrentHolder = (roomNumber) => {
     // If time filter is active, don't show current holder
