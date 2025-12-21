@@ -117,7 +117,7 @@ export default function MySchedule() {
   // Fetch special requests (waiting queue)
   const { data: allSpecialRequests = [] } = useQuery({
     queryKey: ['special-requests', selectedDate],
-    queryFn: () => base44.entities.WaitingQueue.list('priority'),
+    queryFn: () => base44.entities.WaitingQueue.filter({ date: selectedDate }, 'priority'),
     enabled: !!selectedDate
   });
 
