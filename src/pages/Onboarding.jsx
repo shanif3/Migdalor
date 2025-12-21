@@ -37,11 +37,14 @@ export default function Onboarding() {
     queryFn: () => base44.entities.Squad.list('order')
   });
 
+  const queryClient = useQueryClient();
+  
   const updateMutation = useMutation({
     mutationFn: async (data) => {
       await base44.auth.updateMe(data);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('פרטים נשמרו בהצלחה!');
       setTimeout(() => {
         window.location.href = createPageUrl('Dashboard');
