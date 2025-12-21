@@ -573,14 +573,57 @@ export default function MySchedule() {
                     <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                   </TableCell>
                 </TableRow> :
-              lessons.length === 0 ?
+              lessons.length === 0 && specialRequests.length === 0 ?
               <TableRow>
                   <TableCell colSpan={8} className="text-center py-8 text-slate-400">
-                    אין שיעורים מתוכננים לתאריך זה
+                    אין שיעורים או בקשות מיוחדות לתאריך זה
                   </TableCell>
                 </TableRow> :
-
-              lessons.map((lesson) =>
+              <>
+              {/* Special Requests */}
+              {specialRequests.map((request) =>
+              <TableRow key={`request-${request.id}`} className="bg-blue-50 hover:bg-blue-100/70 border-b-2 border-blue-200">
+                    <TableCell className="p-2 align-middle font-medium text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Badge className="bg-blue-600 hover:bg-blue-600">בקשה מיוחדת</Badge>
+                        <span>{request.crew_name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-2 flex items-center justify-center text-center align-middle">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="w-4 h-4 text-blue-600" />
+                        {request.end_time} - {request.start_time}
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <Badge variant="outline" className="border-blue-400 text-blue-700">
+                        {request.preferred_type === 'any' ? '🔄 כל חדר' : 
+                         request.preferred_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-slate-400 text-sm">—</span>
+                    </TableCell>
+                    <TableCell className="p-2 flex items-center justify-center text-center align-middle">
+                      <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        ממתין
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-slate-400">—</span>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-sm text-slate-600">{request.notes || '—'}</span>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-slate-400 text-xs">בקשה מיוחדת</span>
+                    </TableCell>
+                  </TableRow>
+              )}
+              
+              {/* Regular Lessons */}
+              {lessons.map((lesson) =>
               <TableRow key={lesson.id} className="hover:bg-slate-50/50">
                     <TableCell className="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-medium text-center">{lesson.crew_name}</TableCell>
                     <TableCell className="p-2 flex items-center justify-center text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
