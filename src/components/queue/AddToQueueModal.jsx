@@ -46,13 +46,17 @@ export default function AddToQueueModal({ open, onClose, crews, squads, currentU
         return;
       }
 
+      // Get today's date
+      const today = new Date().toISOString().split('T')[0];
+      
       onConfirm({
         crew_name: crewName,
         platoon_name: platoonName,
         preferred_type: preferredType,
         start_time: startTime,
         end_time: endTime,
-        notes: notes
+        notes: notes,
+        date: today
       });
       setCrewName('');
       setPlatoonName('');
