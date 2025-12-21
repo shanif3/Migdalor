@@ -1,27 +1,29 @@
 import Dashboard from './pages/Dashboard';
-import ManageKeys from './pages/ManageKeys';
-import ManageCrews from './pages/ManageCrews';
-import MySchedule from './pages/MySchedule';
+import Home from './pages/Home';
 import KeyAllocation from './pages/KeyAllocation';
+import ManageCrews from './pages/ManageCrews';
+import ManageKeys from './pages/ManageKeys';
+import ManagePositions from './pages/ManagePositions';
 import ManageSquads from './pages/ManageSquads';
 import ManageUsers from './pages/ManageUsers';
-import ManagePositions from './pages/ManagePositions';
-import Onboarding from './pages/Onboarding';
 import MyProfile from './pages/MyProfile';
+import MySchedule from './pages/MySchedule';
+import Onboarding from './pages/Onboarding';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Dashboard": Dashboard,
-    "ManageKeys": ManageKeys,
-    "ManageCrews": ManageCrews,
-    "MySchedule": MySchedule,
+    "Home": Home,
     "KeyAllocation": KeyAllocation,
+    "ManageCrews": ManageCrews,
+    "ManageKeys": ManageKeys,
+    "ManagePositions": ManagePositions,
     "ManageSquads": ManageSquads,
     "ManageUsers": ManageUsers,
-    "ManagePositions": ManagePositions,
-    "Onboarding": Onboarding,
     "MyProfile": MyProfile,
+    "MySchedule": MySchedule,
+    "Onboarding": Onboarding,
 }
 
 export const pagesConfig = {

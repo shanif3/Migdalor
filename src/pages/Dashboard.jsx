@@ -57,10 +57,15 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Squad.list('order')
   });
 
-  const { data: queue = [] } = useQuery({
+  const { data: allQueue = [] } = useQuery({
     queryKey: ['queue'],
     queryFn: () => base44.entities.WaitingQueue.list('priority')
   });
+
+  // Filter queue by platoon (admins see all)
+  const queue = (isAdmin || !user?.platoon_name
+    ? allQueue
+    : allQueue.filter(item => item.platoon_name === user.platoon_name));
 
   // Filter crews and squads based on user's platoon (admins see all)
   const isAdmin = user?.role === 'admin';
