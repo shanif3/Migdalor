@@ -532,7 +532,7 @@ export default function MySchedule() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
           <Card className="p-4">
             <p className="text-sm text-slate-500">סה״כ שיעורים</p>
             <p className="text-2xl font-bold text-slate-800">{lessons.length}</p>
@@ -547,6 +547,12 @@ export default function MySchedule() {
             <p className="text-sm text-yellow-600">ממתינים</p>
             <p className="text-2xl font-bold text-yellow-700">
               {lessons.filter((l) => l.status === 'pending').length}
+            </p>
+          </Card>
+          <Card className="p-4 bg-blue-50 border-blue-200">
+            <p className="text-sm text-blue-600">בקשות מיוחדות</p>
+            <p className="text-2xl font-bold text-blue-700">
+              {specialRequests.length}
             </p>
           </Card>
         </div>
