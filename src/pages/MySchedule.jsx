@@ -114,6 +114,21 @@ export default function MySchedule() {
     queryFn: () => base44.entities.ClassroomKey.list()
   });
 
+  // Fetch special requests (waiting queue)
+  const { data: allSpecialRequests = [] } = useQuery({
+    queryKey: ['special-requests', selectedDate],
+    queryFn: () => base44.entities.WaitingQueue.list('priority'),
+    enabled: !!selectedDate
+  });
+
+  // Filter special requests by platoon and squad (admins see all)
+  const specialRequests = (isAdmin
+    ? allSpecialRequests
+    : allSpecialRequests.filter(item => 
+        item.platoon_name === user.platoon_name || 
+        item.crew_name === user.squad_name
+      ));
+
   // Get classroom assignments for Misdar (Wednesday only, from 9:00 AM)
   const getMyMisdarAssignments = () => {
     const selectedDay = new Date(selectedDate);
