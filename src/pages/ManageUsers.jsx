@@ -145,8 +145,7 @@ export default function ManageUsers() {
     
     const matchRole = !filters.role || user.role === filters.role;
     
-    const matchSquad = !filters.squad || 
-      (user.squad_name && user.squad_name.toLowerCase().includes(filters.squad.toLowerCase()));
+    const matchSquad = !filters.squad || user.squad_name === filters.squad;
     
     const matchPlatoon = !filters.platoon || user.platoon_name === filters.platoon;
     
@@ -251,12 +250,16 @@ export default function ManageUsers() {
                 <TableHead className="text-center">
                   <div className="flex flex-col gap-2">
                     <span>צוות</span>
-                    <Input
-                      placeholder="סנן..."
+                    <select
                       value={filters.squad || ''}
                       onChange={(e) => setFilters({ ...filters, squad: e.target.value })}
-                      className="h-8 text-sm"
-                    />
+                      className="h-8 text-sm px-2 border border-slate-300 rounded-md text-right"
+                    >
+                      <option value="">הכל</option>
+                      {squads.map((squad) => (
+                        <option key={squad.id} value={squad.squad_number}>{squad.squad_number}</option>
+                      ))}
+                    </select>
                   </div>
                 </TableHead>
                 <TableHead className="text-center">
