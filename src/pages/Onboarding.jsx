@@ -14,6 +14,7 @@ export default function Onboarding() {
   const [user, setUser] = useState(null);
   const [fullName, setFullName] = useState('');
   const [squadName, setSquadName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Onboarding() {
       await base44.auth.updateMe({
         squad_name: data.squad_name,
         platoon_name: data.platoon_name,
+        phone_number: data.phone_number,
         onboarding_completed: data.onboarding_completed
       });
     },
@@ -67,7 +69,7 @@ export default function Onboarding() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!fullName.trim() || !squadName) {
+    if (!fullName.trim() || !squadName || !phoneNumber.trim()) {
       toast.error('אנא מלא את כל השדות');
       return;
     }
@@ -80,6 +82,7 @@ export default function Onboarding() {
       full_name: fullName.trim(),
       squad_name: squadName,
       platoon_name: platoonName,
+      phone_number: phoneNumber.trim(),
       onboarding_completed: true
     });
   };
@@ -132,6 +135,19 @@ export default function Onboarding() {
                 placeholder="הכנס שם מלא בעברית"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                className="text-right"
+                required />
+
+            </div>
+
+            {/* Phone Number */}
+            <div className="space-y-2">
+              <Label>מספר טלפון *</Label>
+              <Input
+                type="tel"
+                placeholder="05X-XXXXXXX"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 className="text-right"
                 required />
 
