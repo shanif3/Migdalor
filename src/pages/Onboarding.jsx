@@ -145,6 +145,7 @@ export default function Onboarding() {
               <Label>מספר טלפון *</Label>
               <Input
                 type="tel"
+                inputMode="numeric"
                 placeholder="05X-XXXXXXX"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
