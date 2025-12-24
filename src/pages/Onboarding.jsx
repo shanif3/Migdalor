@@ -43,6 +43,7 @@ export default function Onboarding() {
       // Update all fields via User entity (includes both built-in and custom)
       await base44.entities.User.update(user.id, {
         full_name: data.full_name,
+        onboarding_full_name: data.full_name,
         squad_name: data.squad_name,
         platoon_name: data.platoon_name,
         phone_number: data.phone_number,
