@@ -38,8 +38,6 @@ export default function Onboarding() {
     queryFn: () => base44.entities.Squad.list('order')
   });
 
-  const queryClient = useQueryClient();
-  
   const updateMutation = useMutation({
     mutationFn: async (data) => {
       // Update all fields via User entity (includes both built-in and custom)
@@ -52,7 +50,6 @@ export default function Onboarding() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success('פרטים נשמרו בהצלחה!');
       setTimeout(() => {
         window.location.href = createPageUrl('Dashboard');
