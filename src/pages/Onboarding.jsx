@@ -41,7 +41,16 @@ export default function Onboarding() {
   
   const updateMutation = useMutation({
     mutationFn: async (data) => {
-      await base44.auth.updateMe(data);
+      // Update built-in fields (full_name) via User entity
+      await base44.entities.User.update(user.id, {
+        full_name: data.full_name
+      });
+      // Update custom fields via auth.updateMe
+      await base44.auth.updateMe({
+        squad_name: data.squad_name,
+        platoon_name: data.platoon_name,
+        onboarding_completed: data.onboarding_completed
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
