@@ -42,12 +42,9 @@ export default function Onboarding() {
   
   const updateMutation = useMutation({
     mutationFn: async (data) => {
-      // Update built-in fields (full_name) via User entity
+      // Update all fields via User entity (includes both built-in and custom)
       await base44.entities.User.update(user.id, {
-        full_name: data.full_name
-      });
-      // Update custom fields via auth.updateMe
-      await base44.auth.updateMe({
+        full_name: data.full_name,
         squad_name: data.squad_name,
         platoon_name: data.platoon_name,
         phone_number: data.phone_number,
