@@ -28,7 +28,7 @@ export default function ManageUsers() {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-  const [formData, setFormData] = useState({ squad_name: '', platoon_name: '', positions: [], role: 'user' });
+  const [formData, setFormData] = useState({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '' });
   const [newPosition, setNewPosition] = useState('');
   const [filters, setFilters] = useState({
     name: '',
@@ -70,7 +70,7 @@ export default function ManageUsers() {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowModal(false);
       setEditingUser(null);
-      setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user' });
+      setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '' });
       setNewPosition('');
       toast.success('פרטי משתמש עודכנו בהצלחה');
     }
@@ -96,7 +96,8 @@ export default function ManageUsers() {
       squad_name: user.squad_name || '',
       platoon_name: user.platoon_name || '',
       positions: user.positions || (user.position ? [user.position] : []),
-      role: user.role || 'user'
+      role: user.role || 'user',
+      phone_number: user.phone_number || ''
     });
     setNewPosition('');
     setShowModal(true);
@@ -105,7 +106,7 @@ export default function ManageUsers() {
   const handleClose = () => {
     setShowModal(false);
     setEditingUser(null);
-    setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user' });
+    setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '' });
     setNewPosition('');
   };
 
@@ -231,6 +232,9 @@ export default function ManageUsers() {
                   </div>
                 </TableHead>
                 <TableHead className="text-center">
+                  <span>טלפון</span>
+                </TableHead>
+                <TableHead className="text-center">
                   <div className="flex flex-col gap-2">
                     <span>תפקיד במערכת</span>
                     <select
@@ -291,13 +295,13 @@ export default function ManageUsers() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     אין משתמשים מתאימים לסינון
                   </TableCell>
                 </TableRow>
@@ -317,6 +321,9 @@ export default function ManageUsers() {
                         <Mail className="w-4 h-4" />
                         <span className="text-sm">{user.email}</span>
                       </div>
+                    </TableCell>
+                    <TableCell className="text-center text-slate-600">
+                      {user.phone_number || <span className="text-slate-400">—</span>}
                     </TableCell>
                     <TableCell className="text-center">
                       {user.role === 'admin' ? (
@@ -448,6 +455,17 @@ export default function ManageUsers() {
                 value={formData.platoon_name}
                 disabled
                 className="bg-slate-50 text-slate-600"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-right block">מספר טלפון</Label>
+              <Input
+                type="tel"
+                placeholder="05X-XXXXXXX"
+                value={formData.phone_number}
+                onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                className="text-right"
               />
             </div>
 
