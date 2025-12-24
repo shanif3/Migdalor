@@ -635,11 +635,86 @@ export default function MySchedule() {
               )}
               
               {/* Regular Lessons */}
-              {lessons.map((lesson) =>
+              {lessons.map((lesson) => {
+                const keyHandoff = getKeyHandoffNote(lesson);
+                return (
               <TableRow key={lesson.id} className="hover:bg-slate-50/50">
-...
+                    <TableCell className="p-2 align-middle font-medium text-center">
+                      {lesson.crew_name}
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <div className="flex items-center justify-center gap-2 text-sm">
+                        <Clock className="w-4 h-4 text-slate-400" />
+                        {lesson.end_time} - {lesson.start_time}
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <Badge variant="outline" className={
+                        lesson.room_type_needed === 'פלוגתי' 
+                          ? 'border-purple-300 text-purple-700' 
+                          : 'border-blue-300 text-blue-700'
+                      }>
+                        {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      {lesson.needs_computers ? '💻' : '—'}
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      {getStatusBadge(lesson.status)}
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      {lesson.assigned_key ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100">
+                            <Key className="w-3 h-3 ml-1" />
+                            חדר {lesson.assigned_key}
+                          </Badge>
+                          {keyHandoff && (
+                            <div className="text-xs space-y-0.5">
+                              {keyHandoff.receiveFrom && (
+                                <div className="text-green-600">
+                                  ← קבלה מ: {keyHandoff.receiveFrom.crew}
+                                </div>
+                              )}
+                              {keyHandoff.passTo && (
+                                <div className="text-orange-600">
+                                  → מסירה ל: {keyHandoff.passTo.crew}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-sm text-slate-600">{lesson.notes || '—'}</span>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(lesson)}
+                          className="text-slate-400 hover:text-slate-600"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(lesson.id)}
+                          className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
-              )}
+                );
+              })}
               </>
               }
             </TableBody>
