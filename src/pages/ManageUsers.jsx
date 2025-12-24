@@ -210,7 +210,7 @@ export default function ManageUsers() {
               <TableRow className="bg-slate-50">
                 <TableHead className="text-center">
                   <div className="flex flex-col gap-2">
-                    <span>שם מלא</span>
+                    <span>שם מלא (מ-Onboarding)</span>
                     <Input
                       placeholder="סנן..."
                       value={filters.name}
@@ -312,9 +312,11 @@ export default function ManageUsers() {
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
-                      <div className="flex flex-row-reverse items-center justify-center gap-2">
-                        <span>{user.full_name || 'ללא שם'}</span>
-
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <span className="font-semibold">{user.full_name || 'ללא שם'}</span>
+                        {user.onboarding_completed && (
+                          <span className="text-xs text-green-600">✓ הושלם</span>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
