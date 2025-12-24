@@ -55,14 +55,21 @@ export default function MySchedule() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  const { data: lessons = [], isLoading } = useQuery({
-    queryKey: ['my-lessons', user?.email, selectedDate],
+  const { data: allLessons = [], isLoading } = useQuery({
+    queryKey: ['my-lessons', user?.platoon_name, selectedDate],
     queryFn: () => base44.entities.Lesson.filter({
-      crew_manager: user?.email,
       date: selectedDate
     }, 'start_time'),
-    enabled: !!user?.email
+    enabled: !!user?.platoon_name
   });
+
+  // Filter lessons by user's platoon
+  const lessons = isAdmin 
+    ? allLessons 
+    : allLessons.filter(lesson => 
+        lesson.platoon_name === user?.platoon_name || 
+        lesson.crew_name === user?.squad_name
+      );
 
   const { data: crews = [] } = useQuery({
     queryKey: ['crews'],
