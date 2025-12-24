@@ -55,6 +55,8 @@ export default function MySchedule() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  const isAdmin = user?.role === 'admin';
+
   const { data: allLessons = [], isLoading } = useQuery({
     queryKey: ['my-lessons', user?.platoon_name, selectedDate],
     queryFn: () => base44.entities.Lesson.filter({
@@ -80,9 +82,6 @@ export default function MySchedule() {
     queryKey: ['squads'],
     queryFn: () => base44.entities.Squad.list('order')
   });
-
-  // Filter crews and squads based on user's platoon (admins see all)
-  const isAdmin = user?.role === 'admin';
 
   const filteredCrews = (isAdmin || !user?.platoon_name
     ? crews
