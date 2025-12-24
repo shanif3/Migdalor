@@ -210,7 +210,7 @@ export default function ManageUsers() {
               <TableRow className="bg-slate-50">
                 <TableHead className="text-center">
                   <div className="flex flex-col gap-2">
-                    <span>שם מלא במערכת</span>
+                    <span>שם מלא</span>
                     <Input
                       placeholder="סנן..."
                       value={filters.name}
@@ -218,9 +218,6 @@ export default function ManageUsers() {
                       className="h-8 text-sm"
                     />
                   </div>
-                </TableHead>
-                <TableHead className="text-center">
-                  <span>שם מלא מ-Onboarding</span>
                 </TableHead>
                 <TableHead className="text-center">
                   <div className="flex flex-col gap-2">
@@ -301,13 +298,13 @@ export default function ManageUsers() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow>
               ) : filteredUsers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
                     אין משתמשים מתאימים לסינון
                   </TableCell>
                 </TableRow>
@@ -315,11 +312,8 @@ export default function ManageUsers() {
                 filteredUsers.map((user) => (
                   <TableRow key={user.id} className="hover:bg-slate-50/50 [&_td]:text-center">
                     <TableCell className="font-medium text-center">
-                      {user.full_name || 'ללא שם'}
-                    </TableCell>
-                    <TableCell className="font-medium text-center">
                       <div className="flex flex-col items-center justify-center gap-1">
-                        <span className="font-semibold text-blue-600">{user.onboarding_full_name || '—'}</span>
+                        <span className="font-semibold">{user.onboarding_full_name || user.full_name || 'ללא שם'}</span>
                         {user.onboarding_completed && (
                           <span className="text-xs text-green-600">✓ הושלם</span>
                         )}
