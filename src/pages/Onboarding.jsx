@@ -53,7 +53,7 @@ export default function Onboarding() {
     onSuccess: () => {
       toast.success('פרטים נשמרו בהצלחה!');
       setTimeout(() => {
-        window.location.href = createPageUrl('Dashboard');
+        window.location.href = createPageUrl('Home');
       }, 1000);
     },
     onError: () => {

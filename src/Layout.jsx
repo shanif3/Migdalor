@@ -80,6 +80,11 @@ export default function Layout({ children, currentPageName }) {
   const navItems = isAdmin ? adminNavItems : userNavItems;
   const isManagementPage = managementPages.includes(currentPageName);
 
+  // Hide navigation for Home page
+  if (currentPageName === 'Home') {
+    return <div className="min-h-screen bg-slate-50">{children}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50" dir="rtl">
       {/* Top Navigation */}
