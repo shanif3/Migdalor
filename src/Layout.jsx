@@ -24,6 +24,10 @@ export default function Layout({ children, currentPageName }) {
         if (!user.onboarding_completed && currentPageName !== 'Onboarding') {
           window.location.href = createPageUrl('Onboarding');
         }
+        // Redirect to Home if no positions assigned (unless already on Home or Onboarding)
+        else if ((!user.positions || user.positions.length === 0) && currentPageName !== 'Home' && currentPageName !== 'Onboarding') {
+          window.location.href = createPageUrl('Home');
+        }
         setLoading(false);
       })
       .catch(() => {
