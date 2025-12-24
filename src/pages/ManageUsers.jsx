@@ -312,7 +312,6 @@ export default function ManageUsers() {
                       <div className="flex flex-row-reverse items-center justify-center gap-2">
                         <span>{user.full_name || 'ללא שם'}</span>
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                          <User className="w-4 h-4 text-indigo-600" />
                         </div>
                       </div>
                     </TableCell>
