@@ -143,7 +143,10 @@ export default function Onboarding() {
                 inputMode="numeric"
                 placeholder="05X-XXXXXXX"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9]/g, '');
+                  setPhoneNumber(value);
+                }}
                 className="text-right"
                 required />
 
