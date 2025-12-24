@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, Clock, Trash2, ArrowUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function WaitingQueueCard({ item, position, onRemove, onMoveUp }) {
+export default function WaitingQueueCard({ item, position, onRemove, onMoveUp, isAdmin }) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -46,7 +46,7 @@ export default function WaitingQueueCard({ item, position, onRemove, onMoveUp })
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {position > 1 && (
+            {position > 1 && isAdmin && (
               <Button
                 variant="ghost"
                 size="icon"

@@ -464,12 +464,13 @@ export default function Dashboard() {
             <div className="space-y-3">
                 <AnimatePresence>
                   {queue.map((item, index) =>
-                <WaitingQueueCard
+                  <WaitingQueueCard
                   key={item.id}
                   item={item}
                   position={index + 1}
                   onRemove={() => removeFromQueueMutation.mutate(item.id)}
-                  onMoveUp={handleMoveUp} />
+                  onMoveUp={handleMoveUp}
+                  isAdmin={isAdmin} />
 
                 )}
                 </AnimatePresence>
