@@ -22,8 +22,8 @@ export default function Onboarding() {
       setUser(user);
       setFullName(user.full_name || '');
 
-      // If already completed onboarding, redirect
-      if (user.onboarding_completed) {
+      // If already completed onboarding and not admin, redirect
+      if (user.onboarding_completed && user.role !== 'admin') {
         window.location.href = createPageUrl('Dashboard');
       } else {
         setIsLoading(false);

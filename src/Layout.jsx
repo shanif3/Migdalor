@@ -51,6 +51,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation', tooltip: 'הקצאה' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
+    { name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding' },
   ];
 
   const userNavItems = [
