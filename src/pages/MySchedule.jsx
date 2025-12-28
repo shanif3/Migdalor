@@ -791,109 +791,28 @@ export default function MySchedule() {
 
       {/* Add Lesson Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-  <DialogContent dir="rtl" className="sm:max-w-md text-right">
-    <DialogHeader className="text-right">
-
+        <DialogContent dir="rtl" className="sm:max-w-md text-right">
+          <DialogHeader className="text-right">
             <DialogTitle className="flex items-center gap-2 flex-row-reverse justify-end text-right">
-  <div className="p-2 bg-indigo-100 rounded-lg">
-          <Calendar className="w-5 h-5 text-indigo-600" />
-        </div>
-        {editingLesson ? 'ערוך שיעור' : 'הוסף שיעור'}
-      </DialogTitle>
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <Calendar className="w-5 h-5 text-indigo-600" />
+              </div>
+              {editingLesson ? 'ערוך שיעור' : 'הוסף שיעור'}
+            </DialogTitle>
+            <DialogDescription className="text-right">
+              {editingLesson ? 'עדכן את פרטי השיעור' : `הוסף שיעור חדש ללוח הזמנים שלך ל־${format(new Date(selectedDate), 'MMM d, yyyy')}`}
+            </DialogDescription>
+          </DialogHeader>
 
-      <DialogDescription className="text-right">
-        {editingLesson ? 'עדכן את פרטי השיעור' : `הוסף שיעור חדש ללוח הזמנים שלך ל־${format(new Date(selectedDate), 'MMM d, yyyy')}`}
-      </DialogDescription>
-
-    </DialogHeader>
-
-    <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4">
             <div className="space-y-2">
-  <Label>החדר עבור *
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              </Label>
-
+              <Label>החדר עבור *</Label>
               <select
                 value={formData.crew_name}
                 onChange={(e) => {
                   const selectedValue = e.target.value;
-
-                  // Check if a squad was selected and auto-fill platoon name
                   const selectedSquad = squads.find((s) => s.squad_number === selectedValue);
-
-                  // Check if a platoon/crew was selected
                   const selectedCrew = crews.find((c) => c.name === selectedValue);
-
                   setFormData({
                     ...formData,
                     crew_name: selectedValue,
@@ -901,15 +820,12 @@ export default function MySchedule() {
                   });
                 }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
-
                 <option value="">בחר פלוגה או צוות...</option>
-                
                 <optgroup label="פלוגות">
                   {filteredCrews.map((crew) =>
                   <option key={crew.id} value={crew.name}>{crew.name}</option>
                   )}
                 </optgroup>
-                
                 <optgroup label="צוותים">
                   {filteredSquads.map((squad) =>
                   <option key={squad.id} value={squad.squad_number}>
@@ -918,7 +834,6 @@ export default function MySchedule() {
                   )}
                 </optgroup>
               </select>
-
             </div>
 
             {/* Room Count - only for platoons when not editing */}
@@ -1092,56 +1007,42 @@ export default function MySchedule() {
                   type="time"
                   value={formData.start_time}
                   onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} />
-
               </div>
-            <div className="space-y-2">
+              <div className="space-y-2">
                 <Label>שעת סיום *</Label>
                 <Input
                   type="time"
                   value={formData.end_time}
                   onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} />
-
               </div>
             </div>
 
-        
-
             <div className="space-y-2 flex flex-col items-end text-right">
-  <Label className="text-right ml-auto">
-    סוג חדר נדרש *
-  </Label>
-
-  <Select
+              <Label className="text-right ml-auto">
+                סוג חדר נדרש *
+              </Label>
+              <Select
                 value={formData.room_type_needed}
                 onValueChange={(value) =>
                 setFormData({ ...formData, room_type_needed: value })
                 }>
-
-    <SelectTrigger className="text-right justify-end">
-      <SelectValue placeholder="בחר סוג חדר" />
-    </SelectTrigger>
-
-    <SelectContent className="text-right" dir="rtl">
-
-  <SelectItem
+                <SelectTrigger className="text-right justify-end">
+                  <SelectValue placeholder="בחר סוג חדר" />
+                </SelectTrigger>
+                <SelectContent className="text-right" dir="rtl">
+                  <SelectItem
                     value="צוותי"
                     className="text-right flex flex-row-reverse justify-end gap-2 pr-8">
-
-    צוותי 🏠
-  </SelectItem>
-
-  <SelectItem
+                    צוותי 🏠
+                  </SelectItem>
+                  <SelectItem
                     value="פלוגתי"
                     className="text-right flex flex-row-reverse justify-end gap-2 pr-8">
-
-    פלוגתי 🏢
-  </SelectItem>
-
+                    פלוגתי 🏢
+                  </SelectItem>
                 </SelectContent>
-  </Select>
+              </Select>
             </div>
-
-
 
             <div className="flex items-center space-x-2 space-x-reverse">
               <Checkbox
@@ -1150,7 +1051,6 @@ export default function MySchedule() {
                 onCheckedChange={(checked) =>
                 setFormData({ ...formData, needs_computers: checked })
                 } />
-
               <Label htmlFor="computers" className="cursor-pointer">
                 💻 דורש כיתה עם מחשב
               </Label>
@@ -1162,7 +1062,6 @@ export default function MySchedule() {
                 placeholder="דרישות מיוחדות..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })} />
-
             </div>
           </div>
 
@@ -1174,7 +1073,6 @@ export default function MySchedule() {
               onClick={handleSubmit}
               disabled={!formData.crew_name || !formData.start_time || !formData.end_time}
               className="flex-1 bg-indigo-600 hover:bg-indigo-700">
-
               {editingLesson ? 'עדכן שיעור' : 'הוסף שיעור'}
             </Button>
           </div>

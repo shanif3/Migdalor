@@ -6,10 +6,10 @@ import ManageKeys from './pages/ManageKeys';
 import ManagePositions from './pages/ManagePositions';
 import ManageSquads from './pages/ManageSquads';
 import ManageUsers from './pages/ManageUsers';
+import ManageZones from './pages/ManageZones';
 import MyProfile from './pages/MyProfile';
 import MySchedule from './pages/MySchedule';
 import Onboarding from './pages/Onboarding';
-import ManageZones from './pages/ManageZones';
 import __Layout from './Layout.jsx';
 
 
@@ -22,10 +22,10 @@ export const PAGES = {
     "ManagePositions": ManagePositions,
     "ManageSquads": ManageSquads,
     "ManageUsers": ManageUsers,
+    "ManageZones": ManageZones,
     "MyProfile": MyProfile,
     "MySchedule": MySchedule,
     "Onboarding": Onboarding,
-    "ManageZones": ManageZones,
 }
 
 export const pagesConfig = {
