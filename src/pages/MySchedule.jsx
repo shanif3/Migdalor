@@ -67,20 +67,6 @@ export default function MySchedule() {
     enabled: !!user?.platoon_name
   });
 
-  // Filter lessons by user's platoon
-  const lessons = isAdmin 
-    ? allLessons 
-    : allLessons.filter(lesson => {
-        // Show if lesson is for user's specific squad
-        if (lesson.crew_name === user?.squad_name) return true;
-        
-        // Show if lesson is platoon-wide (crew_name is a platoon name) and matches user's platoon
-        const isPlatoonLesson = filteredCrews.some(crew => crew.name === lesson.crew_name);
-        if (isPlatoonLesson && lesson.platoon_name === user?.platoon_name) return true;
-        
-        return false;
-      });
-
   const { data: crews = [] } = useQuery({
     queryKey: ['crews'],
     queryFn: () => base44.entities.Crew.list('order')
@@ -104,6 +90,20 @@ export default function MySchedule() {
       const numB = parseInt(b.squad_number.match(/\d+/)?.[0] || 0);
       return numA - numB;
     });
+
+  // Filter lessons by user's platoon (after filteredCrews is defined)
+  const lessons = isAdmin 
+    ? allLessons 
+    : allLessons.filter(lesson => {
+        // Show if lesson is for user's specific squad
+        if (lesson.crew_name === user?.squad_name) return true;
+        
+        // Show if lesson is platoon-wide (crew_name is a platoon name) and matches user's platoon
+        const isPlatoonLesson = filteredCrews.some(crew => crew.name === lesson.crew_name);
+        if (isPlatoonLesson && lesson.platoon_name === user?.platoon_name) return true;
+        
+        return false;
+      });
 
   const { data: allDayLessons = [] } = useQuery({
     queryKey: ['all-day-lessons', selectedDate],
