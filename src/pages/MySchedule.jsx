@@ -56,6 +56,8 @@ export default function MySchedule() {
   }, []);
 
   const isAdmin = user?.role === 'admin';
+  const isPlatoonCommander = user?.positions && user.positions.includes('קה״ד פלוגתי');
+  const canAddLessons = isPlatoonCommander; // Only קה״ד פלוגתי can add lessons
 
   const { data: allLessons = [], isLoading } = useQuery({
     queryKey: ['my-lessons', user?.platoon_name, selectedDate],
@@ -531,10 +533,12 @@ export default function MySchedule() {
               className="w-auto" />
 
           </div>
-          <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="w-4 h-4 ml-2" />
-            הוסף שיעור
-          </Button>
+          {canAddLessons && (
+            <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
+              <Plus className="w-4 h-4 ml-2" />
+              הוסף שיעור
+            </Button>
+          )}
         </div>
 
         {/* Stats */}
@@ -693,24 +697,28 @@ export default function MySchedule() {
                       <span className="text-sm text-slate-600">{lesson.notes || '—'}</span>
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
-                      <div className="flex justify-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(lesson)}
-                          className="text-slate-400 hover:text-slate-600"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => deleteMutation.mutate(lesson.id)}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      {canAddLessons ? (
+                        <div className="flex justify-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(lesson)}
+                            className="text-slate-400 hover:text-slate-600"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(lesson.id)}
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-xs">צפייה בלבד</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
