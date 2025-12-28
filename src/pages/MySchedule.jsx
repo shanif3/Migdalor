@@ -926,36 +926,98 @@ export default function MySchedule() {
             <>
               <div className="space-y-2">
                 <Label className="text-sm font-medium">כמות כיתות</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  max={filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length || 10}
-                  value={formData.room_count}
-                  onChange={(e) => {
-                    const newCount = parseInt(e.target.value) || 1;
-                    const platoonSquadsCount = filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length;
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      const newCount = Math.max(1, formData.room_count - 1);
+                      const platoonSquadsCount = filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length;
 
-                    // Don't allow more rooms than squads in platoon
-                    if (newCount > platoonSquadsCount) return;
+                      if (newCount === platoonSquadsCount) {
+                        setFormData({
+                          ...formData,
+                          room_count: newCount,
+                          squad_count: newCount.toString(),
+                          selected_squads: []
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          room_count: newCount,
+                          squad_count: '',
+                          selected_squads: []
+                        });
+                      }
+                    }}
+                    disabled={formData.room_count <= 1}
+                    className="h-10 w-10 flex-shrink-0"
+                  >
+                    -
+                  </Button>
+                  <Input
+                    type="number"
+                    min="1"
+                    max={filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length || 10}
+                    value={formData.room_count}
+                    onChange={(e) => {
+                      const newCount = parseInt(e.target.value) || 1;
+                      const platoonSquadsCount = filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length;
 
-                    // If room count equals squad count, auto-fill
-                    if (newCount === platoonSquadsCount) {
-                      setFormData({
-                        ...formData,
-                        room_count: newCount,
-                        squad_count: newCount.toString(),
-                        selected_squads: []
-                      });
-                    } else {
-                      setFormData({
-                        ...formData,
-                        room_count: newCount,
-                        squad_count: '',
-                        selected_squads: []
-                      });
-                    }
-                  }}
-                  className="text-right" />
+                      // Don't allow more rooms than squads in platoon
+                      if (newCount > platoonSquadsCount) return;
+
+                      // If room count equals squad count, auto-fill
+                      if (newCount === platoonSquadsCount) {
+                        setFormData({
+                          ...formData,
+                          room_count: newCount,
+                          squad_count: newCount.toString(),
+                          selected_squads: []
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          room_count: newCount,
+                          squad_count: '',
+                          selected_squads: []
+                        });
+                      }
+                    }}
+                    className="text-right text-center" />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      const platoonSquadsCount = filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length;
+                      const newCount = Math.min(platoonSquadsCount, formData.room_count + 1);
+
+                      if (newCount > platoonSquadsCount) return;
+
+                      if (newCount === platoonSquadsCount) {
+                        setFormData({
+                          ...formData,
+                          room_count: newCount,
+                          squad_count: newCount.toString(),
+                          selected_squads: []
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          room_count: newCount,
+                          squad_count: '',
+                          selected_squads: []
+                        });
+                      }
+                    }}
+                    disabled={formData.room_count >= (filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length || 10)}
+                    className="h-10 w-10 flex-shrink-0"
+                  >
+                    +
+                  </Button>
+                </div>
                 <p className="text-xs text-slate-500">
                   מקסימום: {filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length} צוותים בפלוגה
                 </p>
