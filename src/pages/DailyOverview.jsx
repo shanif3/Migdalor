@@ -114,14 +114,27 @@ export default function DailyOverview() {
         items: [{ id: selectedCrew, name: selectedCrew, platoon: null }]
       };
     } else if (filterType === 'platoon' && selectedPlatoon) {
-      // Show all crews in the platoon
-      const platoonCrews = crews
-        .filter(c => squads.find(s => s.squad_number === c.name)?.platoon_name === selectedPlatoon)
-        .map(c => ({ id: c.id, name: c.name, platoon: selectedPlatoon }))
-        .sort((a, b) => a.name.localeCompare(b.name, 'he'));
+      // Show the platoon itself and all squads in the platoon
+      const items = [];
+      
+      // Add the platoon row (for platoon-level lessons)
+      items.push({ id: `platoon_${selectedPlatoon}`, name: selectedPlatoon, platoon: selectedPlatoon, isPlatoon: true });
+      
+      // Add all squads in this platoon
+      const platoonSquads = squads
+        .filter(s => s.platoon_name === selectedPlatoon)
+        .map(s => ({ id: s.id, name: s.squad_number, platoon: selectedPlatoon, isPlatoon: false }))
+        .sort((a, b) => {
+          const numA = parseInt(a.name.match(/\d+/)?.[0] || 0);
+          const numB = parseInt(b.name.match(/\d+/)?.[0] || 0);
+          return numA - numB;
+        });
+      
+      items.push(...platoonSquads);
+      
       return {
         type: 'platoon',
-        items: platoonCrews
+        items: items
       };
     } else {
       // Show all crews
@@ -131,7 +144,7 @@ export default function DailyOverview() {
           id: c.id,
           name: c.name,
           platoon: squads.find(s => s.squad_number === c.name)?.platoon_name || null
-        })).sort((a, b) => a.name.localeCompare(b, 'he'))
+        })).sort((a, b) => a.name.localeCompare(b.name, 'he'))
       };
     }
   }, [filterType, selectedRoom, selectedCrew, selectedPlatoon, crews, squads]);
