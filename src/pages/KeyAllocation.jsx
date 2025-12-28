@@ -193,8 +193,23 @@ export default function KeyAllocation() {
 
       const assignments = [];
       const failureReasons = [];
-      const userKeyMap = {}; // Track which key each user was assigned
-      const crewKeyMap = {}; // Track which key each crew was assigned
+      const crewKeyMap = {}; // Track which key each crew/platoon was assigned
+      
+      // Pre-populate crewKeyMap with already assigned lessons (including manual assignments)
+      const alreadyAssigned = lessons.filter(l => l.status === 'assigned' && l.assigned_key);
+      for (const lesson of alreadyAssigned) {
+        const key = availableKeys.find(k => k.room_number === lesson.assigned_key);
+        if (key) {
+          // Remember for crew
+          if (lesson.crew_name && !crewKeyMap[lesson.crew_name]) {
+            crewKeyMap[lesson.crew_name] = key.id;
+          }
+          // Remember for platoon
+          if (lesson.platoon_name && !crewKeyMap[lesson.platoon_name]) {
+            crewKeyMap[lesson.platoon_name] = key.id;
+          }
+        }
+      }
 
       for (const lesson of allToAllocate) {
         // Find suitable key
