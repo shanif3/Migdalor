@@ -282,99 +282,86 @@ export default function DailyOverview() {
 
         {/* Details Modal */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
-          <DialogContent className="sm:max-w-2xl" dir="rtl">
+          <DialogContent className="sm:max-w-lg" dir="rtl">
             <DialogHeader className="text-right">
               <DialogTitle className="flex items-center gap-2 flex-row-reverse justify-end">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <Info className="w-5 h-5 text-blue-600" />
                 </div>
-                {selectedUnit?.name} - לוח זמנים מלא
+                פרטי שיעור
               </DialogTitle>
             </DialogHeader>
 
-            {selectedUnit && (
+            {selectedUnit && selectedUnit.lesson && (
               <div className="space-y-4 py-4">
-                <div className="text-sm text-slate-600">
-                  {viewMode === 'squads' ? 'צוות' : 'פלוגה'}: <span className="font-bold text-slate-800">{selectedUnit.name}</span>
-                </div>
-
-                {/* All lessons for this unit */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-slate-700">כל השיעורים היום:</h4>
-                  {getUnitLessons(selectedUnit.name).length === 0 ? (
-                    <p className="text-slate-400 text-sm">אין שיעורים מתוכננים</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {getUnitLessons(selectedUnit.name).map((lesson) => (
-                        <Card key={lesson.id} className={`p-4 border-2 ${getStatusColor(lesson.status)}`}>
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <Clock className="w-4 h-4" />
-                                <span className="font-bold">{lesson.start_time} - {lesson.end_time}</span>
-                              </div>
-                              
-                              {lesson.assigned_key ? (
-                                <div className="flex items-center gap-2 mb-2">
-                                  <Key className="w-4 h-4" />
-                                  <span className="font-medium">חדר {lesson.assigned_key}</span>
-                                </div>
-                              ) : (
-                                <div className="text-sm text-slate-500 mb-2">טרם שובץ חדר</div>
-                              )}
-
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Badge variant="outline" className="text-xs">
-                                  {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
-                                </Badge>
-                                {lesson.needs_computers && (
-                                  <Badge variant="outline" className="text-xs">💻 מחשבים</Badge>
-                                )}
-                                {lesson.platoon_name && (
-                                  <Badge variant="outline" className="text-xs bg-purple-50">
-                                    {lesson.platoon_name}
-                                  </Badge>
-                                )}
-                              </div>
-
-                              {lesson.notes && (
-                                <div className="mt-2 text-xs text-slate-600">
-                                  הערות: {lesson.notes}
-                                </div>
-                              )}
-                            </div>
-
-                            <div>
-                              <Badge className={
-                                lesson.status === 'assigned' 
-                                  ? 'bg-green-600 hover:bg-green-600' 
-                                  : 'bg-yellow-600 hover:bg-yellow-600'
-                              }>
-                                {lesson.status === 'assigned' ? 'שובץ' : 'ממתין'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
+                {/* Crew/Platoon Info */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <div className="text-sm text-slate-600 mb-1">
+                    {viewMode === 'squads' ? 'צוות' : 'פלוגה'}:
+                  </div>
+                  <div className="text-xl font-bold text-slate-800">{selectedUnit.name}</div>
+                  {selectedUnit.lesson.platoon_name && (
+                    <Badge variant="outline" className="mt-2 bg-purple-50">
+                      {selectedUnit.lesson.platoon_name}
+                    </Badge>
                   )}
                 </div>
 
-                {/* Summary */}
-                <div className="pt-4 border-t">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-slate-500">סה״כ שיעורים:</span>
-                      <span className="font-bold mr-2">{getUnitLessons(selectedUnit.name).length}</span>
+                {/* Lesson Details */}
+                <Card className={`p-4 border-2 ${getStatusColor(selectedUnit.lesson.status)}`}>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Clock className="w-5 h-5 text-slate-600" />
+                      <div>
+                        <div className="text-sm text-slate-500">שעות השיעור</div>
+                        <div className="text-lg font-bold">
+                          {selectedUnit.lesson.start_time} - {selectedUnit.lesson.end_time}
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-slate-500">שיעורים משובצים:</span>
-                      <span className="font-bold mr-2">
-                        {getUnitLessons(selectedUnit.name).filter(l => l.status === 'assigned').length}
-                      </span>
+
+                    {selectedUnit.lesson.assigned_key ? (
+                      <div className="flex items-center gap-3">
+                        <Key className="w-5 h-5 text-slate-600" />
+                        <div>
+                          <div className="text-sm text-slate-500">חדר משובץ</div>
+                          <div className="text-lg font-bold">חדר {selectedUnit.lesson.assigned_key}</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <Key className="w-5 h-5 text-slate-400" />
+                        <div className="text-slate-500">טרם שובץ חדר</div>
+                      </div>
+                    )}
+
+                    <div className="pt-3 border-t">
+                      <div className="text-sm text-slate-500 mb-2">דרישות</div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge variant="outline">
+                          {selectedUnit.lesson.room_type_needed === 'פלוגתי' ? '🏢 חדר פלוגתי' : '🏠 חדר צוותי'}
+                        </Badge>
+                        {selectedUnit.lesson.needs_computers && (
+                          <Badge variant="outline">💻 נדרשים מחשבים</Badge>
+                        )}
+                        <Badge className={
+                          selectedUnit.lesson.status === 'assigned' 
+                            ? 'bg-green-600 hover:bg-green-600' 
+                            : 'bg-yellow-600 hover:bg-yellow-600'
+                        }>
+                          {selectedUnit.lesson.status === 'assigned' ? '✓ שובץ' : '⏳ ממתין'}
+                        </Badge>
+                      </div>
                     </div>
+
+                    {selectedUnit.lesson.notes && (
+                      <div className="pt-3 border-t">
+                        <div className="text-sm text-slate-500 mb-1">הערות</div>
+                        <div className="text-sm text-slate-700">{selectedUnit.lesson.notes}</div>
+                      </div>
+                    )}
                   </div>
-                </div>
+                </Card>
               </div>
             )}
           </DialogContent>
