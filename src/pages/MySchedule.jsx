@@ -929,11 +929,14 @@ export default function MySchedule() {
                 <Input
                   type="number"
                   min="1"
-                  max="10"
+                  max={filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length || 10}
                   value={formData.room_count}
                   onChange={(e) => {
                     const newCount = parseInt(e.target.value) || 1;
                     const platoonSquadsCount = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
+                    
+                    // Don't allow more rooms than squads in platoon
+                    if (newCount > platoonSquadsCount) return;
                     
                     // If room count equals squad count, auto-fill
                     if (newCount === platoonSquadsCount) {
@@ -953,6 +956,9 @@ export default function MySchedule() {
                     }
                   }}
                   className="text-right" />
+                <p className="text-xs text-slate-500">
+                  מקסימום: {filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length} צוותים בפלוגה
+                </p>
               </div>
 
               {formData.room_count > 1 && (() => {
