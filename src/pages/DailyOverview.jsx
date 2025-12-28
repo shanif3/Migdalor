@@ -205,17 +205,25 @@ export default function DailyOverview() {
   };
 
   // Get lesson for a specific unit and time slot
-  const getLessonForSlot = (unitName, timeSlot) => {
+  const getLessonForSlot = (unitName, timeSlot, item) => {
     if (displayData.type === 'room') {
       // For room view, find any lesson using this room
       return lessons.find(lesson => 
         lesson.assigned_key === unitName.replace('חדר ', '') && isLessonActive(lesson, timeSlot)
       );
     } else {
-      // For crew/platoon view, find lesson by crew name
-      return lessons.find(lesson => 
-        lesson.crew_name === unitName && isLessonActive(lesson, timeSlot)
-      );
+      // For crew/platoon view, find lesson by crew name OR platoon name (if it's a platoon row)
+      return lessons.find(lesson => {
+        if (!isLessonActive(lesson, timeSlot)) return false;
+
+        // If this is a platoon row, show platoon-level lessons
+        if (item?.isPlatoon) {
+          return lesson.crew_name === unitName || lesson.platoon_name === unitName;
+        }
+
+        // Otherwise, show crew lessons
+        return lesson.crew_name === unitName;
+      });
     }
   };
 
