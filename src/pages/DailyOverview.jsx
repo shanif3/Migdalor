@@ -180,8 +180,8 @@ export default function DailyOverview() {
         });
       });
 
-      // Add all crews
-      crews.forEach(c => {
+      // Add only crews (not platoons)
+      crews.filter(c => c.name.includes('צוות')).forEach(c => {
         items.push({
           id: c.id,
           name: c.name,
