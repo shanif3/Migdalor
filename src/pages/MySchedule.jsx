@@ -98,9 +98,11 @@ export default function MySchedule() {
         // Show if lesson is for user's specific squad
         if (lesson.crew_name === user?.squad_name) return true;
         
-        // Show if lesson is platoon-wide (crew_name is a platoon name) and matches user's platoon
-        const isPlatoonLesson = filteredCrews.some(crew => crew.name === lesson.crew_name);
-        if (isPlatoonLesson && lesson.platoon_name === user?.platoon_name) return true;
+        // Show if lesson is platoon-wide (crew_name is a platoon name that matches user's platoon)
+        if (lesson.crew_name === user?.platoon_name) return true;
+        
+        // Show if lesson's platoon_name matches user's platoon
+        if (lesson.platoon_name === user?.platoon_name) return true;
         
         return false;
       });
