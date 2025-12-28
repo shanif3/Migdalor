@@ -474,7 +474,7 @@ export default function DailyOverview() {
                         {item.name}
                       </td>
                       {timeSlots.map((slot) => {
-                        const lesson = getLessonForSlot(item.name, slot);
+                        const lesson = getLessonForSlot(item.name, slot, item);
                         return (
                           <td key={slot} className="p-1 border-l border-slate-200 align-middle">
                             {lesson ? (
