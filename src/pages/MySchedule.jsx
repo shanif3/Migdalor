@@ -973,43 +973,10 @@ export default function MySchedule() {
                   </div>
                 ) : (
                 <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <Label className="text-sm font-medium text-blue-800">שיטת שיבוץ צוותים</Label>
+                  <Label className="text-sm font-medium text-blue-800">בחר צוותים</Label>
                   
-                  {/* Squad count input */}
                   <div className="space-y-2">
-                    <Label className="text-xs text-blue-700">כמות צוותים בפלוגה (לשיבוץ אוטומטי)</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      max={Math.min(formData.room_count, filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)}
-                      placeholder="למשל: 4"
-                      value={formData.squad_count}
-                      onChange={(e) => {
-                        const maxSquads = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
-                        const value = parseInt(e.target.value) || '';
-                        if (value === '' || value <= Math.min(formData.room_count, maxSquads)) {
-                          setFormData({ ...formData, squad_count: e.target.value, selected_squads: [] });
-                        }
-                      }}
-                      className="text-right"
-                      disabled={formData.selected_squads.length > 0} />
-                    {formData.squad_count && parseInt(formData.squad_count) > 0 && (
-                      <p className="text-xs text-green-600">
-                        ✓ יוקצו {Math.min(formData.room_count, parseInt(formData.squad_count), filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)} צוותים הראשונים מהפלוגה
-                      </p>
-                    )}
-                    {formData.squad_count && parseInt(formData.squad_count) >= Math.min(formData.room_count, filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length) && (
-                      <p className="text-xs text-amber-600">
-                        הגעת למקסימום ({Math.min(formData.room_count, filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)} צוותים)
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="text-xs text-blue-600 text-center">או</div>
-
-                  {/* Manual squad selection */}
-                  <div className="space-y-2">
-                    <Label className="text-xs text-blue-700">בחירה ידנית של צוותים</Label>
+                    <Label className="text-xs text-blue-700">בחר את הצוותים הספציפיים לשיבוץ</Label>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {filteredSquads
                         .filter(s => s.platoon_name === formData.platoon_name)
@@ -1018,14 +985,12 @@ export default function MySchedule() {
                             <Checkbox
                               id={`squad-${squad.id}`}
                               checked={formData.selected_squads.includes(squad.squad_number)}
-                              disabled={!!formData.squad_count}
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   if (formData.selected_squads.length < formData.room_count) {
                                     setFormData({
                                       ...formData,
-                                      selected_squads: [...formData.selected_squads, squad.squad_number],
-                                      squad_count: ''
+                                      selected_squads: [...formData.selected_squads, squad.squad_number]
                                     });
                                   }
                                 } else {
