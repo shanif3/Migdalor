@@ -221,9 +221,9 @@ export default function DailyOverview() {
     if (!lesson) return '';
     
     if (displayData.type === 'platoon') {
-      // If this is a platoon-level lesson (crew_name is the platoon itself), use status color
+      // If this is a platoon-level lesson (crew_name is the platoon itself), use unique platoon color
       if (lesson.crew_name === selectedPlatoon) {
-        return getStatusColor(lesson.status);
+        return 'bg-amber-100 border-amber-300 text-amber-800';
       }
       // Different color for each squad/crew
       return crewColors[lesson.crew_name] || getStatusColor(lesson.status);
