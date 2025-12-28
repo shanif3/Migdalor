@@ -391,7 +391,19 @@ export default function DailyOverview() {
             <span className="font-semibold text-slate-700">מקרא:</span>
             {displayData.type === 'platoon' ? (
               <>
-                <span className="text-slate-600">כל צוות בצבע שונה</span>
+                <Badge className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-100">
+                  {selectedPlatoon} (פלוגה)
+                </Badge>
+                {displayData.items
+                  .filter(item => !item.isPlatoon)
+                  .map(item => (
+                    <Badge 
+                      key={item.id}
+                      className={`${crewColors[item.name]} hover:${crewColors[item.name]}`}
+                    >
+                      {item.name}
+                    </Badge>
+                  ))}
               </>
             ) : (
               <>
