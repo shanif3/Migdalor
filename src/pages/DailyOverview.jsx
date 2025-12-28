@@ -303,7 +303,7 @@ export default function DailyOverview() {
                 setSelectedCrew('');
                 setSelectedPlatoon('');
                 setSelectedPlatoonForCrew('');
-              }}>
+              }} dir="rtl">
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
@@ -321,7 +321,7 @@ export default function DailyOverview() {
           {filterType === 'room' && (
             <div className="flex items-center gap-3">
               <Label className="text-sm font-medium">בחר חדר:</Label>
-              <Select value={selectedRoom} onValueChange={setSelectedRoom}>
+              <Select value={selectedRoom} onValueChange={setSelectedRoom} dir="rtl">
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="בחר חדר..." />
                 </SelectTrigger>
@@ -340,7 +340,7 @@ export default function DailyOverview() {
               <Select value={selectedPlatoonForCrew} onValueChange={(value) => {
                 setSelectedPlatoonForCrew(value);
                 setSelectedCrew('');
-              }}>
+              }} dir="rtl">
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="בחר פלוגה..." />
                 </SelectTrigger>
@@ -353,7 +353,7 @@ export default function DailyOverview() {
               {selectedPlatoonForCrew && (
                 <>
                   <Label className="text-sm font-medium">בחר צוות:</Label>
-                  <Select value={selectedCrew} onValueChange={setSelectedCrew}>
+                  <Select value={selectedCrew} onValueChange={setSelectedCrew} dir="rtl">
                     <SelectTrigger className="w-48">
                       <SelectValue placeholder="בחר צוות..." />
                     </SelectTrigger>
@@ -371,7 +371,7 @@ export default function DailyOverview() {
           {filterType === 'platoon' && (
             <div className="flex items-center gap-3">
               <Label className="text-sm font-medium">בחר פלוגה:</Label>
-              <Select value={selectedPlatoon} onValueChange={setSelectedPlatoon}>
+              <Select value={selectedPlatoon} onValueChange={setSelectedPlatoon} dir="rtl">
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="בחר פלוגה..." />
                 </SelectTrigger>
