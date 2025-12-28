@@ -283,6 +283,11 @@ export default function MySchedule() {
       // Update the lesson first
       await base44.entities.Lesson.update(id, data);
 
+      // Only try to reassign key if the lesson already had one assigned
+      if (!originalLesson.assigned_key) {
+        return { success: true };
+      }
+
       // If times or room type changed, try to find a new key
       const timesChanged = data.start_time !== originalLesson.start_time ||
       data.end_time !== originalLesson.end_time;
