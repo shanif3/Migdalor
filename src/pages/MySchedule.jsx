@@ -1037,7 +1037,8 @@ export default function MySchedule() {
                 <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <Label className="text-sm font-medium text-blue-800">בחר את הצוותים הספציפיים לשיבוץ</Label>
                   
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                  <div className="space-y-2">
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
                       {filteredSquads.
                       filter((s) => s.platoon_name === formData.platoon_name).
                       map((squad) =>
@@ -1067,16 +1068,17 @@ export default function MySchedule() {
                       )}
                     </div>
                     
-                  {formData.selected_squads.length > 0 &&
-                  <p className="text-xs text-green-600">
-                      ✓ נבחרו {formData.selected_squads.length} צוותים
-                    </p>
-                  }
-                  {formData.selected_squads.length >= formData.room_count &&
-                  <p className="text-xs text-amber-600">
-                      הגעת למקסימום ({formData.room_count} כיתות)
-                    </p>
-                  }
+                    {formData.selected_squads.length > 0 &&
+                    <p className="text-xs text-green-600">
+                        ✓ נבחרו {formData.selected_squads.length} צוותים
+                      </p>
+                    }
+                    {formData.selected_squads.length >= formData.room_count &&
+                    <p className="text-xs text-amber-600">
+                        הגעת למקסימום ({formData.room_count} כיתות)
+                      </p>
+                    }
+                  </div>
                 </div>;
 
               })()}
