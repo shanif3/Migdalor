@@ -30,6 +30,7 @@ import { format } from 'date-fns';
 export default function KeyAllocation() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [selectedKeys, setSelectedKeys] = useState([]);
+  const [selectedLessons, setSelectedLessons] = useState([]);
   const [isAllocating, setIsAllocating] = useState(false);
   const queryClient = useQueryClient();
 
@@ -125,6 +126,23 @@ export default function KeyAllocation() {
     }
   };
 
+  const toggleLessonSelection = (lessonId) => {
+    setSelectedLessons((prev) =>
+      prev.includes(lessonId) ?
+        prev.filter((id) => id !== lessonId) :
+        [...prev, lessonId]
+    );
+  };
+
+  const toggleSelectAllLessons = () => {
+    const allIds = allItemsToDisplay.map(l => l.id);
+    if (selectedLessons.length === allIds.length) {
+      setSelectedLessons([]);
+    } else {
+      setSelectedLessons(allIds);
+    }
+  };
+
   const allocateKeys = async () => {
     setIsAllocating(true);
 
@@ -132,10 +150,12 @@ export default function KeyAllocation() {
       // Get available keys
       const availableKeys = allKeys.filter((k) => selectedKeys.includes(k.id));
 
-      // Get pending lessons sorted by priority
-      const pendingLessons = lessons.
-      filter((l) => l.status === 'pending').
-      sort((a, b) => {
+      // Get pending lessons (only selected ones if any selected, otherwise all)
+      const lessonsToProcess = selectedLessons.length > 0 
+        ? lessons.filter((l) => selectedLessons.includes(l.id) && l.status === 'pending')
+        : lessons.filter((l) => l.status === 'pending');
+      
+      const pendingLessons = lessonsToProcess.sort((a, b) => {
         // Priority 1: Earlier time
         const timeA = a.start_time;
         const timeB = b.start_time;
@@ -152,8 +172,12 @@ export default function KeyAllocation() {
         return 0;
       });
 
-      // Add special requests to the end (lowest priority)
-      const specialRequestsToAllocate = specialRequests.map((req) => ({
+      // Add special requests to the end (only selected ones if any lessons selected)
+      const requestsToProcess = selectedLessons.length > 0
+        ? specialRequests.filter((req) => selectedLessons.includes(`special_${req.id}`))
+        : specialRequests;
+      
+      const specialRequestsToAllocate = requestsToProcess.map((req) => ({
         id: `special_${req.id}`,
         crew_name: req.crew_name,
         start_time: req.start_time,
@@ -465,7 +489,9 @@ export default function KeyAllocation() {
               <Loader2 className="w-4 h-4 ml-2 animate-spin" /> :
               <Wand2 className="w-4 h-4 ml-2" />
               }
-              שבץ אוטומטית
+              {selectedLessons.length > 0 
+                ? `שבץ ${selectedLessons.length} נבחרים` 
+                : 'שבץ אוטומטית'}
             </Button>
             <Button
               variant="outline"
@@ -490,7 +516,7 @@ export default function KeyAllocation() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-6 gap-4 mb-6">
           <Card className="p-4">
             <p className="text-sm text-slate-500">סה״כ שיעורים</p>
             <p className="text-2xl font-bold text-slate-800">{lessons.length}</p>
@@ -510,6 +536,10 @@ export default function KeyAllocation() {
           <Card className="p-4 bg-blue-50 border-blue-200">
             <p className="text-sm text-blue-600">מפתחות זמינים</p>
             <p className="text-2xl font-bold text-blue-700">{selectedKeys.length}</p>
+          </Card>
+          <Card className="p-4 bg-indigo-50 border-indigo-200">
+            <p className="text-sm text-indigo-600">שיעורים נבחרים</p>
+            <p className="text-2xl font-bold text-indigo-700">{selectedLessons.length}</p>
           </Card>
         </div>
 
@@ -559,16 +589,24 @@ export default function KeyAllocation() {
 
           {/* Lessons List */}
           <Card className="lg:col-span-2 overflow-hidden border-slate-200">
-            <div className="p-6 border-b bg-slate-50">
+            <div className="p-6 border-b bg-slate-50 flex items-center justify-between">
               <h3 className="font-semibold text-lg flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-slate-600" />
                 לוח זמנים שיעורים
               </h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleSelectAllLessons}
+                className="text-xs">
+                {selectedLessons.length === allItemsToDisplay.length ? 'בטל הכל' : 'בחר הכל'}
+              </Button>
             </div>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">✓</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">שעה</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">צוות</TableHead>
                     <TableHead className="h-10 px-2 text-center align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">סוג</TableHead>
@@ -582,19 +620,25 @@ export default function KeyAllocation() {
                 <TableBody>
                   {isLoading ?
                   <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
+                      <TableCell colSpan={9} className="text-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                       </TableCell>
                     </TableRow> :
                   allItemsToDisplay.length === 0 ?
                   <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8 text-slate-400">
+                      <TableCell colSpan={9} className="text-center py-8 text-slate-400">
                         אין שיעורים או בקשות מתוכננים לתאריך זה
                       </TableCell>
                     </TableRow> :
 
                   allItemsToDisplay.map((lesson) =>
                   <TableRow key={lesson.id} className="hover:bg-slate-50/50">
+                        <TableCell className="p-2 text-center align-middle">
+                          <Checkbox
+                            checked={selectedLessons.includes(lesson.id)}
+                            onCheckedChange={() => toggleLessonSelection(lesson.id)}
+                          />
+                        </TableCell>
                         <TableCell className="p-2 text-center align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] font-mono text-sm">
                           {lesson.start_time}-{lesson.end_time}
                         </TableCell>
