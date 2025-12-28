@@ -9,6 +9,7 @@ import ManageUsers from './pages/ManageUsers';
 import MyProfile from './pages/MyProfile';
 import MySchedule from './pages/MySchedule';
 import Onboarding from './pages/Onboarding';
+import ManageZones from './pages/ManageZones';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +25,7 @@ export const PAGES = {
     "MyProfile": MyProfile,
     "MySchedule": MySchedule,
     "Onboarding": Onboarding,
+    "ManageZones": ManageZones,
 }
 
 export const pagesConfig = {
