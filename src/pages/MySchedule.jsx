@@ -945,15 +945,26 @@ export default function MySchedule() {
                     <Input
                       type="number"
                       min="1"
-                      max="10"
+                      max={Math.min(formData.room_count, filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)}
                       placeholder="למשל: 4"
                       value={formData.squad_count}
-                      onChange={(e) => setFormData({ ...formData, squad_count: e.target.value, selected_squads: [] })}
+                      onChange={(e) => {
+                        const maxSquads = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
+                        const value = parseInt(e.target.value) || '';
+                        if (value === '' || value <= Math.min(formData.room_count, maxSquads)) {
+                          setFormData({ ...formData, squad_count: e.target.value, selected_squads: [] });
+                        }
+                      }}
                       className="text-right"
                       disabled={formData.selected_squads.length > 0} />
                     {formData.squad_count && parseInt(formData.squad_count) > 0 && (
                       <p className="text-xs text-green-600">
                         ✓ יוקצו {Math.min(formData.room_count, parseInt(formData.squad_count), filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)} צוותים הראשונים מהפלוגה
+                      </p>
+                    )}
+                    {formData.squad_count && parseInt(formData.squad_count) >= Math.min(formData.room_count, filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length) && (
+                      <p className="text-xs text-amber-600">
+                        הגעת למקסימום ({Math.min(formData.room_count, filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)} צוותים)
                       </p>
                     )}
                   </div>
