@@ -53,6 +53,7 @@ export default function Layout({ children, currentPageName }) {
 
   const adminNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
+    { name: 'תמונת מצב', icon: Calendar, page: 'DailyOverview', tooltip: 'תמונת מצב' },
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation', tooltip: 'הקצאה' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
     { name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding' },
