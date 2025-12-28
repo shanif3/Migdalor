@@ -446,7 +446,7 @@ export default function DailyOverview() {
                 {/* Crew/Platoon Info */}
                 <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="text-sm text-slate-600 mb-1">
-                    {viewMode === 'squads' ? 'צוות' : 'פלוגה'}:
+                    {displayData.type === 'room' ? 'חדר' : 'צוות'}:
                   </div>
                   <div className="text-xl font-bold text-slate-800">{selectedUnit.name}</div>
                   {selectedUnit.lesson.platoon_name && (
