@@ -482,7 +482,7 @@ export default function DailyOverview() {
                                     )}
                                     {displayData.type === 'all' && (
                                       <div className="text-[10px] opacity-75 mt-1">
-                                        {lesson.crew_name === lesson.platoon_name 
+                                        {lesson.room_type_needed === 'פלוגתי'
                                           ? `פלוגה: ${lesson.platoon_name}`
                                           : `צוות: ${lesson.crew_name}`
                                         }
