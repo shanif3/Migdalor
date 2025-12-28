@@ -80,7 +80,7 @@ export default function DailyOverview() {
     });
   }, [keys]);
 
-  // Generate colors for crews
+  // Generate colors for crews/squads
   const crewColors = useMemo(() => {
     const colors = [
       'bg-blue-100 border-blue-300 text-blue-800',
@@ -93,11 +93,30 @@ export default function DailyOverview() {
       'bg-rose-100 border-rose-300 text-rose-800',
     ];
     const colorMap = {};
-    crewNames.forEach((crew, idx) => {
-      colorMap[crew] = colors[idx % colors.length];
-    });
+    
+    // If filtering by platoon, assign colors to squads in that platoon
+    if (filterType === 'platoon' && selectedPlatoon) {
+      const platoonSquads = squads
+        .filter(s => s.platoon_name === selectedPlatoon)
+        .map(s => s.squad_number)
+        .sort((a, b) => {
+          const numA = parseInt(a.match(/\d+/)?.[0] || 0);
+          const numB = parseInt(b.match(/\d+/)?.[0] || 0);
+          return numA - numB;
+        });
+      
+      platoonSquads.forEach((squad, idx) => {
+        colorMap[squad] = colors[idx % colors.length];
+      });
+    } else {
+      // Otherwise use crew names
+      crewNames.forEach((crew, idx) => {
+        colorMap[crew] = colors[idx % colors.length];
+      });
+    }
+    
     return colorMap;
-  }, [crewNames]);
+  }, [crewNames, filterType, selectedPlatoon, squads]);
 
   // Get display data based on filter type
   const displayData = useMemo(() => {
