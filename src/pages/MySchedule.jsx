@@ -47,7 +47,9 @@ export default function MySchedule() {
     room_type_needed: 'צוותי',
     needs_computers: false,
     notes: '',
-    room_count: 1
+    room_count: 1,
+    squad_count: '',
+    selected_squads: []
   });
   const queryClient = useQueryClient();
 
@@ -259,13 +261,43 @@ export default function MySchedule() {
 
       // Multiple rooms - create multiple lessons
       const lessons = [];
-      for (let i = 0; i < data.room_count; i++) {
-        lessons.push({
-          ...data,
-          room_type_needed: 'צוותי', // Always צוותי for multiple rooms
-          notes: data.notes ? `${data.notes} (חדר ${i + 1}/${data.room_count})` : `חדר ${i + 1}/${data.room_count}`
-        });
+      
+      // If squad_count is provided, auto-assign squads
+      if (data.squad_count && parseInt(data.squad_count) > 0) {
+        const squadCount = parseInt(data.squad_count);
+        const platoonSquads = filteredSquads.filter(s => s.platoon_name === data.platoon_name);
+        
+        for (let i = 0; i < Math.min(data.room_count, squadCount, platoonSquads.length); i++) {
+          lessons.push({
+            ...data,
+            crew_name: platoonSquads[i].squad_number,
+            room_type_needed: 'צוותי',
+            notes: data.notes || ''
+          });
+        }
+      } 
+      // If specific squads selected, use them
+      else if (data.selected_squads && data.selected_squads.length > 0) {
+        for (let i = 0; i < Math.min(data.room_count, data.selected_squads.length); i++) {
+          lessons.push({
+            ...data,
+            crew_name: data.selected_squads[i],
+            room_type_needed: 'צוותי',
+            notes: data.notes || ''
+          });
+        }
       }
+      // Default behavior - generic rooms
+      else {
+        for (let i = 0; i < data.room_count; i++) {
+          lessons.push({
+            ...data,
+            room_type_needed: 'צוותי',
+            notes: data.notes ? `${data.notes} (חדר ${i + 1}/${data.room_count})` : `חדר ${i + 1}/${data.room_count}`
+          });
+        }
+      }
+      
       return base44.entities.Lesson.bulkCreate(lessons);
     },
     onSuccess: () => {
@@ -376,7 +408,9 @@ export default function MySchedule() {
         room_type_needed: 'צוותי',
         needs_computers: false,
         notes: '',
-        room_count: 1
+        room_count: 1,
+        squad_count: '',
+        selected_squads: []
       });
       toast.success('השיעור עודכן והמפתח הוקצה מחדש');
     }
@@ -887,22 +921,91 @@ export default function MySchedule() {
 
             {/* Room Count - only for platoons when not editing */}
             {!editingLesson && filteredCrews.some((c) => c.name === formData.crew_name) &&
-            <div className="space-y-2">
+            <>
+              <div className="space-y-2">
                 <Label className="text-sm font-medium">כמות כיתות</Label>
                 <Input
-                type="number"
-                min="1"
-                max="10"
-                value={formData.room_count}
-                onChange={(e) => setFormData({ ...formData, room_count: parseInt(e.target.value) || 1 })}
-                className="text-right" />
-
-                {formData.room_count > 1 &&
-              <p className="text-xs text-blue-600">
-                    יווצרו {formData.room_count} שיעורים בחדרים צוותיים
-                  </p>
-              }
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={formData.room_count}
+                  onChange={(e) => setFormData({ ...formData, room_count: parseInt(e.target.value) || 1, squad_count: '', selected_squads: [] })}
+                  className="text-right" />
               </div>
+
+              {formData.room_count > 1 && (
+                <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <Label className="text-sm font-medium text-blue-800">שיטת שיבוץ צוותים</Label>
+                  
+                  {/* Squad count input */}
+                  <div className="space-y-2">
+                    <Label className="text-xs text-blue-700">כמות צוותים בפלוגה (לשיבוץ אוטומטי)</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="10"
+                      placeholder="למשל: 4"
+                      value={formData.squad_count}
+                      onChange={(e) => setFormData({ ...formData, squad_count: e.target.value, selected_squads: [] })}
+                      className="text-right"
+                      disabled={formData.selected_squads.length > 0} />
+                    {formData.squad_count && parseInt(formData.squad_count) > 0 && (
+                      <p className="text-xs text-green-600">
+                        ✓ יוקצו {Math.min(formData.room_count, parseInt(formData.squad_count), filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length)} צוותים הראשונים מהפלוגה
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="text-xs text-blue-600 text-center">או</div>
+
+                  {/* Manual squad selection */}
+                  <div className="space-y-2">
+                    <Label className="text-xs text-blue-700">בחירה ידנית של צוותים</Label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {filteredSquads
+                        .filter(s => s.platoon_name === formData.platoon_name)
+                        .map((squad) => (
+                          <div key={squad.id} className="flex items-center gap-2">
+                            <Checkbox
+                              id={`squad-${squad.id}`}
+                              checked={formData.selected_squads.includes(squad.squad_number)}
+                              disabled={!!formData.squad_count}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  if (formData.selected_squads.length < formData.room_count) {
+                                    setFormData({
+                                      ...formData,
+                                      selected_squads: [...formData.selected_squads, squad.squad_number],
+                                      squad_count: ''
+                                    });
+                                  }
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    selected_squads: formData.selected_squads.filter(s => s !== squad.squad_number)
+                                  });
+                                }
+                              }} />
+                            <Label htmlFor={`squad-${squad.id}`} className="text-xs cursor-pointer">
+                              {squad.squad_number}
+                            </Label>
+                          </div>
+                        ))}
+                    </div>
+                    {formData.selected_squads.length > 0 && (
+                      <p className="text-xs text-green-600">
+                        ✓ נבחרו {formData.selected_squads.length} צוותים
+                      </p>
+                    )}
+                    {formData.selected_squads.length >= formData.room_count && (
+                      <p className="text-xs text-amber-600">
+                        הגעת למקסימום ({formData.room_count} כיתות)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
             }
 
             <div className="grid grid-cols-2 gap-3">
