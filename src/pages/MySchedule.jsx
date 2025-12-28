@@ -976,7 +976,6 @@ export default function MySchedule() {
                   <Label className="text-sm font-medium text-blue-800">בחר צוותים</Label>
                   
                   <div className="space-y-2">
-                    <Label className="text-xs text-blue-700">בחר את הצוותים הספציפיים לשיבוץ</Label>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {filteredSquads
                         .filter(s => s.platoon_name === formData.platoon_name)
