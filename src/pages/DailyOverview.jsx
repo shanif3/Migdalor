@@ -28,6 +28,7 @@ export default function DailyOverview() {
   const [selectedRoom, setSelectedRoom] = useState('');
   const [selectedCrew, setSelectedCrew] = useState('');
   const [selectedPlatoon, setSelectedPlatoon] = useState('');
+  const [selectedPlatoonForCrew, setSelectedPlatoonForCrew] = useState('');
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -66,10 +67,20 @@ export default function DailyOverview() {
     return Array.from(platoonSet).sort();
   }, [squads]);
 
-  // Get crew names
+  // Get crew names (filtered by platoon if selected for crew filter)
   const crewNames = useMemo(() => {
+    if (filterType === 'crew' && selectedPlatoonForCrew) {
+      return squads
+        .filter(s => s.platoon_name === selectedPlatoonForCrew)
+        .map(s => s.squad_number)
+        .sort((a, b) => {
+          const numA = parseInt(a.match(/\d+/)?.[0] || 0);
+          const numB = parseInt(b.match(/\d+/)?.[0] || 0);
+          return numA - numB;
+        });
+    }
     return crews.map(c => c.name).sort((a, b) => a.localeCompare(b, 'he'));
-  }, [crews]);
+  }, [crews, filterType, selectedPlatoonForCrew, squads]);
 
   // Get room numbers
   const roomNumbers = useMemo(() => {
@@ -265,6 +276,7 @@ export default function DailyOverview() {
                 setSelectedRoom('');
                 setSelectedCrew('');
                 setSelectedPlatoon('');
+                setSelectedPlatoonForCrew('');
               }}>
                 <SelectTrigger className="w-40">
                   <SelectValue />
@@ -298,17 +310,35 @@ export default function DailyOverview() {
 
           {filterType === 'crew' && (
             <div className="flex items-center gap-3">
-              <Label className="text-sm font-medium">בחר צוות:</Label>
-              <Select value={selectedCrew} onValueChange={setSelectedCrew}>
+              <Label className="text-sm font-medium">בחר פלוגה:</Label>
+              <Select value={selectedPlatoonForCrew} onValueChange={(value) => {
+                setSelectedPlatoonForCrew(value);
+                setSelectedCrew('');
+              }}>
                 <SelectTrigger className="w-48">
-                  <SelectValue placeholder="בחר צוות..." />
+                  <SelectValue placeholder="בחר פלוגה..." />
                 </SelectTrigger>
                 <SelectContent dir="rtl">
-                  {crewNames.map((crew) => (
-                    <SelectItem key={crew} value={crew}>{crew}</SelectItem>
+                  {platoons.map((platoon) => (
+                    <SelectItem key={platoon} value={platoon}>{platoon}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              {selectedPlatoonForCrew && (
+                <>
+                  <Label className="text-sm font-medium">בחר צוות:</Label>
+                  <Select value={selectedCrew} onValueChange={setSelectedCrew}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="בחר צוות..." />
+                    </SelectTrigger>
+                    <SelectContent dir="rtl">
+                      {crewNames.map((crew) => (
+                        <SelectItem key={crew} value={crew}>{crew}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
             </div>
           )}
 
