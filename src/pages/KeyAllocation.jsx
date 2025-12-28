@@ -206,6 +206,43 @@ export default function KeyAllocation() {
           }
         }
 
+        // Third priority: Try to find a key in the same zone as previously assigned keys
+        if (!assignedKey) {
+          const userEmail = lesson.crew_manager || lesson.created_by;
+          const crewName = lesson.crew_name;
+          
+          // Check if user or crew has a previous key with a zone
+          let preferredZone = null;
+          if (userEmail && userKeyMap[userEmail]) {
+            const previousKey = availableKeys.find((k) => k.id === userKeyMap[userEmail]);
+            if (previousKey?.zone) preferredZone = previousKey.zone;
+          }
+          if (!preferredZone && crewName && crewKeyMap[crewName]) {
+            const previousKey = availableKeys.find((k) => k.id === crewKeyMap[crewName]);
+            if (previousKey?.zone) preferredZone = previousKey.zone;
+          }
+
+          // If we have a preferred zone, try to find a key in that zone
+          if (preferredZone) {
+            assignedKey = availableKeys.find(
+              (k) => k.zone === preferredZone &&
+              k.room_type === lesson.room_type_needed &&
+              (!lesson.needs_computers || k.has_computers) &&
+              !isKeyOccupied(k, lesson, assignments)
+            );
+            
+            // If not found exact match in zone, try upgrade in same zone
+            if (!assignedKey && lesson.room_type_needed === 'צוותי') {
+              assignedKey = availableKeys.find(
+                (k) => k.zone === preferredZone &&
+                k.room_type === 'פלוגתי' &&
+                (!lesson.needs_computers || k.has_computers) &&
+                !isKeyOccupied(k, lesson, assignments)
+              );
+            }
+          }
+        }
+
         // First try to find exact match with computer requirement
         if (!assignedKey && lesson.needs_computers) {
           assignedKey = availableKeys.find(
@@ -705,11 +742,12 @@ export default function KeyAllocation() {
           <h4 className="font-semibold text-blue-900 mb-3">סדר עדיפויות הקצאה:</h4>
           <ol className="space-y-2 text-sm text-blue-800">
             <li>1. <strong>שימור כיתות - משתמש שקיבל כיתה מסוימת ישאר איתה לאורך היום</strong></li>
-            <li>2. שיעורים מוקדמים יותר מקבלים עדיפות</li>
-            <li>3. חדרים פלוגתיים משובצים ראשונים</li>
-            <li>4. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
-            <li>5. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
-            <li>6. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
+            <li>2. <strong>שימור אזור - העדפה לכיתות באותו אזור פיזי</strong></li>
+            <li>3. שיעורים מוקדמים יותר מקבלים עדיפות</li>
+            <li>4. חדרים פלוגתיים משובצים ראשונים</li>
+            <li>5. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
+            <li>6. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
+            <li>7. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
           </ol>
         </Card>
       </div>
