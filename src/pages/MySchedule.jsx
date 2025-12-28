@@ -836,11 +836,14 @@ export default function MySchedule() {
 
                   // Check if a squad was selected and auto-fill platoon name
                   const selectedSquad = squads.find((s) => s.squad_number === selectedValue);
+                  
+                  // Check if a platoon/crew was selected
+                  const selectedCrew = crews.find((c) => c.name === selectedValue);
 
                   setFormData({
                     ...formData,
                     crew_name: selectedValue,
-                    platoon_name: selectedSquad ? selectedSquad.platoon_name : ''
+                    platoon_name: selectedSquad ? selectedSquad.platoon_name : (selectedCrew ? selectedCrew.name : '')
                   });
                 }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
