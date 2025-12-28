@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Key, Users, Settings, LayoutDashboard, Calendar, Target, LogOut, ChevronDown, Shield, Briefcase, MapPin } from 'lucide-react';
+import { Key, Users, Settings, LayoutDashboard, Calendar, Target, LogOut, ChevronDown, Shield, Briefcase, MapPin, Image } from 'lucide-react';
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +53,7 @@ export default function Layout({ children, currentPageName }) {
 
   const adminNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
-    { name: 'תמונת מצב', icon: Calendar, page: 'DailyOverview', tooltip: 'תמונת מצב' },
+    { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation', tooltip: 'הקצאה' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
     { name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding' },
@@ -61,7 +61,7 @@ export default function Layout({ children, currentPageName }) {
 
   const userNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
-    { name: 'תמונת מצב', icon: Calendar, page: 'DailyOverview', tooltip: 'תמונת מצב' },
+    { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
     { name: 'אזור אישי', icon: Target, page: 'MyProfile', tooltip: 'אזור אישי' },
