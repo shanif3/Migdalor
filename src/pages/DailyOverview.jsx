@@ -167,14 +167,32 @@ export default function DailyOverview() {
         items: items
       };
     } else {
-      // Show all crews
-      return {
-        type: 'all',
-        items: crews.map(c => ({
+      // Show all platoons and crews
+      const items = [];
+
+      // Add all platoons
+      platoons.forEach(platoonName => {
+        items.push({
+          id: `platoon_${platoonName}`,
+          name: platoonName,
+          platoon: platoonName,
+          isPlatoon: true
+        });
+      });
+
+      // Add all crews
+      crews.forEach(c => {
+        items.push({
           id: c.id,
           name: c.name,
-          platoon: squads.find(s => s.squad_number === c.name)?.platoon_name || null
-        })).sort((a, b) => a.name.localeCompare(b.name, 'he'))
+          platoon: squads.find(s => s.squad_number === c.name)?.platoon_name || null,
+          isPlatoon: false
+        });
+      });
+
+      return {
+        type: 'all',
+        items: items.sort((a, b) => a.name.localeCompare(b.name, 'he'))
       };
     }
   }, [filterType, selectedRoom, selectedCrew, selectedPlatoon, crews, squads]);
