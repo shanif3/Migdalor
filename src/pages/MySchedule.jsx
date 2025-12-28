@@ -931,11 +931,41 @@ export default function MySchedule() {
                   min="1"
                   max="10"
                   value={formData.room_count}
-                  onChange={(e) => setFormData({ ...formData, room_count: parseInt(e.target.value) || 1, squad_count: '', selected_squads: [] })}
+                  onChange={(e) => {
+                    const newCount = parseInt(e.target.value) || 1;
+                    const platoonSquadsCount = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
+                    
+                    // If room count equals squad count, auto-fill
+                    if (newCount === platoonSquadsCount) {
+                      setFormData({ 
+                        ...formData, 
+                        room_count: newCount, 
+                        squad_count: newCount.toString(), 
+                        selected_squads: [] 
+                      });
+                    } else {
+                      setFormData({ 
+                        ...formData, 
+                        room_count: newCount, 
+                        squad_count: '', 
+                        selected_squads: [] 
+                      });
+                    }
+                  }}
                   className="text-right" />
               </div>
 
-              {formData.room_count > 1 && (
+              {formData.room_count > 1 && (() => {
+                const platoonSquadsCount = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
+                const isFullPlatoon = formData.room_count === platoonSquadsCount;
+                
+                return isFullPlatoon ? (
+                  <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                    <p className="text-sm text-green-800 font-medium">
+                      ✓ יוקצו אוטומטית כל {platoonSquadsCount} הצוותים בפלוגה
+                    </p>
+                  </div>
+                ) : (
                 <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <Label className="text-sm font-medium text-blue-800">שיטת שיבוץ צוותים</Label>
                   
@@ -1017,7 +1047,8 @@ export default function MySchedule() {
                     )}
                   </div>
                 </div>
-              )}
+                );
+              })()}
             </>
             }
 
