@@ -542,7 +542,7 @@ export default function DailyOverview() {
                       <div>
                         <div className="text-sm text-slate-500">שעות השיעור</div>
                         <div className="text-lg font-bold">
-                          {selectedUnit.lesson.start_time} - {selectedUnit.lesson.end_time}
+                            {selectedUnit.lesson.end_time} - {selectedUnit.lesson.start_time}
                         </div>
                       </div>
                     </div>
