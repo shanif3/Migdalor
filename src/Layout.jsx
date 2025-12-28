@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { base44 } from '@/api/base44Client';
-import { Key, Users, Settings, LayoutDashboard, Calendar, Target, LogOut, ChevronDown, Shield, Briefcase } from 'lucide-react';
+import { Key, Users, Settings, LayoutDashboard, Calendar, Target, LogOut, ChevronDown, Shield, Briefcase, MapPin } from 'lucide-react';
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +66,7 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const managementPages = isAdmin 
-    ? ['ManageCrews', 'ManageSquads', 'ManageUsers', 'ManagePositions']
+    ? ['ManageCrews', 'ManageSquads', 'ManageUsers', 'ManagePositions', 'ManageZones']
     : ['ManageCrews', 'ManageSquads'];
 
   const managementItems = isAdmin
@@ -75,6 +75,7 @@ export default function Layout({ children, currentPageName }) {
         { name: 'צוותים', page: 'ManageSquads', icon: Users },
         { name: 'משתמשים', page: 'ManageUsers', icon: Settings },
         { name: 'תפקידים', page: 'ManagePositions', icon: Briefcase },
+        { name: 'אזורים', page: 'ManageZones', icon: MapPin },
       ]
     : [
         { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
