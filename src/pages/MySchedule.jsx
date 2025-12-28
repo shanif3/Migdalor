@@ -791,8 +791,8 @@ export default function MySchedule() {
 
       {/* Add Lesson Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent dir="rtl" className="sm:max-w-md text-right">
-          <DialogHeader className="text-right">
+        <DialogContent dir="rtl" className="sm:max-w-md text-right max-h-[90vh] flex flex-col">
+          <DialogHeader className="text-right flex-shrink-0">
             <DialogTitle className="flex items-center gap-2 flex-row-reverse justify-end text-right">
               <div className="p-2 bg-indigo-100 rounded-lg">
                 <Calendar className="w-5 h-5 text-indigo-600" />
@@ -804,7 +804,7 @@ export default function MySchedule() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 overflow-y-auto flex-1">
             <div className="space-y-2">
               <Label>החדר עבור *</Label>
               <select
@@ -1065,7 +1065,7 @@ export default function MySchedule() {
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-shrink-0 pt-4 border-t">
             <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">
               ביטול
             </Button>
