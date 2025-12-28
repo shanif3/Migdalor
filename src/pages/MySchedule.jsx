@@ -79,35 +79,35 @@ export default function MySchedule() {
     queryFn: () => base44.entities.Squad.list('order')
   });
 
-  const filteredCrews = (isAdmin || !user?.platoon_name
-    ? crews
-    : crews.filter((crew) => crew.name === user.platoon_name))
-    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
+  const filteredCrews = (isAdmin || !user?.platoon_name ?
+  crews :
+  crews.filter((crew) => crew.name === user.platoon_name)).
+  sort((a, b) => a.name.localeCompare(b.name, 'he'));
 
-  const filteredSquads = (isAdmin || !user?.platoon_name
-    ? squads
-    : squads.filter((squad) => squad.platoon_name === user.platoon_name))
-    .sort((a, b) => {
-      const numA = parseInt(a.squad_number.match(/\d+/)?.[0] || 0);
-      const numB = parseInt(b.squad_number.match(/\d+/)?.[0] || 0);
-      return numA - numB;
-    });
+  const filteredSquads = (isAdmin || !user?.platoon_name ?
+  squads :
+  squads.filter((squad) => squad.platoon_name === user.platoon_name)).
+  sort((a, b) => {
+    const numA = parseInt(a.squad_number.match(/\d+/)?.[0] || 0);
+    const numB = parseInt(b.squad_number.match(/\d+/)?.[0] || 0);
+    return numA - numB;
+  });
 
   // Filter lessons by user's platoon (after filteredCrews is defined)
-  const lessons = isAdmin 
-    ? allLessons 
-    : allLessons.filter(lesson => {
-        // Show if lesson is for user's specific squad
-        if (lesson.crew_name === user?.squad_name) return true;
-        
-        // Show if lesson is platoon-wide (crew_name is a platoon name that matches user's platoon)
-        if (lesson.crew_name === user?.platoon_name) return true;
-        
-        // Show if lesson's platoon_name matches user's platoon
-        if (lesson.platoon_name === user?.platoon_name) return true;
-        
-        return false;
-      });
+  const lessons = isAdmin ?
+  allLessons :
+  allLessons.filter((lesson) => {
+    // Show if lesson is for user's specific squad
+    if (lesson.crew_name === user?.squad_name) return true;
+
+    // Show if lesson is platoon-wide (crew_name is a platoon name that matches user's platoon)
+    if (lesson.crew_name === user?.platoon_name) return true;
+
+    // Show if lesson's platoon_name matches user's platoon
+    if (lesson.platoon_name === user?.platoon_name) return true;
+
+    return false;
+  });
 
   const { data: allDayLessons = [] } = useQuery({
     queryKey: ['all-day-lessons', selectedDate],
@@ -140,12 +140,12 @@ export default function MySchedule() {
   });
 
   // Filter special requests by platoon and squad (admins see all)
-  const specialRequests = (isAdmin || !user
-    ? allSpecialRequests
-    : allSpecialRequests.filter(item => 
-        item.platoon_name === user.platoon_name || 
-        item.crew_name === user.squad_name
-      ));
+  const specialRequests = isAdmin || !user ?
+  allSpecialRequests :
+  allSpecialRequests.filter((item) =>
+  item.platoon_name === user.platoon_name ||
+  item.crew_name === user.squad_name
+  );
 
   // Get classroom assignments for Misdar (Wednesday only, from 9:00 AM)
   const getMyMisdarAssignments = () => {
@@ -261,12 +261,12 @@ export default function MySchedule() {
 
       // Multiple rooms - create multiple lessons
       const lessons = [];
-      
+
       // If squad_count is provided, auto-assign squads
       if (data.squad_count && parseInt(data.squad_count) > 0) {
         const squadCount = parseInt(data.squad_count);
-        const platoonSquads = filteredSquads.filter(s => s.platoon_name === data.platoon_name);
-        
+        const platoonSquads = filteredSquads.filter((s) => s.platoon_name === data.platoon_name);
+
         for (let i = 0; i < Math.min(data.room_count, squadCount, platoonSquads.length); i++) {
           lessons.push({
             ...data,
@@ -275,7 +275,7 @@ export default function MySchedule() {
             notes: data.notes || ''
           });
         }
-      } 
+      }
       // If specific squads selected, use them
       else if (data.selected_squads && data.selected_squads.length > 0) {
         for (let i = 0; i < Math.min(data.room_count, data.selected_squads.length); i++) {
@@ -297,7 +297,7 @@ export default function MySchedule() {
           });
         }
       }
-      
+
       return base44.entities.Lesson.bulkCreate(lessons);
     },
     onSuccess: () => {
@@ -582,12 +582,12 @@ export default function MySchedule() {
               className="w-auto" />
 
           </div>
-          {canAddLessons && (
-            <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
+          {canAddLessons &&
+          <Button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700">
               <Plus className="w-4 h-4 ml-2" />
               הוסף שיעור
             </Button>
-          )}
+          }
         </div>
 
         {/* Stats */}
@@ -649,7 +649,7 @@ export default function MySchedule() {
               <>
               {/* Special Requests */}
               {specialRequests.map((request) =>
-              <TableRow key={`request-${request.id}`} className="bg-blue-50 hover:bg-blue-100/70 border-b-2 border-blue-200">
+                <TableRow key={`request-${request.id}`} className="bg-blue-50 hover:bg-blue-100/70 border-b-2 border-blue-200">
                     <TableCell className="p-2 align-middle font-medium text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Badge className="bg-blue-600 hover:bg-blue-600">בקשה מיוחדת</Badge>
@@ -664,8 +664,8 @@ export default function MySchedule() {
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
                       <Badge variant="outline" className="border-blue-400 text-blue-700">
-                        {request.preferred_type === 'any' ? '🔄 כל חדר' : 
-                         request.preferred_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
+                        {request.preferred_type === 'any' ? '🔄 כל חדר' :
+                      request.preferred_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
@@ -693,13 +693,13 @@ export default function MySchedule() {
                       <span className="text-slate-400 text-xs">בקשה מיוחדת</span>
                     </TableCell>
                   </TableRow>
-              )}
+                )}
               
               {/* Regular Lessons */}
               {lessons.map((lesson) => {
-                const keyHandoff = getKeyHandoffNote(lesson);
-                return (
-              <TableRow key={lesson.id} className="hover:bg-slate-50/50">
+                  const keyHandoff = getKeyHandoffNote(lesson);
+                  return (
+                    <TableRow key={lesson.id} className="hover:bg-slate-50/50">
                     <TableCell className="p-2 align-middle font-medium text-center">
                       {lesson.crew_name}
                     </TableCell>
@@ -711,10 +711,10 @@ export default function MySchedule() {
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
                       <Badge variant="outline" className={
-                        lesson.room_type_needed === 'פלוגתי' 
-                          ? 'border-purple-300 text-purple-700' 
-                          : 'border-blue-300 text-blue-700'
-                      }>
+                        lesson.room_type_needed === 'פלוגתי' ?
+                        'border-purple-300 text-purple-700' :
+                        'border-blue-300 text-blue-700'
+                        }>
                         {lesson.room_type_needed === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
                     </TableCell>
@@ -725,63 +725,63 @@ export default function MySchedule() {
                       {getStatusBadge(lesson.status)}
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
-                      {lesson.assigned_key ? (
+                      {lesson.assigned_key ?
                         <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100">
                           <Key className="w-3 h-3 ml-1" />
                           חדר {lesson.assigned_key}
-                        </Badge>
-                      ) : (
+                        </Badge> :
+
                         <span className="text-slate-400">—</span>
-                      )}
+                        }
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
-                      {keyHandoff?.receiveFrom ? (
+                      {keyHandoff?.receiveFrom ?
                         <div className="text-sm text-green-600">
                           {keyHandoff.receiveFrom.crew}
-                        </div>
-                      ) : (
+                        </div> :
+
                         <span className="text-slate-400">—</span>
-                      )}
+                        }
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
-                      {keyHandoff?.passTo ? (
+                      {keyHandoff?.passTo ?
                         <div className="text-sm text-orange-600">
                           {keyHandoff.passTo.crew}
-                        </div>
-                      ) : (
+                        </div> :
+
                         <span className="text-slate-400">—</span>
-                      )}
+                        }
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
                       <span className="text-sm text-slate-600">{lesson.notes || '—'}</span>
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
-                      {canAddLessons ? (
+                      {canAddLessons ?
                         <div className="flex justify-center gap-2">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(lesson)}
-                            className="text-slate-400 hover:text-slate-600"
-                          >
+                            className="text-slate-400 hover:text-slate-600">
+
                             <Edit2 className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => deleteMutation.mutate(lesson.id)}
-                            className="text-red-400 hover:text-red-600 hover:bg-red-50"
-                          >
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50">
+
                             <Trash2 className="w-4 h-4" />
                           </Button>
-                        </div>
-                      ) : (
+                        </div> :
+
                         <span className="text-slate-400 text-xs">צפייה בלבד</span>
-                      )}
+                        }
                     </TableCell>
-                  </TableRow>
-                );
-              })}
+                  </TableRow>);
+
+                })}
               </>
               }
             </TableBody>
@@ -890,14 +890,14 @@ export default function MySchedule() {
 
                   // Check if a squad was selected and auto-fill platoon name
                   const selectedSquad = squads.find((s) => s.squad_number === selectedValue);
-                  
+
                   // Check if a platoon/crew was selected
                   const selectedCrew = crews.find((c) => c.name === selectedValue);
 
                   setFormData({
                     ...formData,
                     crew_name: selectedValue,
-                    platoon_name: selectedSquad ? selectedSquad.platoon_name : (selectedCrew ? selectedCrew.name : '')
+                    platoon_name: selectedSquad ? selectedSquad.platoon_name : selectedCrew ? selectedCrew.name : ''
                   });
                 }}
                 className="w-full px-3 py-2 border border-slate-300 rounded-md text-right">
@@ -929,95 +929,95 @@ export default function MySchedule() {
                 <Input
                   type="number"
                   min="1"
-                  max={filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length || 10}
+                  max={filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length || 10}
                   value={formData.room_count}
                   onChange={(e) => {
                     const newCount = parseInt(e.target.value) || 1;
-                    const platoonSquadsCount = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
-                    
+                    const platoonSquadsCount = filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length;
+
                     // Don't allow more rooms than squads in platoon
                     if (newCount > platoonSquadsCount) return;
-                    
+
                     // If room count equals squad count, auto-fill
                     if (newCount === platoonSquadsCount) {
-                      setFormData({ 
-                        ...formData, 
-                        room_count: newCount, 
-                        squad_count: newCount.toString(), 
-                        selected_squads: [] 
+                      setFormData({
+                        ...formData,
+                        room_count: newCount,
+                        squad_count: newCount.toString(),
+                        selected_squads: []
                       });
                     } else {
-                      setFormData({ 
-                        ...formData, 
-                        room_count: newCount, 
-                        squad_count: '', 
-                        selected_squads: [] 
+                      setFormData({
+                        ...formData,
+                        room_count: newCount,
+                        squad_count: '',
+                        selected_squads: []
                       });
                     }
                   }}
                   className="text-right" />
                 <p className="text-xs text-slate-500">
-                  מקסימום: {filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length} צוותים בפלוגה
+                  מקסימום: {filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length} צוותים בפלוגה
                 </p>
               </div>
 
               {formData.room_count > 1 && (() => {
-                const platoonSquadsCount = filteredSquads.filter(s => s.platoon_name === formData.platoon_name).length;
+                const platoonSquadsCount = filteredSquads.filter((s) => s.platoon_name === formData.platoon_name).length;
                 const isFullPlatoon = formData.room_count === platoonSquadsCount;
-                
-                return isFullPlatoon ? (
-                  <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+
+                return isFullPlatoon ?
+                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                     <p className="text-sm text-green-800 font-medium">
                       ✓ יוקצו אוטומטית כל {platoonSquadsCount} הצוותים בפלוגה
                     </p>
-                  </div>
-                ) : (
+                  </div> :
+
                 <div className="space-y-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <Label className="text-sm font-medium text-blue-800">בחר צוותים</Label>
+                  <Label className="peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-sm font-medium text-blue-800">בחר את הצוותים הספציפיים לשיבוץ</Label>
                   
                   <div className="space-y-2">
                     <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {filteredSquads
-                        .filter(s => s.platoon_name === formData.platoon_name)
-                        .map((squad) => (
-                          <div key={squad.id} className="flex items-center gap-2">
+                      {filteredSquads.
+                      filter((s) => s.platoon_name === formData.platoon_name).
+                      map((squad) =>
+                      <div key={squad.id} className="flex items-center gap-2">
                             <Checkbox
-                              id={`squad-${squad.id}`}
-                              checked={formData.selected_squads.includes(squad.squad_number)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  if (formData.selected_squads.length < formData.room_count) {
-                                    setFormData({
-                                      ...formData,
-                                      selected_squads: [...formData.selected_squads, squad.squad_number]
-                                    });
-                                  }
-                                } else {
-                                  setFormData({
-                                    ...formData,
-                                    selected_squads: formData.selected_squads.filter(s => s !== squad.squad_number)
-                                  });
-                                }
-                              }} />
+                          id={`squad-${squad.id}`}
+                          checked={formData.selected_squads.includes(squad.squad_number)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              if (formData.selected_squads.length < formData.room_count) {
+                                setFormData({
+                                  ...formData,
+                                  selected_squads: [...formData.selected_squads, squad.squad_number]
+                                });
+                              }
+                            } else {
+                              setFormData({
+                                ...formData,
+                                selected_squads: formData.selected_squads.filter((s) => s !== squad.squad_number)
+                              });
+                            }
+                          }} />
                             <Label htmlFor={`squad-${squad.id}`} className="text-xs cursor-pointer">
                               {squad.squad_number}
                             </Label>
                           </div>
-                        ))}
+                      )}
                     </div>
-                    {formData.selected_squads.length > 0 && (
-                      <p className="text-xs text-green-600">
+                    {formData.selected_squads.length > 0 &&
+                    <p className="text-xs text-green-600">
                         ✓ נבחרו {formData.selected_squads.length} צוותים
                       </p>
-                    )}
-                    {formData.selected_squads.length >= formData.room_count && (
-                      <p className="text-xs text-amber-600">
+                    }
+                    {formData.selected_squads.length >= formData.room_count &&
+                    <p className="text-xs text-amber-600">
                         הגעת למקסימום ({formData.room_count} כיתות)
                       </p>
-                    )}
+                    }
                   </div>
-                </div>
-                );
+                </div>;
+
               })()}
             </>
             }
