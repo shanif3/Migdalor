@@ -312,7 +312,9 @@ export default function MySchedule() {
         room_type_needed: 'צוותי',
         needs_computers: false,
         notes: '',
-        room_count: 1
+        room_count: 1,
+        squad_count: '',
+        selected_squads: []
       });
       toast.success('שיעורים נוספו ללוח הזמנים');
     }
