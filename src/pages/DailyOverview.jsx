@@ -482,9 +482,9 @@ export default function DailyOverview() {
                                     )}
                                     {displayData.type === 'all' && (
                                       <div className="text-[10px] opacity-75 mt-1">
-                                        {lesson.room_type_needed === 'פלוגתי'
-                                          ? `פלוגה: ${lesson.platoon_name}`
-                                          : `צוות: ${lesson.crew_name}`
+                                        {lesson.crew_name.includes('צוות')
+                                          ? `צוות: ${lesson.crew_name}`
+                                          : `פלוגה: ${lesson.platoon_name}`
                                         }
                                       </div>
                                     )}
