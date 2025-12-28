@@ -473,41 +473,39 @@ export default function ManageUsers() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">תפקידים</Label>
+              <Label className="text-right block text-base font-semibold">ניהול תפקידים</Label>
               
               {/* Display current positions */}
-              {formData.positions.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 border border-slate-200 rounded-md bg-slate-50">
-                  {formData.positions.map((pos, idx) => (
-                    <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
-                      <span>{pos}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemovePosition(pos)}
-                        className="hover:bg-blue-200 rounded-full p-0.5"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div className="p-3 border-2 border-slate-200 rounded-lg bg-white min-h-[60px]">
+                {formData.positions.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.positions.map((pos, idx) => (
+                      <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-blue-600 transition-colors">
+                        <Briefcase className="w-3.5 h-3.5" />
+                        <span>{pos}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePosition(pos)}
+                          className="hover:bg-blue-700 rounded-full p-1 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-slate-400 text-sm">
+                    אין תפקידים מוקצים
+                  </div>
+                )}
+              </div>
 
               {/* Add new position */}
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  onClick={handleAddPosition}
-                  disabled={!newPosition}
-                  className="px-3"
-                  size="sm"
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
+              <div className="flex gap-2 pt-2">
                 <select
                   value={newPosition}
                   onChange={(e) => setNewPosition(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-right text-sm"
+                  className="flex-1 px-3 py-2.5 border-2 border-slate-300 rounded-lg text-right text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all"
                 >
                   <option value="">בחר תפקיד להוספה...</option>
                   {positionTitles
@@ -516,6 +514,16 @@ export default function ManageUsers() {
                       <option key={pos} value={pos}>{pos}</option>
                     ))}
                 </select>
+                <Button
+                  type="button"
+                  onClick={handleAddPosition}
+                  disabled={!newPosition}
+                  className="px-4 bg-green-600 hover:bg-green-700 disabled:bg-slate-300"
+                  size="default"
+                >
+                  <Plus className="w-4 h-4 ml-1" />
+                  הוסף
+                </Button>
               </div>
             </div>
           </div>
