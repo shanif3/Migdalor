@@ -175,11 +175,12 @@ export default function KeyAllocation() {
       for (const lesson of allToAllocate) {
         // Find suitable key
         let assignedKey = null;
+        const crewName = lesson.crew_name;
+        const platoonName = lesson.platoon_name;
 
-        // Try to use the same key this user already has today (first priority)
-        const userEmail = lesson.crew_manager || lesson.created_by;
-        if (userEmail && userKeyMap[userEmail]) {
-          const previousKey = availableKeys.find((k) => k.id === userKeyMap[userEmail]);
+        // Priority 1: Try to use the same key this CREW already has today
+        if (crewName && crewKeyMap[crewName]) {
+          const previousKey = availableKeys.find((k) => k.id === crewKeyMap[crewName]);
           // Only reuse if: exact match OR upgrade (צוותי request gets פלוגתי room)
           // Never downgrade (פלוגתי request gets צוותי room)
           if (previousKey && 
@@ -191,34 +192,31 @@ export default function KeyAllocation() {
           }
         }
 
-        // If not found, try to use the same key this crew already has today (second priority)
-        if (!assignedKey) {
-          const crewName = lesson.crew_name;
-          if (crewName && crewKeyMap[crewName]) {
-            const previousKey = availableKeys.find((k) => k.id === crewKeyMap[crewName]);
-            if (previousKey && 
-                !isKeyOccupied(previousKey, lesson, assignments) &&
-                (previousKey.room_type === lesson.room_type_needed || 
-                 (lesson.room_type_needed === 'צוותי' && previousKey.room_type === 'פלוגתי')) &&
-                (!lesson.needs_computers || previousKey.has_computers)) {
-              assignedKey = previousKey;
-            }
+        // Priority 2: Try to use the same key this PLATOON already has today
+        if (!assignedKey && platoonName && crewKeyMap[platoonName]) {
+          const previousKey = availableKeys.find((k) => k.id === crewKeyMap[platoonName]);
+          if (previousKey && 
+              !isKeyOccupied(previousKey, lesson, assignments) &&
+              (previousKey.room_type === lesson.room_type_needed || 
+               (lesson.room_type_needed === 'צוותי' && previousKey.room_type === 'פלוגתי')) &&
+              (!lesson.needs_computers || previousKey.has_computers)) {
+            assignedKey = previousKey;
           }
         }
 
-        // Third priority: Try to find a key in the same zone as previously assigned keys
+        // Priority 3: Try to find a key in the same zone as previously assigned keys
         if (!assignedKey) {
-          const userEmail = lesson.crew_manager || lesson.created_by;
           const crewName = lesson.crew_name;
+          const platoonName = lesson.platoon_name;
           
-          // Check if user or crew has a previous key with a zone
+          // Check if crew or platoon has a previous key with a zone
           let preferredZone = null;
-          if (userEmail && userKeyMap[userEmail]) {
-            const previousKey = availableKeys.find((k) => k.id === userKeyMap[userEmail]);
+          if (crewName && crewKeyMap[crewName]) {
+            const previousKey = availableKeys.find((k) => k.id === crewKeyMap[crewName]);
             if (previousKey?.zone) preferredZone = previousKey.zone;
           }
-          if (!preferredZone && crewName && crewKeyMap[crewName]) {
-            const previousKey = availableKeys.find((k) => k.id === crewKeyMap[crewName]);
+          if (!preferredZone && platoonName && crewKeyMap[platoonName]) {
+            const previousKey = availableKeys.find((k) => k.id === crewKeyMap[platoonName]);
             if (previousKey?.zone) preferredZone = previousKey.zone;
           }
 
@@ -278,14 +276,15 @@ export default function KeyAllocation() {
             endTime: lesson.end_time
           });
 
-          // Remember this key for this user and crew
-          const userEmail = lesson.crew_manager || lesson.created_by;
-          if (userEmail && !userKeyMap[userEmail]) {
-            userKeyMap[userEmail] = assignedKey.id;
-          }
+          // Remember this key for this crew and platoon (first match wins)
           const crewName = lesson.crew_name;
+          const platoonName = lesson.platoon_name;
+          
           if (crewName && !crewKeyMap[crewName]) {
             crewKeyMap[crewName] = assignedKey.id;
+          }
+          if (platoonName && !crewKeyMap[platoonName]) {
+            crewKeyMap[platoonName] = assignedKey.id;
           }
         } else {
           // Track why this lesson couldn't be assigned
@@ -741,13 +740,14 @@ export default function KeyAllocation() {
         <Card className="mt-6 p-6 bg-blue-50 border-blue-200">
           <h4 className="font-semibold text-blue-900 mb-3">סדר עדיפויות הקצאה:</h4>
           <ol className="space-y-2 text-sm text-blue-800">
-            <li>1. <strong>שימור כיתות - משתמש שקיבל כיתה מסוימת ישאר איתה לאורך היום</strong></li>
-            <li>2. <strong>שימור אזור - העדפה לכיתות באותו אזור פיזי</strong></li>
-            <li>3. שיעורים מוקדמים יותר מקבלים עדיפות</li>
-            <li>4. חדרים פלוגתיים משובצים ראשונים</li>
-            <li>5. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
-            <li>6. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
-            <li>7. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
+            <li>1. <strong>שימור כיתות לצוות - צוות שקיבל כיתה מסוימת ישאר איתה לאורך היום</strong></li>
+            <li>2. <strong>שימור כיתות לפלוגה - העדפה לאותה כיתה שהפלוגה השתמשה בה</strong></li>
+            <li>3. <strong>שימור אזור - העדפה לכיתות באותו אזור פיזי</strong></li>
+            <li>4. שיעורים מוקדמים יותר מקבלים עדיפות</li>
+            <li>5. חדרים פלוגתיים משובצים ראשונים</li>
+            <li>6. שיעורים שדורשים מחשבים מקבלים עדיפות על פני אלו שלא</li>
+            <li>7. בקשות לחדרים צוותיים עשויות לקבל שדרוג לפלוגתי במידת הצורך</li>
+            <li>8. <strong>בקשות מיוחדות מקבלות עדיפות נמוכה - משובצות אחרונות</strong></li>
           </ol>
         </Card>
       </div>
