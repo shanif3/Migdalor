@@ -591,6 +591,8 @@ export default function MySchedule() {
                 <TableHead className="h-10 px-2 flex items-center justify-center text-center align-middle font-medium [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">מחשבים</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">חדר משובץ</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">קבלת מפתח</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מסירת מפתח</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">הערות</TableHead>
                 <TableHead className="h-10 px-2 align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">פעולות</TableHead>
               </TableRow>
@@ -598,13 +600,13 @@ export default function MySchedule() {
             <TableBody>
               {isLoading ?
               <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
+                  <TableCell colSpan={10} className="text-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-slate-400 mx-auto" />
                   </TableCell>
                 </TableRow> :
               lessons.length === 0 && specialRequests.length === 0 ?
               <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={10} className="text-center py-8 text-slate-400">
                     אין שיעורים או בקשות מיוחדות לתאריך זה
                   </TableCell>
                 </TableRow> :
@@ -638,6 +640,12 @@ export default function MySchedule() {
                         <Clock className="w-3 h-3" />
                         ממתין
                       </Badge>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-slate-400">—</span>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      <span className="text-slate-400">—</span>
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
                       <span className="text-slate-400">—</span>
@@ -682,25 +690,27 @@ export default function MySchedule() {
                     </TableCell>
                     <TableCell className="p-2 align-middle text-center">
                       {lesson.assigned_key ? (
-                        <div className="flex flex-col items-center gap-1">
-                          <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100">
-                            <Key className="w-3 h-3 ml-1" />
-                            חדר {lesson.assigned_key}
-                          </Badge>
-                          {keyHandoff && (
-                            <div className="text-xs space-y-0.5">
-                              {keyHandoff.receiveFrom && (
-                                <div className="text-green-600">
-                                  ← קבלה מ: {keyHandoff.receiveFrom.crew}
-                                </div>
-                              )}
-                              {keyHandoff.passTo && (
-                                <div className="text-orange-600">
-                                  → מסירה ל: {keyHandoff.passTo.crew}
-                                </div>
-                              )}
-                            </div>
-                          )}
+                        <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100">
+                          <Key className="w-3 h-3 ml-1" />
+                          חדר {lesson.assigned_key}
+                        </Badge>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      {keyHandoff?.receiveFrom ? (
+                        <div className="text-sm text-green-600">
+                          {keyHandoff.receiveFrom.crew}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center">
+                      {keyHandoff?.passTo ? (
+                        <div className="text-sm text-orange-600">
+                          {keyHandoff.passTo.crew}
                         </div>
                       ) : (
                         <span className="text-slate-400">—</span>
