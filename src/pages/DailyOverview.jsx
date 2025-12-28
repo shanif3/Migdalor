@@ -480,9 +480,10 @@ export default function DailyOverview() {
                                         {lesson.crew_name}
                                       </div>
                                     )}
-                                    {displayData.type === 'all' && lesson.platoon_name && (
+                                    {displayData.type === 'all' && (
                                       <div className="text-[10px] opacity-75 mt-1">
-                                        {lesson.platoon_name}
+                                        {lesson.crew_name}
+                                        {lesson.platoon_name && ` • ${lesson.platoon_name}`}
                                       </div>
                                     )}
                                   </>
