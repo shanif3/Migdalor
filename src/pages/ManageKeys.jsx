@@ -39,7 +39,7 @@ export default function ManageKeys() {
   const [misdarEditKey, setMisdarEditKey] = useState(null);
   const [misdarValue, setMisdarValue] = useState('');
   const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({ room_number: '', room_type: 'צוותי', has_computers: false });
+  const [formData, setFormData] = useState({ room_number: '', room_type: 'צוותי', has_computers: false, zone: '' });
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -51,6 +51,12 @@ export default function ManageKeys() {
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ['keys'],
     queryFn: () => base44.entities.ClassroomKey.list()
+  });
+
+  const { data: zones = [] } = useQuery({
+    queryKey: ['zones'],
+    queryFn: () => base44.entities.Zone.list('order'),
+    enabled: isAdmin
   });
 
   const { data: todayLessons = [] } = useQuery({
@@ -136,7 +142,7 @@ export default function ManageKeys() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
       setShowModal(false);
-      setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
+      setFormData({ room_number: '', room_type: 'צוותי', has_computers: false, zone: '' });
       toast.success('מפתח נוסף בהצלחה');
     }
   });
@@ -147,7 +153,7 @@ export default function ManageKeys() {
       queryClient.invalidateQueries({ queryKey: ['keys'] });
       setShowModal(false);
       setEditingKey(null);
-      setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
+      setFormData({ room_number: '', room_type: 'צוותי', has_computers: false, zone: '' });
       toast.success('מפתח עודכן בהצלחה');
     }
   });
@@ -170,14 +176,14 @@ export default function ManageKeys() {
 
   const handleEdit = (key) => {
     setEditingKey(key);
-    setFormData({ room_number: key.room_number, room_type: key.room_type, has_computers: key.has_computers || false });
+    setFormData({ room_number: key.room_number, room_type: key.room_type, has_computers: key.has_computers || false, zone: key.zone || '' });
     setShowModal(true);
   };
 
   const handleClose = () => {
     setShowModal(false);
     setEditingKey(null);
-    setFormData({ room_number: '', room_type: 'צוותי', has_computers: false });
+    setFormData({ room_number: '', room_type: 'צוותי', has_computers: false, zone: '' });
   };
 
   const handleMisdarEdit = (key) => {
@@ -250,6 +256,7 @@ export default function ManageKeys() {
               <TableRow className="bg-slate-50">
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מספר חדר</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סוג</TableHead>
+                <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">אזור</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">מחשבים</TableHead>
                 <TableHead className="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-center">סטטוס / מחזיק</TableHead>
                 {isAdmin &&
@@ -263,13 +270,13 @@ export default function ManageKeys() {
             <TableBody>
               {isLoading ?
               <TableRow>
-                  <TableCell colSpan={isAdmin ? 6 : 4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 7 : 5} className="text-center py-8 text-slate-400">
                     טוען...
                   </TableCell>
                 </TableRow> :
               keys.length === 0 ?
               <TableRow>
-                  <TableCell colSpan={isAdmin ? 6 : 4} className="text-center py-8 text-slate-400">
+                  <TableCell colSpan={isAdmin ? 7 : 5} className="text-center py-8 text-slate-400">
                     עדיין לא נוספו מפתחות
                   </TableCell>
                 </TableRow> :
@@ -290,6 +297,15 @@ export default function ManageKeys() {
                   }>
                         {key.room_type === 'פלוגתי' ? '🏢 פלוגתי' : '🏠 צוותי'}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="p-2 align-middle text-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                      {key.zone ? (
+                        <Badge variant="outline" className="border-slate-300 text-slate-700">
+                          📍 {key.zone}
+                        </Badge>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-cente my-3 p-2 text-center t te tex texx text align-middle flex items-center justify-center [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
                       {key.has_computers ?
@@ -480,6 +496,20 @@ export default function ManageKeys() {
                 setFormData({ ...formData, has_computers: checked })
                 } />
 
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-right block">אזור (אופציונלי)</Label>
+              <select
+                value={formData.zone}
+                onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="">בחר אזור...</option>
+                {zones.map((zone) => (
+                  <option key={zone.id} value={zone.name}>{zone.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
