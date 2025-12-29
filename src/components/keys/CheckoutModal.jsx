@@ -19,7 +19,7 @@ import {
 import { Key, Users, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function CheckoutModal({ open, onClose, keyItem, crews, squads, currentUser, onConfirm }) {
+export default function CheckoutModal({ open, onClose, keyItem, crews, squads, currentUser, onConfirm, selectedDate }) {
   const [selectedCrew, setSelectedCrew] = useState('');
   const [platoonName, setPlatoonName] = useState('');
   const [customName, setCustomName] = useState('');
@@ -40,12 +40,15 @@ export default function CheckoutModal({ open, onClose, keyItem, crews, squads, c
   const handleConfirm = () => {
     const holderName = useCustom ? customName : selectedCrew;
     if (holderName && startTime && endTime) {
-      // Check if time has already passed
-      const now = new Date();
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      if (startTime < currentTime) {
-        toast.error('לא ניתן למשוך מפתח בזמן שכבר חלף');
-        return;
+      // Check if time has already passed (only for today)
+      const today = new Date().toISOString().split('T')[0];
+      if (selectedDate === today) {
+        const now = new Date();
+        const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        if (startTime < currentTime) {
+          toast.error('לא ניתן למשוך מפתח בזמן שכבר חלף');
+          return;
+        }
       }
       
       onConfirm(keyItem, holderName, startTime, endTime, platoonName);

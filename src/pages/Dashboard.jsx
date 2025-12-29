@@ -501,6 +501,7 @@ export default function Dashboard() {
           crews={filteredCrews}
           squads={filteredSquads}
           currentUser={user}
+          selectedDate={selectedDate}
           onConfirm={handleCheckout} />
       )}
 
