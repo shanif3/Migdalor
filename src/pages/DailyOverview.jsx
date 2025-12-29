@@ -104,35 +104,30 @@ export default function DailyOverview() {
       'bg-rose-100 border-rose-300 text-rose-800',
     ];
     const colorMap = {};
-
-    // If filtering by platoon or crew, assign colors to squads in that platoon
-    if ((filterType === 'platoon' && selectedPlatoon) || (filterType === 'crew' && selectedCrew)) {
-      const platoonName = filterType === 'platoon' ? selectedPlatoon : 
-                         squads.find(s => s.squad_number === selectedCrew)?.platoon_name;
-
-      if (platoonName) {
-        const platoonSquads = squads
-          .filter(s => s.platoon_name === platoonName)
-          .map(s => s.squad_number)
-          .sort((a, b) => {
-            const numA = parseInt(a.match(/\d+/)?.[0] || 0);
-            const numB = parseInt(b.match(/\d+/)?.[0] || 0);
-            return numA - numB;
-          });
-
-        platoonSquads.forEach((squad, idx) => {
-          colorMap[squad] = colors[idx % colors.length];
+    
+    // If filtering by platoon, assign colors to squads in that platoon
+    if (filterType === 'platoon' && selectedPlatoon) {
+      const platoonSquads = squads
+        .filter(s => s.platoon_name === selectedPlatoon)
+        .map(s => s.squad_number)
+        .sort((a, b) => {
+          const numA = parseInt(a.match(/\d+/)?.[0] || 0);
+          const numB = parseInt(b.match(/\d+/)?.[0] || 0);
+          return numA - numB;
         });
-      }
+      
+      platoonSquads.forEach((squad, idx) => {
+        colorMap[squad] = colors[idx % colors.length];
+      });
     } else {
       // Otherwise use crew names
       crewNames.forEach((crew, idx) => {
         colorMap[crew] = colors[idx % colors.length];
       });
     }
-
+    
     return colorMap;
-  }, [crewNames, filterType, selectedPlatoon, selectedCrew, squads]);
+  }, [crewNames, filterType, selectedPlatoon, squads]);
 
   // Get display data based on filter type
   const displayData = useMemo(() => {
@@ -143,23 +138,10 @@ export default function DailyOverview() {
         items: [{ id: selectedRoom, name: `חדר ${selectedRoom}`, platoon: null }]
       };
     } else if (filterType === 'crew' && selectedCrew) {
-      // Show timeline for a specific crew - include platoon row
-      const squad = squads.find(s => s.squad_number === selectedCrew);
-      const platoonName = squad?.platoon_name;
-
-      const items = [];
-
-      // Add platoon row first (if exists)
-      if (platoonName) {
-        items.push({ id: `platoon_${platoonName}`, name: platoonName, platoon: platoonName, isPlatoon: true });
-      }
-
-      // Add crew row
-      items.push({ id: selectedCrew, name: selectedCrew, platoon: platoonName, isPlatoon: false });
-
+      // Show timeline for a specific crew
       return {
         type: 'crew',
-        items: items
+        items: [{ id: selectedCrew, name: selectedCrew, platoon: null }]
       };
     } else if (filterType === 'platoon' && selectedPlatoon) {
       // Show the platoon itself and all squads in the platoon
@@ -274,13 +256,10 @@ export default function DailyOverview() {
   // Get cell color based on filter type
   const getCellColor = (lesson) => {
     if (!lesson) return '';
-
-    if (displayData.type === 'platoon' || displayData.type === 'crew') {
-      // Get the platoon name from the display items
-      const itemPlatoon = displayData.items.find(item => item.isPlatoon)?.platoon;
-
-      // If this is a platoon-level lesson, use unique platoon color
-      if (itemPlatoon && (lesson.crew_name === itemPlatoon || lesson.platoon_name === itemPlatoon)) {
+    
+    if (displayData.type === 'platoon') {
+      // If this is a platoon-level lesson (crew_name is the platoon itself), use unique platoon color
+      if (lesson.crew_name === selectedPlatoon) {
         return 'bg-amber-100 border-amber-300 text-amber-800';
       }
       // Different color for each squad/crew
