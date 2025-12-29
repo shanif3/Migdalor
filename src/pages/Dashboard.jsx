@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Key, Clock, Users, Filter } from 'lucide-react';
+import { Plus, Key, Clock, Users, Filter, Calendar } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 import KeyCard from '@/components/keys/KeyCard';
 import CheckoutModal from '@/components/keys/CheckoutModal';
@@ -18,6 +21,7 @@ export default function Dashboard() {
   const [showQueueModal, setShowQueueModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [timeFilter, setTimeFilter] = useState({ start: '', end: '' });
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
 
@@ -53,10 +57,9 @@ export default function Dashboard() {
   });
 
   const { data: allQueue = [] } = useQuery({
-    queryKey: ['queue'],
+    queryKey: ['queue', selectedDate],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      return base44.entities.WaitingQueue.filter({ date: today }, 'priority');
+      return base44.entities.WaitingQueue.filter({ date: selectedDate }, 'priority');
     }
   });
 
@@ -86,10 +89,9 @@ export default function Dashboard() {
     });
 
   const { data: todayLessons = [] } = useQuery({
-    queryKey: ['today-lessons'],
+    queryKey: ['today-lessons', selectedDate],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      return base44.entities.Lesson.filter({ date: today });
+      return base44.entities.Lesson.filter({ date: selectedDate });
     }
   });
 
@@ -157,10 +159,9 @@ export default function Dashboard() {
 
   const addToQueueMutation = useMutation({
     mutationFn: (data) => {
-      const today = new Date().toISOString().split('T')[0];
       return base44.entities.WaitingQueue.create({
         ...data,
-        date: today,
+        date: selectedDate,
         priority: queue.length + 1,
         crew_manager: user?.email
       });
@@ -188,9 +189,8 @@ export default function Dashboard() {
     }
 
     // Check for time conflicts with existing lessons
-    const today = new Date().toISOString().split('T')[0];
     const existingLessons = await base44.entities.Lesson.filter({ 
-      date: today, 
+      date: selectedDate, 
       assigned_key: key.room_number 
     });
     
@@ -209,7 +209,7 @@ export default function Dashboard() {
       crew_manager: user.email,
       crew_name: holderName,
       platoon_name: platoonName || '',
-      date: today,
+      date: selectedDate,
       start_time: startTime,
       end_time: endTime,
       room_type_needed: key.room_type,
@@ -314,9 +314,21 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8">
 
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            ניהול מפתחות 🔑
-          </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h1 className="text-3xl font-bold text-slate-800">
+              ניהול מפתחות 🔑
+            </h1>
+            
+            <div className="flex items-center gap-3">
+              <Label className="text-sm font-medium text-slate-700">תאריך:</Label>
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-auto"
+              />
+            </div>
+          </div>
         </motion.div>
 
         {/* Stats */}
