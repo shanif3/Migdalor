@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Key, Clock, Users, Filter } from 'lucide-react';
+import { Plus, Key, Clock, Users, Filter, Calendar } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 import KeyCard from '@/components/keys/KeyCard';
 import CheckoutModal from '@/components/keys/CheckoutModal';
@@ -18,6 +21,7 @@ export default function Dashboard() {
   const [showQueueModal, setShowQueueModal] = useState(false);
   const [filter, setFilter] = useState('all');
   const [timeFilter, setTimeFilter] = useState({ start: '', end: '' });
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
 
@@ -53,10 +57,9 @@ export default function Dashboard() {
   });
 
   const { data: allQueue = [] } = useQuery({
-    queryKey: ['queue'],
+    queryKey: ['queue', selectedDate],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      return base44.entities.WaitingQueue.filter({ date: today }, 'priority');
+      return base44.entities.WaitingQueue.filter({ date: selectedDate }, 'priority');
     }
   });
 
@@ -86,10 +89,9 @@ export default function Dashboard() {
     });
 
   const { data: todayLessons = [] } = useQuery({
-    queryKey: ['today-lessons'],
+    queryKey: ['today-lessons', selectedDate],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      return base44.entities.Lesson.filter({ date: today });
+      return base44.entities.Lesson.filter({ date: selectedDate });
     }
   });
 
@@ -157,10 +159,9 @@ export default function Dashboard() {
 
   const addToQueueMutation = useMutation({
     mutationFn: (data) => {
-      const today = new Date().toISOString().split('T')[0];
       return base44.entities.WaitingQueue.create({
         ...data,
-        date: today,
+        date: selectedDate,
         priority: queue.length + 1,
         crew_manager: user?.email
       });
@@ -188,9 +189,8 @@ export default function Dashboard() {
     }
 
     // Check for time conflicts with existing lessons
-    const today = new Date().toISOString().split('T')[0];
     const existingLessons = await base44.entities.Lesson.filter({ 
-      date: today, 
+      date: selectedDate, 
       assigned_key: key.room_number 
     });
     
@@ -209,7 +209,7 @@ export default function Dashboard() {
       crew_manager: user.email,
       crew_name: holderName,
       platoon_name: platoonName || '',
-      date: today,
+      date: selectedDate,
       start_time: startTime,
       end_time: endTime,
       room_type_needed: key.room_type,
@@ -372,42 +372,55 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Time Range Filter */}
-              <div className="flex flex-row-reverse items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
-                <span className="text-sm font-medium text-slate-700">:סנן לפי זמינות</span>
-                <Clock className="w-5 h-5 text-slate-600" />
-                <div className="flex items-center gap-2">
-                  
-                  <input
-                    type="time"
-                    value={timeFilter.end}
-                    onChange={(e) => setTimeFilter({ ...timeFilter, end: e.target.value })}
-                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+              {/* Date and Time Range Filter */}
+              <div className="flex flex-col sm:flex-row sm:flex-row-reverse items-stretch sm:items-center gap-4 bg-white p-4 rounded-lg border border-slate-200">
+                <div className="flex flex-row-reverse items-center gap-3">
+                  <Label className="text-sm font-medium text-slate-700">תאריך:</Label>
+                  <Calendar className="w-4 h-4 text-slate-600" />
+                  <Input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-auto"
                   />
-                  <span className="text-slate-500">עד</span>
-                  <input
-                    type="time"
-                    value={timeFilter.start}
-                    onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
-                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
-                  />
-                  
-                  {(timeFilter.start || timeFilter.end) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setTimeFilter({ start: '', end: '' })}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      נקה
-                    </Button>
+                </div>
+                
+                <div className="flex flex-row-reverse items-center gap-3">
+                  <span className="text-sm font-medium text-slate-700">:סנן לפי זמינות</span>
+                  <Clock className="w-5 h-5 text-slate-600" />
+                  <div className="flex items-center gap-2">
+                    
+                    <input
+                      type="time"
+                      value={timeFilter.end}
+                      onChange={(e) => setTimeFilter({ ...timeFilter, end: e.target.value })}
+                      className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                    />
+                    <span className="text-slate-500">עד</span>
+                    <input
+                      type="time"
+                      value={timeFilter.start}
+                      onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
+                      className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                    />
+                    
+                    {(timeFilter.start || timeFilter.end) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setTimeFilter({ start: '', end: '' })}
+                        className="text-slate-500 hover:text-slate-700"
+                      >
+                        נקה
+                      </Button>
+                    )}
+                  </div>
+                  {timeFilter.start && timeFilter.end && (
+                    <span className="text-xs text-emerald-600 font-medium">
+                      מציג {filteredKeys.length} כיתות זמינות
+                    </span>
                   )}
                 </div>
-                {timeFilter.start && timeFilter.end && (
-                  <span className="text-xs text-emerald-600 font-medium">
-                    מציג {filteredKeys.length} כיתות זמינות
-                  </span>
-                )}
               </div>
             </div>
 
