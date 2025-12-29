@@ -353,7 +353,26 @@ export default function Dashboard() {
           <TabsContent value="keys" className="space-y-6">
             {/* Filters */}
             <div className="space-y-4">
-              {/* Date and Room Type Filter */}
+              {/* Room Type Filter */}
+              <div className="flex flex-row-reverse items-center gap-2">
+                <span className="text-sm text-slate-500">:סוג חדר</span>
+                <Filter className="w-4 h-4 text-slate-400" />
+                <div className="flex flex-row-reverse gap-2">
+                  {['all', 'צוותי', 'פלוגתי'].map((f) =>
+                  <Button
+                    key={f}
+                    variant={filter === f ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFilter(f)}
+                    className={filter === f ? 'bg-slate-800' : ''}>
+
+                      {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Date and Time Range Filter */}
               <div className="flex flex-col sm:flex-row sm:flex-row-reverse items-stretch sm:items-center gap-4 bg-white p-4 rounded-lg border border-slate-200">
                 <div className="flex flex-row-reverse items-center gap-3">
                   <Label className="text-sm font-medium text-slate-700">:תאריך</Label>
@@ -366,61 +385,39 @@ export default function Dashboard() {
                   />
                 </div>
                 
-                <div className="flex flex-row-reverse items-center gap-2">
-                  <span className="text-sm text-slate-500">:סוג חדר</span>
-                  <Filter className="w-4 h-4 text-slate-400" />
-                  <div className="flex flex-row-reverse gap-2">
-                    {['all', 'צוותי', 'פלוגתי'].map((f) =>
-                    <Button
-                      key={f}
-                      variant={filter === f ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setFilter(f)}
-                      className={filter === f ? 'bg-slate-800' : ''}>
-
-                        {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
+                  <span className="text-sm font-medium text-slate-700">:סנן לפי זמינות</span>
+                  <Clock className="w-5 h-5 text-slate-600" />
+                    <input
+                      type="time"
+                      value={timeFilter.end}
+                      onChange={(e) => setTimeFilter({ ...timeFilter, end: e.target.value })}
+                      className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                    />
+                    <span className="text-slate-500">עד</span>
+                    <input
+                      type="time"
+                      value={timeFilter.start}
+                      onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
+                      className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
+                    />
+                    
+                    {(timeFilter.start || timeFilter.end) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setTimeFilter({ start: '', end: '' })}
+                        className="text-slate-500 hover:text-slate-700"
+                      >
+                        נקה
                       </Button>
                     )}
                   </div>
-                </div>
-              </div>
-
-              {/* Time Range Filter */}
-              <div className="flex flex-row-reverse items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
-                <span className="text-sm font-medium text-slate-700">:סנן לפי זמינות</span>
-                <Clock className="w-5 h-5 text-slate-600" />
-                <div className="flex items-center gap-2">
-                  
-                  <input
-                    type="time"
-                    value={timeFilter.end}
-                    onChange={(e) => setTimeFilter({ ...timeFilter, end: e.target.value })}
-                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
-                  />
-                  <span className="text-slate-500">עד</span>
-                  <input
-                    type="time"
-                    value={timeFilter.start}
-                    onChange={(e) => setTimeFilter({ ...timeFilter, start: e.target.value })}
-                    className="px-3 py-1.5 border border-slate-300 rounded-md text-sm"
-                  />
-                  
-                  {(timeFilter.start || timeFilter.end) && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setTimeFilter({ start: '', end: '' })}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      נקה
-                    </Button>
+                  {timeFilter.start && timeFilter.end && (
+                    <span className="text-xs text-emerald-600 font-medium">
+                      מציג {filteredKeys.length} כיתות זמינות
+                    </span>
                   )}
                 </div>
-                {timeFilter.start && timeFilter.end && (
-                  <span className="text-xs text-emerald-600 font-medium">
-                    מציג {filteredKeys.length} כיתות זמינות
-                  </span>
-                )}
               </div>
             </div>
 
