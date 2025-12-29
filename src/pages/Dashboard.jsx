@@ -314,21 +314,9 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8">
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-3xl font-bold text-slate-800">
-              ניהול מפתחות 🔑
-            </h1>
-            
-            <div className="flex items-center gap-3">
-              <Label className="text-sm font-medium text-slate-700">תאריך:</Label>
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-auto"
-              />
-            </div>
-          </div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            ניהול מפתחות 🔑
+          </h1>
         </motion.div>
 
         {/* Stats */}
@@ -365,22 +353,35 @@ export default function Dashboard() {
           <TabsContent value="keys" className="space-y-6">
             {/* Filters */}
             <div className="space-y-4">
-              {/* Room Type Filter */}
-              <div className="flex flex-row-reverse items-center gap-2">
-                <span className="text-sm text-slate-500">:סנן לפי סוג</span>
-                <Filter className="w-4 h-4 text-slate-400" />
-                <div className="flex flex-row-reverse gap-2">
-                  {['all', 'צוותי', 'פלוגתי'].map((f) =>
-                  <Button
-                    key={f}
-                    variant={filter === f ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setFilter(f)}
-                    className={filter === f ? 'bg-slate-800' : ''}>
+              {/* Date and Room Type Filter */}
+              <div className="flex flex-col sm:flex-row sm:flex-row-reverse items-stretch sm:items-center gap-4 bg-white p-4 rounded-lg border border-slate-200">
+                <div className="flex flex-row-reverse items-center gap-3">
+                  <Label className="text-sm font-medium text-slate-700">תאריך:</Label>
+                  <Calendar className="w-4 h-4 text-slate-600" />
+                  <Input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-auto"
+                  />
+                </div>
+                
+                <div className="flex flex-row-reverse items-center gap-2">
+                  <span className="text-sm text-slate-500">:סוג חדר</span>
+                  <Filter className="w-4 h-4 text-slate-400" />
+                  <div className="flex flex-row-reverse gap-2">
+                    {['all', 'צוותי', 'פלוגתי'].map((f) =>
+                    <Button
+                      key={f}
+                      variant={filter === f ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setFilter(f)}
+                      className={filter === f ? 'bg-slate-800' : ''}>
 
-                      {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
-                    </Button>
-                  )}
+                        {f === 'all' ? 'הכל' : f === 'צוותי' ? '🏠 צוותי' : '🏢 פלוגתי'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
 
