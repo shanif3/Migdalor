@@ -465,17 +465,12 @@ export default function ManageUsers() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">פלוגה</Label>
-              <select
-                value={formData.platoon_name}
-                onChange={(e) => setFormData({ ...formData, platoon_name: e.target.value })}
-                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
-              >
-                <option value="">בחר פלוגה...</option>
-                {platoonNames.map((name) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </select>
+              <Label className="text-right block">פלוגה (אוטומטי לפי הצוות)</Label>
+              <Input
+                value={formData.platoon_name || 'יתעדכן לפי הצוות'}
+                disabled
+                className="bg-slate-50 text-slate-600"
+              />
             </div>
 
             <div className="space-y-2">
