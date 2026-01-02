@@ -24,10 +24,7 @@ export default function Layout({ children, currentPageName }) {
         if (!user.onboarding_completed && currentPageName !== 'Onboarding') {
           window.location.href = createPageUrl('Onboarding');
         }
-        // Redirect to Home if no positions assigned and not admin (unless already on Home or Onboarding)
-        else if ((!user.positions || user.positions.length === 0) && user.role !== 'admin' && currentPageName !== 'Home' && currentPageName !== 'Onboarding') {
-          window.location.href = createPageUrl('Home');
-        }
+
         setLoading(false);
       })
       .catch(() => {
@@ -99,7 +96,7 @@ export default function Layout({ children, currentPageName }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link to={createPageUrl('Dashboard')} className="flex items-center gap-3">
+            <Link to={createPageUrl('Home')} className="flex items-center gap-3">
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/135b53ec8_2.png" 
                 alt="מגדלור לוגו" 
