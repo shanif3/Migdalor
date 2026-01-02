@@ -32,10 +32,12 @@ export default function ManagePermissions() {
     { id: 'KeyAllocation', name: 'הקצאת מפתחות', area: 'classroom' },
     { id: 'ManageKeys', name: 'ניהול מפתחות', area: 'classroom' },
     { id: 'MySchedule', name: 'לוח הזמנים שלי', area: 'classroom' },
-    { id: 'MyProfile', name: 'אזור אישי', area: 'classroom' },
-    { id: 'ManageCrews', name: 'ניהול פלוגות', area: 'management' },
-    { id: 'ManageSquads', name: 'ניהול צוותים', area: 'management' },
+    { id: 'ManageCrews', name: 'ניהול פלוגות', area: 'classroom' },
+    { id: 'ManageSquads', name: 'ניהול צוותים', area: 'classroom' },
   ];
+  
+  // Pages under classroom management (only these require access toggle)
+  const classroomPages = availablePages.filter(p => p.area === 'classroom');
 
   // Available entities for CRUD permissions
   const availableEntities = [
@@ -257,7 +259,7 @@ export default function ManagePermissions() {
                           גישה לעמודים
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {availablePages.map((page) => {
+                          {classroomPages.map((page) => {
                             const hasAccess = pagesAccess.includes(page.id);
                             return (
                               <div
