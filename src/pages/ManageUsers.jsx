@@ -465,15 +465,6 @@ export default function ManageUsers() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-right block">פלוגה (אוטומטי לפי הצוות)</Label>
-              <Input
-                value={formData.platoon_name || 'יתעדכן לפי הצוות'}
-                disabled
-                className="bg-slate-50 text-slate-600"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label className="text-right block">מספר טלפון</Label>
               <Input
                 type="tel"
