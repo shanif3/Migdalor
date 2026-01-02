@@ -28,7 +28,7 @@ export default function ManageUsers() {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-  const [formData, setFormData] = useState({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '' });
+  const [formData, setFormData] = useState({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '', full_name: '', onboarding_full_name: '' });
   const [newPosition, setNewPosition] = useState('');
   const [filters, setFilters] = useState({
     name: '',
@@ -70,7 +70,7 @@ export default function ManageUsers() {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setShowModal(false);
       setEditingUser(null);
-      setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '' });
+      setFormData({ squad_name: '', platoon_name: '', positions: [], role: 'user', phone_number: '', full_name: '', onboarding_full_name: '' });
       setNewPosition('');
       toast.success('פרטי משתמש עודכנו בהצלחה');
     }
@@ -97,7 +97,9 @@ export default function ManageUsers() {
       platoon_name: user.platoon_name || '',
       positions: user.positions || (user.position ? [user.position] : []),
       role: user.role || 'user',
-      phone_number: user.phone_number || ''
+      phone_number: user.phone_number || '',
+      full_name: user.full_name || '',
+      onboarding_full_name: user.onboarding_full_name || user.full_name || ''
     });
     setNewPosition('');
     setShowModal(true);
@@ -418,6 +420,16 @@ export default function ManageUsers() {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
+              <Label className="text-right block">שם מלא</Label>
+              <Input
+                value={formData.onboarding_full_name}
+                onChange={(e) => setFormData({ ...formData, onboarding_full_name: e.target.value, full_name: e.target.value })}
+                className="text-right"
+                placeholder="הזן שם מלא"
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label className="text-right block">תפקיד במערכת</Label>
               <select
                 value={formData.role}
@@ -454,11 +466,16 @@ export default function ManageUsers() {
 
             <div className="space-y-2">
               <Label className="text-right block">פלוגה</Label>
-              <Input
+              <select
                 value={formData.platoon_name}
-                disabled
-                className="bg-slate-50 text-slate-600"
-              />
+                onChange={(e) => setFormData({ ...formData, platoon_name: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-300 rounded-md text-right"
+              >
+                <option value="">בחר פלוגה...</option>
+                {platoonNames.map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2">
