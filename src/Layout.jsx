@@ -149,16 +149,11 @@ export default function Layout({ children, currentPageName }) {
                 alt="מגדלור לוגו" 
                 className="w-12 h-12 object-contain" 
               />
-              <div className="hidden sm:block">
-                <h2 className="text-sm font-semibold text-slate-800">
-                  {isUserManagementArea ? 'ניהול משתמשים' : 'ניהול כיתות'}
-                </h2>
-                {user && (
-                  <p className="text-xs text-slate-500">
-                    {isAdmin ? 'מנהל 👑' : 'קה״ד פלוגתי 👤'}
-                  </p>
-                )}
-              </div>
+              {isUserManagementArea && (
+                <div className="hidden sm:block">
+                  <h2 className="text-sm font-semibold text-slate-800">ניהול משתמשים</h2>
+                </div>
+              )}
             </Link>
 
             {/* Nav Links */}
