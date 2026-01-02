@@ -220,7 +220,7 @@ export default function Layout({ children, currentPageName }) {
               </DropdownMenu>
               )}
 
-              {user && (
+              {user && isUserManagementArea && (
                 <DropdownMenu dir="rtl">
                   <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors mr-2">
