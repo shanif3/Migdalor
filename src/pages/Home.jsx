@@ -148,14 +148,14 @@ export default function Home() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
+            <Link to={createPageUrl('Home')} className="flex items-center gap-3">
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/135b53ec8_2.png" 
                 alt="מגדלור לוגו" 
                 className="w-12 h-12 object-contain" 
               />
               <h2 className="text-lg font-semibold text-slate-800">מגדלור</h2>
-            </div>
+            </Link>
 
             {user && (
               <div className="flex items-center gap-3">
