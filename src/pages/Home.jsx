@@ -19,6 +19,8 @@ export default function Home() {
     });
   }, []);
 
+  const isAdmin = user?.role === 'admin';
+
   const features = [
     {
       title: 'ניהול כיתות',
@@ -64,7 +66,6 @@ export default function Home() {
     );
   }
 
-  const isAdmin = user?.role === 'admin';
   const hasPositions = user?.positions && user.positions.length > 0;
 
   // If no positions and not admin - show waiting message
