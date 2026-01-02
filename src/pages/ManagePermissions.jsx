@@ -60,20 +60,22 @@ export default function ManagePermissions() {
 
   // Update permissions mutation
   const updatePermissionMutation = useMutation({
-    mutationFn: async ({ positionId, positionName, pagesAccess, entityPermissions }) => {
+    mutationFn: async ({ positionId, positionName, pagesAccess, entityPermissions, hasClassroomAccess }) => {
       const existing = getPermissionForPosition(positionId);
       
       if (existing) {
         return base44.entities.PositionPermission.update(existing.id, {
           pages_access: pagesAccess,
-          entity_permissions: entityPermissions
+          entity_permissions: entityPermissions,
+          has_classroom_management_access: hasClassroomAccess
         });
       } else {
         return base44.entities.PositionPermission.create({
           position_id: positionId,
           position_name: positionName,
           pages_access: pagesAccess,
-          entity_permissions: entityPermissions
+          entity_permissions: entityPermissions,
+          has_classroom_management_access: hasClassroomAccess || false
         });
       }
     },
@@ -85,6 +87,20 @@ export default function ManagePermissions() {
       toast.error('שגיאה בעדכון ההרשאות');
     }
   });
+
+  // Handle classroom management access toggle
+  const handleClassroomAccessToggle = (position) => {
+    const permission = getPermissionForPosition(position.id);
+    const newAccess = !permission?.has_classroom_management_access;
+
+    updatePermissionMutation.mutate({
+      positionId: position.id,
+      positionName: position.title,
+      pagesAccess: permission?.pages_access || [],
+      entityPermissions: permission?.entity_permissions || {},
+      hasClassroomAccess: newAccess
+    });
+  };
 
   // Handle page access toggle
   const handlePageToggle = (position, pageId) => {
@@ -98,7 +114,8 @@ export default function ManagePermissions() {
       positionId: position.id,
       positionName: position.title,
       pagesAccess: newPages,
-      entityPermissions: permission?.entity_permissions || {}
+      entityPermissions: permission?.entity_permissions || {},
+      hasClassroomAccess: permission?.has_classroom_management_access || false
     });
   };
 
@@ -121,7 +138,8 @@ export default function ManagePermissions() {
       positionId: position.id,
       positionName: position.title,
       pagesAccess: permission?.pages_access || [],
-      entityPermissions: newEntityPerms
+      entityPermissions: newEntityPerms,
+      hasClassroomAccess: permission?.has_classroom_management_access || false
     });
   };
 
@@ -212,8 +230,29 @@ export default function ManagePermissions() {
                   {/* Expanded Content */}
                   {isExpanded && (
                     <div className="p-6 border-t border-slate-200 bg-slate-50/50">
-                      {/* Pages Access */}
-                      <div className="mb-6">
+                      {/* Main Classroom Management Access Toggle */}
+                      <div className="mb-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+                        <div
+                          onClick={() => handleClassroomAccessToggle(position)}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Checkbox checked={permission?.has_classroom_management_access || false} />
+                          <div>
+                            <Label className="cursor-pointer text-base font-semibold text-blue-900">
+                              גישה לניהול כיתות
+                            </Label>
+                            <p className="text-sm text-blue-700 mt-1">
+                              סמן כדי לאפשר גישה לכל מערכת ניהול הכיתות
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Show pages and entities only if classroom access is enabled */}
+                      {permission?.has_classroom_management_access && (
+                        <>
+                          {/* Pages Access */}
+                          <div className="mb-6">
                         <h4 className="text-md font-semibold text-slate-700 mb-3">
                           גישה לעמודים
                         </h4>
@@ -282,15 +321,17 @@ export default function ManagePermissions() {
                                 </div>
                               </Card>
                             );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </Card>
-              </motion.div>
-            );
-          })}
+                            })}
+                            </div>
+                            </div>
+                            </>
+                            )}
+                            </div>
+                            )}
+                            </Card>
+                            </motion.div>
+                            );
+                            })}
 
           {positions.length === 0 && (
             <Card className="p-12 text-center">
