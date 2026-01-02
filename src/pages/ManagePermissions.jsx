@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
@@ -11,18 +11,27 @@ import { toast } from 'sonner';
 
 export default function ManagePermissions() {
   const [expandedPosition, setExpandedPosition] = useState(null);
+  const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const isAdmin = user?.role === 'admin';
 
   // Fetch positions
   const { data: positions = [], isLoading: positionsLoading } = useQuery({
     queryKey: ['positions'],
-    queryFn: () => base44.entities.Position.list('order')
+    queryFn: () => base44.entities.Position.list('order'),
+    enabled: isAdmin
   });
 
   // Fetch existing permissions
   const { data: permissions = [], isLoading: permissionsLoading } = useQuery({
     queryKey: ['permissions'],
-    queryFn: () => base44.entities.PositionPermission.list()
+    queryFn: () => base44.entities.PositionPermission.list(),
+    enabled: isAdmin
   });
 
   // Available pages for access control
@@ -145,10 +154,22 @@ export default function ManagePermissions() {
     });
   };
 
-  if (positionsLoading || permissionsLoading) {
+  if (!user || positionsLoading || permissionsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center" dir="rtl">
+        <Card className="p-8 text-center max-w-md">
+          <Shield className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">אין הרשאת גישה</h2>
+          <p className="text-slate-600">רק מנהלי מערכת יכולים לנהל הרשאות תפקידים</p>
+        </Card>
       </div>
     );
   }
