@@ -106,42 +106,6 @@ export default function Home() {
 
   const hasPositions = user?.positions && user.positions.length > 0;
 
-  // If no positions and not admin - show waiting message
-  if (!hasPositions && !isAdmin) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center" dir="rtl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md"
-        >
-          <Card className="p-8 text-center shadow-xl">
-            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-amber-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-3">
-              ממתין להרשאות
-            </h1>
-            <p className="text-slate-600 mb-4">
-              שלום {user?.onboarding_full_name || user?.full_name}
-            </p>
-            <p className="text-slate-500 leading-relaxed">
-              חשבונך נוצר בהצלחה, אך עדיין לא הוקצו לך תפקידים במערכת.
-              <br />
-              <br />
-              אנא המתן עד שמנהל המערכת יקצה לך תפקיד ויאפשר לך גישה לפונקציות השונות.
-            </p>
-            <div className="mt-6 p-4 bg-slate-50 rounded-lg">
-              <p className="text-sm text-slate-600">
-                💡 נא לפנות למנהל המערכת להקצאת תפקיד
-              </p>
-            </div>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
       {/* Top Navigation */}

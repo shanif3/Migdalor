@@ -36,7 +36,8 @@ export default function ManageUsers() {
     role: '',
     squad: '',
     platoon: '',
-    position: ''
+    position: '',
+    noPermissions: false
   });
   const queryClient = useQueryClient();
 
@@ -154,7 +155,10 @@ export default function ManageUsers() {
     const matchPosition = !filters.position || 
       (user.positions && user.positions.includes(filters.position));
     
-    return matchName && matchEmail && matchRole && matchSquad && matchPlatoon && matchPosition;
+    const matchNoPermissions = !filters.noPermissions || 
+      (!user.positions || user.positions.length === 0);
+    
+    return matchName && matchEmail && matchRole && matchSquad && matchPlatoon && matchPosition && matchNoPermissions;
   });
 
   // Group users by platoon
@@ -196,6 +200,15 @@ export default function ManageUsers() {
           <Card className="p-4 border-slate-200">
             <p className="text-sm text-slate-500">סה״כ משתמשים</p>
             <p className="text-2xl font-bold text-slate-800">{users.length}</p>
+          </Card>
+          <Card 
+            className={`p-4 border-2 cursor-pointer transition-all ${filters.noPermissions ? 'border-amber-400 bg-amber-50' : 'border-slate-200 hover:border-amber-300'}`}
+            onClick={() => setFilters({ ...filters, noPermissions: !filters.noPermissions })}
+          >
+            <p className="text-sm text-slate-500">ללא הרשאות</p>
+            <p className="text-2xl font-bold text-slate-800">
+              {users.filter(u => !u.positions || u.positions.length === 0).length}
+            </p>
           </Card>
           {Object.entries(usersByPlatoon).map(([platoon, platoonUsers]) => (
             <Card key={platoon} className="p-4 border-slate-200">
