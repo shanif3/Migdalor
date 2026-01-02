@@ -190,7 +190,7 @@ export default function Home() {
           className="text-center mb-12"
         >
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/135b53ec8_2.png" 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/eedd182bc_.jpg" 
             alt="מגדלור לוגו" 
             className="w-24 h-24 object-contain mx-auto mb-6" 
           />
