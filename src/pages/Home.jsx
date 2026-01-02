@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
-import { Key, Calendar, Users, ArrowLeft, Shield } from 'lucide-react';
+import { Key, Calendar, Users, ArrowLeft, Shield, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -43,6 +43,16 @@ export default function Home() {
       path: null,
       color: 'bg-purple-500',
       available: false
+    }
+  ];
+
+  const adminFeatures = [
+    {
+      title: 'ניהול משתמשים',
+      description: 'צפייה ועריכת משתמשים במערכת',
+      icon: Settings,
+      path: 'ManageUsers',
+      available: isAdmin
     }
   ];
 
@@ -158,6 +168,46 @@ export default function Home() {
             </motion.div>
           ))}
         </div>
+
+        {/* Admin Section */}
+        {isAdmin && (
+          <div className="mt-12">
+            <motion.h2 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-2xl font-bold text-slate-800 mb-6"
+            >
+              🛡️ אזור מנהל
+            </motion.h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {adminFeatures.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                >
+                  <Link to={createPageUrl(feature.path)}>
+                    <Card className="p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full border-2 border-blue-200 hover:border-blue-300 bg-blue-50/30">
+                      <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <feature.icon className="w-7 h-7 text-white" />
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-slate-600 mb-4">{feature.description}</p>
+                      <div className="flex items-center gap-2 text-blue-600 font-medium group-hover:gap-3 transition-all">
+                        <span>כניסה</span>
+                        <ArrowLeft className="w-4 h-4" />
+                      </div>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
