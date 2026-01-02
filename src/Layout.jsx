@@ -48,6 +48,10 @@ export default function Layout({ children, currentPageName }) {
 
   const isAdmin = user?.role === 'admin';
 
+  // Check if we're in the "User Management" area
+  const isUserManagementArea = currentPageName === 'ManageUsers';
+
+  // Classroom Management Navigation
   const adminNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
     { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
@@ -62,6 +66,11 @@ export default function Layout({ children, currentPageName }) {
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
     { name: 'אזור אישי', icon: Target, page: 'MyProfile', tooltip: 'אזור אישי' },
+  ];
+
+  // User Management Navigation (for admins only)
+  const userManagementNavItems = [
+    { name: 'משתמשים', icon: Users, page: 'ManageUsers', tooltip: 'ניהול משתמשים' },
   ];
 
   const managementPages = isAdmin 
@@ -80,8 +89,11 @@ export default function Layout({ children, currentPageName }) {
         { name: 'צוותים', page: 'ManageSquads', icon: Users },
       ];
 
-  const navItems = isAdmin ? adminNavItems : userNavItems;
+  const navItems = isUserManagementArea ? userManagementNavItems : (isAdmin ? adminNavItems : userNavItems);
   const isManagementPage = managementPages.includes(currentPageName);
+  
+  // Show management dropdown only in classroom area
+  const showManagementDropdown = !isUserManagementArea;
 
   // Hide navigation for Home page
   if (currentPageName === 'Home') {
@@ -102,6 +114,9 @@ export default function Layout({ children, currentPageName }) {
                 className="w-12 h-12 object-contain" 
               />
               <div className="hidden sm:block">
+                <h2 className="text-sm font-semibold text-slate-800">
+                  {isUserManagementArea ? 'ניהול משתמשים' : 'ניהול כיתות'}
+                </h2>
                 {user && (
                   <p className="text-xs text-slate-500">
                     {isAdmin ? 'מנהל 👑' : 'קה״ד פלוגתי 👤'}
@@ -171,6 +186,7 @@ export default function Layout({ children, currentPageName }) {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
+              )}
 
               {user && (
                 <Button
