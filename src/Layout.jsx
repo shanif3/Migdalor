@@ -41,8 +41,8 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Hide navigation for onboarding page
-  if (currentPageName === 'Onboarding') {
+  // Hide navigation for onboarding and MyProfile pages
+  if (currentPageName === 'Onboarding' || currentPageName === 'MyProfile') {
     return <div className="min-h-screen bg-slate-50">{children}</div>;
   }
 

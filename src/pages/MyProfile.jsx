@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
-import { User, Mail, Shield, Users, Briefcase } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { User, Mail, Shield, Users, Briefcase, LogOut, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function MyProfile() {
@@ -25,6 +28,44 @@ export default function MyProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
+      {/* Top Navigation */}
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/135b53ec8_2.png" 
+                alt="מגדלור לוגו" 
+                className="w-12 h-12 object-contain" 
+              />
+              <h2 className="text-lg font-semibold text-slate-800">אזור אישי</h2>
+            </div>
+
+            {user && (
+              <div className="flex items-center gap-3">
+                {/* Back to Home Button */}
+                <Link to={createPageUrl('Home')}>
+                  <Button variant="outline" className="text-slate-700 hover:text-slate-900 hover:bg-slate-50">
+                    <Home className="w-4 h-4 ml-2" />
+                    חזרה לדף הבית
+                  </Button>
+                </Link>
+
+                {/* Logout Button */}
+                <Button
+                  onClick={() => base44.auth.logout()}
+                  variant="outline"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                >
+                  <LogOut className="w-4 h-4 ml-2" />
+                  התנתק
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
