@@ -124,7 +124,7 @@ export default function Onboarding() {
 
             {/* Full Name */}
             <div className="space-y-2">
-              <Label>שם מלא *</Label>
+              <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">שם מלא בעברית *</Label>
               <Input
                 type="text"
                 placeholder="הכנס שם מלא בעברית"
