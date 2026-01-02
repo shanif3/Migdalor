@@ -3,7 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
-import { Key, Calendar, Users, ArrowLeft, Shield, Settings } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
