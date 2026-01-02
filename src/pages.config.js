@@ -11,6 +11,7 @@ import MyProfile from './pages/MyProfile';
 import MySchedule from './pages/MySchedule';
 import Onboarding from './pages/Onboarding';
 import Home from './pages/Home';
+import ManagePermissions from './pages/ManagePermissions';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +29,7 @@ export const PAGES = {
     "MySchedule": MySchedule,
     "Onboarding": Onboarding,
     "Home": Home,
+    "ManagePermissions": ManagePermissions,
 }
 
 export const pagesConfig = {

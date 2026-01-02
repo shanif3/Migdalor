@@ -49,7 +49,7 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
 
   // Check if we're in the "User Management" area
-  const isUserManagementArea = currentPageName === 'ManageUsers';
+  const isUserManagementArea = currentPageName === 'ManageUsers' || currentPageName === 'ManagePermissions';
 
   // Classroom Management Navigation
   const adminNavItems = [
@@ -71,6 +71,7 @@ export default function Layout({ children, currentPageName }) {
   // User Management Navigation (for admins only)
   const userManagementNavItems = [
     { name: 'משתמשים', icon: Users, page: 'ManageUsers', tooltip: 'ניהול משתמשים' },
+    { name: 'הרשאות', icon: Shield, page: 'ManagePermissions', tooltip: 'ניהול הרשאות תפקידים' },
   ];
 
   const managementPages = isAdmin 
