@@ -39,6 +39,7 @@ export default function MySchedule() {
   const [showModal, setShowModal] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [userPermissions, setUserPermissions] = useState(null);
   const [formData, setFormData] = useState({
     crew_name: '',
     platoon_name: '',
@@ -54,12 +55,54 @@ export default function MySchedule() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const loadUserData = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+        
+        // Load user permissions based on positions
+        if (userData.positions && userData.positions.length > 0) {
+          const allPermissions = await base44.entities.PositionPermission.list();
+          const userPositionPerms = allPermissions.filter(p => 
+            userData.positions.includes(p.position_name)
+          );
+          
+          // Merge all entity permissions
+          const mergedEntityPerms = {};
+          userPositionPerms.forEach(perm => {
+            if (perm.entity_permissions) {
+              Object.keys(perm.entity_permissions).forEach(entityName => {
+                if (!mergedEntityPerms[entityName]) {
+                  mergedEntityPerms[entityName] = new Set();
+                }
+                perm.entity_permissions[entityName].forEach(op => {
+                  mergedEntityPerms[entityName].add(op);
+                });
+              });
+            }
+          });
+          
+          // Convert Sets to Arrays
+          Object.keys(mergedEntityPerms).forEach(key => {
+            mergedEntityPerms[key] = Array.from(mergedEntityPerms[key]);
+          });
+          
+          setUserPermissions({ entity_permissions: mergedEntityPerms });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    
+    loadUserData();
   }, []);
 
   const isAdmin = user?.role === 'admin';
-  const isPlatoonCommander = user?.positions && user.positions.includes('קה״ד פלוגתי');
-  const canAddLessons = isPlatoonCommander; // Only קה״ד פלוגתי can add lessons
+  
+  // Check if user has create permission for Lesson entity
+  const canAddLessons = isAdmin || 
+    (userPermissions?.entity_permissions?.Lesson && 
+     userPermissions.entity_permissions.Lesson.includes('create'));
 
   const { data: allLessons = [], isLoading } = useQuery({
     queryKey: ['my-lessons', user?.platoon_name, selectedDate],
