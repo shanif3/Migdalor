@@ -15,21 +15,42 @@ import {
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userPermissions, setUserPermissions] = useState(null);
 
   useEffect(() => {
-    base44.auth.me()
-      .then(user => {
+    const loadUserData = async () => {
+      try {
+        const user = await base44.auth.me();
         setUser(user);
+        
         // Redirect to onboarding if not completed
         if (!user.onboarding_completed && currentPageName !== 'Onboarding') {
           window.location.href = createPageUrl('Onboarding');
         }
 
+        // Load user permissions based on positions
+        if (user.positions && user.positions.length > 0) {
+          const allPermissions = await base44.entities.PositionPermission.list();
+          const userPositionPerms = allPermissions.filter(p => 
+            user.positions.includes(p.position_name)
+          );
+          
+          // Merge all permissions
+          const mergedPerms = {
+            has_classroom_management_access: userPositionPerms.some(p => p.has_classroom_management_access),
+            pages_access: [...new Set(userPositionPerms.flatMap(p => p.pages_access || []))]
+          };
+          
+          setUserPermissions(mergedPerms);
+        }
+
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (error) {
         setLoading(false);
-      });
+      }
+    };
+    
+    loadUserData();
   }, [currentPageName]);
 
   // Show loading while checking onboarding status
@@ -52,20 +73,33 @@ export default function Layout({ children, currentPageName }) {
   const isUserManagementArea = currentPageName === 'ManageUsers' || currentPageName === 'ManagePermissions' || currentPageName === 'ManagePositions';
 
   // Classroom Management Navigation
-  const adminNavItems = [
+  const allNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
     { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation', tooltip: 'הקצאה' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
-    { name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding' },
+    { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
+    { name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding', adminOnly: true },
   ];
 
-  const userNavItems = [
-    { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
-    { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
-    { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
-    { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
-  ];
+  // Filter nav items based on permissions
+  const getFilteredNavItems = () => {
+    if (isAdmin) {
+      return allNavItems;
+    }
+    
+    if (!userPermissions?.has_classroom_management_access) {
+      return [];
+    }
+    
+    return allNavItems.filter(item => {
+      if (item.adminOnly) return false;
+      return userPermissions.pages_access.includes(item.page);
+    });
+  };
+
+  const adminNavItems = isAdmin ? allNavItems : [];
+  const userNavItems = getFilteredNavItems();
 
   // User Management Navigation (for admins only)
   const userManagementNavItems = [
@@ -74,20 +108,22 @@ export default function Layout({ children, currentPageName }) {
     { name: 'הרשאות', icon: Shield, page: 'ManagePermissions', tooltip: 'ניהול הרשאות תפקידים' },
   ];
 
-  const managementPages = isAdmin 
-    ? ['ManageCrews', 'ManageSquads', 'ManageZones']
-    : ['ManageCrews', 'ManageSquads'];
+  const allManagementItems = [
+    { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
+    { name: 'צוותים', page: 'ManageSquads', icon: Users },
+    { name: 'אזורים', page: 'ManageZones', icon: MapPin, adminOnly: true },
+  ];
 
-  const managementItems = isAdmin
-    ? [
-        { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
-        { name: 'צוותים', page: 'ManageSquads', icon: Users },
-        { name: 'אזורים', page: 'ManageZones', icon: MapPin },
-      ]
-    : [
-        { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
-        { name: 'צוותים', page: 'ManageSquads', icon: Users },
-      ];
+  // Filter management items based on permissions
+  const managementItems = isAdmin 
+    ? allManagementItems
+    : allManagementItems.filter(item => {
+        if (item.adminOnly) return false;
+        if (!userPermissions?.has_classroom_management_access) return false;
+        return userPermissions.pages_access.includes(item.page);
+      });
+
+  const managementPages = managementItems.map(item => item.page);
 
   const navItems = isUserManagementArea ? userManagementNavItems : (isAdmin ? adminNavItems : userNavItems);
   const isManagementPage = managementPages.includes(currentPageName);
