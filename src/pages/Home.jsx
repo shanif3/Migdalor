@@ -121,34 +121,14 @@ export default function Home() {
             </div>
 
             {user && (
-              <div className="flex items-center gap-4">
-                {/* User Profile */}
-                <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <span className="text-lg font-semibold text-indigo-600">
-                      {(user.onboarding_full_name || user.full_name || user.email).charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-slate-800">{user.onboarding_full_name || user.full_name}</p>
-                    <p className="text-xs text-slate-500">{user.email}</p>
-                    {user.squad_name && (
-                      <p className="text-xs text-slate-400">צוות: {user.squad_name}</p>
-                    )}
-                    {user.platoon_name && (
-                      <p className="text-xs text-slate-400">פלוגה: {user.platoon_name}</p>
-                    )}
-                    {user.positions && user.positions.length > 0 && (
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {user.positions.map((pos, idx) => (
-                          <span key={idx} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-blue-100 text-blue-700">
-                            {pos}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="flex items-center gap-3">
+                {/* My Profile Button */}
+                <Link to={createPageUrl('MyProfile')}>
+                  <Button variant="outline" className="text-slate-700 hover:text-slate-900 hover:bg-slate-50">
+                    <Users className="w-4 h-4 ml-2" />
+                    אזור אישי
+                  </Button>
+                </Link>
 
                 {/* Logout Button */}
                 <Button
