@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
-import { Key, Calendar, Users, ArrowLeft, Shield, Settings } from 'lucide-react';
+import { Key, Calendar, Users, ArrowLeft, Shield, Settings, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -50,11 +50,22 @@ export default function Home() {
 
   const adminFeatures = [
     {
+      title: 'ניהול מפתחות',
+      description: 'ניהול כל המפתחות והחדרים',
+      icon: Key,
+      path: 'ManageKeys'
+    },
+    {
+      title: 'הקצאת מפתחות',
+      description: 'הקצאה אוטומטית של מפתחות לשיעורים',
+      icon: Target,
+      path: 'KeyAllocation'
+    },
+    {
       title: 'ניהול משתמשים',
       description: 'צפייה ועריכת משתמשים במערכת',
       icon: Settings,
-      path: 'ManageUsers',
-      available: isAdmin
+      path: 'ManageUsers'
     }
   ];
 
