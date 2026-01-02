@@ -150,7 +150,8 @@ export default function Layout({ children, currentPageName }) {
                 );
               })}
               
-              {/* Management Dropdown */}
+              {/* Management Dropdown - Only show in classroom area */}
+              {showManagementDropdown && (
               <DropdownMenu dir="rtl">
                 <DropdownMenuTrigger asChild>
                   <button
