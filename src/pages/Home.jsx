@@ -106,6 +106,64 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
+      {/* Top Navigation */}
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/135b53ec8_2.png" 
+                alt="מגדלור לוגו" 
+                className="w-12 h-12 object-contain" 
+              />
+              <h2 className="text-lg font-semibold text-slate-800">מגדלור</h2>
+            </div>
+
+            {user && (
+              <div className="flex items-center gap-4">
+                {/* User Profile */}
+                <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg">
+                  <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <span className="text-lg font-semibold text-indigo-600">
+                      {(user.onboarding_full_name || user.full_name || user.email).charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-slate-800">{user.onboarding_full_name || user.full_name}</p>
+                    <p className="text-xs text-slate-500">{user.email}</p>
+                    {user.squad_name && (
+                      <p className="text-xs text-slate-400">צוות: {user.squad_name}</p>
+                    )}
+                    {user.platoon_name && (
+                      <p className="text-xs text-slate-400">פלוגה: {user.platoon_name}</p>
+                    )}
+                    {user.positions && user.positions.length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {user.positions.map((pos, idx) => (
+                          <span key={idx} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-blue-100 text-blue-700">
+                            {pos}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Logout Button */}
+                <Button
+                  onClick={() => base44.auth.logout()}
+                  variant="outline"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                >
+                  <LogOut className="w-4 h-4 ml-2" />
+                  התנתק
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
