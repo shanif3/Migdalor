@@ -65,14 +65,13 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const managementPages = isAdmin 
-    ? ['ManageCrews', 'ManageSquads', 'ManageUsers', 'ManagePositions', 'ManageZones']
+    ? ['ManageCrews', 'ManageSquads', 'ManagePositions', 'ManageZones']
     : ['ManageCrews', 'ManageSquads'];
 
   const managementItems = isAdmin
     ? [
         { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
         { name: 'צוותים', page: 'ManageSquads', icon: Users },
-        { name: 'משתמשים', page: 'ManageUsers', icon: Settings },
         { name: 'תפקידים', page: 'ManagePositions', icon: Briefcase },
         { name: 'אזורים', page: 'ManageZones', icon: MapPin },
       ]
