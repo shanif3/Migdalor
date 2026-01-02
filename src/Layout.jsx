@@ -65,7 +65,6 @@ export default function Layout({ children, currentPageName }) {
     { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
-    { name: 'אזור אישי', icon: Target, page: 'MyProfile', tooltip: 'אזור אישי' },
   ];
 
   // User Management Navigation (for admins only)
@@ -191,20 +190,50 @@ export default function Layout({ children, currentPageName }) {
               )}
 
               {user && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => base44.auth.logout()}
-                  className="mr-2 text-slate-500 hover:text-slate-700 group relative"
-                  title="התנתק"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:block mr-2">התנתק</span>
-                  {/* Mobile tooltip */}
-                  <span className="sm:hidden absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                    התנתק
-                  </span>
-                </Button>
+                <DropdownMenu dir="rtl">
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors mr-2">
+                      <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-semibold text-indigo-600">
+                          {(user.onboarding_full_name || user.full_name || user.email).charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="hidden sm:block text-right">
+                        <p className="text-sm font-medium">{user.onboarding_full_name || user.full_name}</p>
+                        <p className="text-xs text-slate-500">{user.role === 'admin' ? 'מנהל' : 'משתמש'}</p>
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-64">
+                    <div className="p-3 border-b">
+                      <p className="font-medium text-slate-800">{user.onboarding_full_name || user.full_name}</p>
+                      <p className="text-sm text-slate-500">{user.email}</p>
+                      {user.squad_name && (
+                        <p className="text-xs text-slate-400 mt-1">צוות: {user.squad_name}</p>
+                      )}
+                      {user.platoon_name && (
+                        <p className="text-xs text-slate-400">פלוגה: {user.platoon_name}</p>
+                      )}
+                      {user.positions && user.positions.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {user.positions.map((pos, idx) => (
+                            <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">
+                              {pos}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <DropdownMenuItem
+                      onClick={() => base44.auth.logout()}
+                      className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <LogOut className="w-4 h-4 ml-2" />
+                      התנתק
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
