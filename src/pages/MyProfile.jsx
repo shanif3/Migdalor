@@ -4,19 +4,58 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Shield, Users, Briefcase, LogOut, Home } from 'lucide-react';
+import { Input } from "@/components/ui/input";
+import { User, Mail, Shield, Users, Briefcase, LogOut, Home, Edit2, Save, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 export default function MyProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState('');
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me()
-      .then(setUser)
+      .then((userData) => {
+        setUser(userData);
+        setEditedName(userData.onboarding_full_name || userData.full_name || '');
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const updateNameMutation = useMutation({
+    mutationFn: async (newName) => {
+      await base44.entities.User.update(user.id, {
+        full_name: newName,
+        onboarding_full_name: newName
+      });
+    },
+    onSuccess: () => {
+      toast.success('השם עודכן בהצלחה');
+      setIsEditing(false);
+      // Refresh user data
+      base44.auth.me().then((userData) => {
+        setUser(userData);
+        setEditedName(userData.onboarding_full_name || userData.full_name || '');
+      });
+    },
+    onError: () => {
+      toast.error('שגיאה בעדכון השם');
+    }
+  });
+
+  const handleSaveName = () => {
+    if (!editedName.trim()) {
+      toast.error('אנא הזן שם');
+      return;
+    }
+    updateNameMutation.mutate(editedName.trim());
+  };
 
   if (loading) {
     return (
@@ -87,9 +126,49 @@ export default function MyProfile() {
               </div>
               <div className="flex-1">
                 <p className="text-sm text-slate-500">שם מלא</p>
-                <p className="text-lg font-semibold text-slate-800">
-                  {user?.full_name || 'לא הוגדר'}
-                </p>
+                {isEditing ? (
+                  <div className="flex items-center gap-2 mt-1">
+                    <Input
+                      value={editedName}
+                      onChange={(e) => setEditedName(e.target.value)}
+                      className="text-right"
+                      placeholder="הזן שם מלא"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={handleSaveName}
+                      disabled={updateNameMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Save className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditing(false);
+                        setEditedName(user?.onboarding_full_name || user?.full_name || '');
+                      }}
+                      disabled={updateNameMutation.isPending}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-semibold text-slate-800">
+                      {user?.onboarding_full_name || user?.full_name || 'לא הוגדר'}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setIsEditing(true)}
+                      className="text-slate-500 hover:text-slate-700"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
