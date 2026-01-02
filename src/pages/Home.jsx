@@ -10,26 +10,63 @@ import { motion } from 'framer-motion';
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userPermissions, setUserPermissions] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
-      setUser(u);
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    const loadUserData = async () => {
+      try {
+        const u = await base44.auth.me();
+        setUser(u);
+        
+        // Load user permissions based on positions
+        if (u.positions && u.positions.length > 0) {
+          const allPermissions = await base44.entities.PositionPermission.list();
+          const userPositionPerms = allPermissions.filter(p => 
+            u.positions.includes(p.position_name)
+          );
+          
+          // Merge all permissions
+          const mergedPerms = {
+            has_classroom_management_access: userPositionPerms.some(p => p.has_classroom_management_access),
+            pages_access: [...new Set(userPositionPerms.flatMap(p => p.pages_access || []))]
+          };
+          
+          setUserPermissions(mergedPerms);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    
+    loadUserData();
   }, []);
 
   const isAdmin = user?.role === 'admin';
+  
+  // Get first accessible page for classroom management
+  const getFirstAccessiblePage = () => {
+    if (isAdmin) return 'Dashboard';
+    
+    if (!userPermissions?.has_classroom_management_access) return null;
+    
+    const pageOrder = ['Dashboard', 'DailyOverview', 'MySchedule', 'ManageKeys', 'KeyAllocation', 'ManageCrews', 'ManageSquads'];
+    const accessiblePage = pageOrder.find(page => userPermissions.pages_access.includes(page));
+    
+    return accessiblePage || null;
+  };
 
+  const classroomPath = getFirstAccessiblePage();
+  
   const features = [
     {
       title: 'ניהול כיתות',
       description: 'ניהול מפתחות, הקצאת חדרים ולוח זמנים',
       icon: Key,
-      path: 'Dashboard',
+      path: classroomPath,
       color: 'bg-indigo-500',
-      available: true
+      available: !!classroomPath
     },
     {
       title: 'ניהול אירועים',
