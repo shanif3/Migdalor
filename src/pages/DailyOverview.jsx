@@ -52,10 +52,10 @@ export default function DailyOverview() {
     queryFn: () => base44.entities.ClassroomKey.list()
   });
 
-  // Generate time slots (07:00 - 22:00)
+  // Generate time slots (07:00 - 23:59)
   const timeSlots = useMemo(() => {
     const slots = [];
-    for (let hour = 7; hour <= 21; hour++) {
+    for (let hour = 7; hour <= 23; hour++) {
       slots.push(`${String(hour).padStart(2, '0')}:00`);
     }
     return slots;
