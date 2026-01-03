@@ -84,8 +84,11 @@ export default function HackalonStatus() {
 
   const shouldShowTeam = (team) => {
     if (filterType === 'all') return true;
+    if (filterType === 'with-spec') return !!getSubmission(team.name, 'specification');
     if (filterType === 'no-spec') return !getSubmission(team.name, 'specification');
+    if (filterType === 'with-pres1') return !!getSubmission(team.name, 'presentation1');
     if (filterType === 'no-pres1') return !getSubmission(team.name, 'presentation1');
+    if (filterType === 'with-pres2') return !!getSubmission(team.name, 'presentation2');
     if (filterType === 'no-pres2') return !getSubmission(team.name, 'presentation2');
     return true;
   };
@@ -105,36 +108,81 @@ export default function HackalonStatus() {
         </motion.div>
 
         {/* Stats with filters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <Card 
-            className={`p-4 cursor-pointer transition-all ${filterType === 'all' ? 'ring-2 ring-slate-500 bg-slate-50' : 'hover:shadow-md'}`}
-            onClick={() => setFilterType('all')}
-          >
-            <p className="text-sm text-slate-500">סה״כ צוותים</p>
-            <p className="text-2xl font-bold text-slate-800">{stats.totalTeams}</p>
-          </Card>
-          <Card 
-            className={`p-4 bg-red-50 border-red-200 cursor-pointer transition-all ${filterType === 'no-spec' ? 'ring-2 ring-red-500' : 'hover:shadow-md'}`}
-            onClick={() => setFilterType('no-spec')}
-          >
-            <p className="text-sm text-red-600">ללא מסמך איפיון</p>
-            <p className="text-2xl font-bold text-red-700">{stats.teamsWithoutSpec}</p>
-          </Card>
-          <Card 
-            className={`p-4 bg-orange-50 border-orange-200 cursor-pointer transition-all ${filterType === 'no-pres1' ? 'ring-2 ring-orange-500' : 'hover:shadow-md'}`}
-            onClick={() => setFilterType('no-pres1')}
-          >
-            <p className="text-sm text-orange-600">ללא מצגת 1</p>
-            <p className="text-2xl font-bold text-orange-700">{stats.teamsWithoutPres1}</p>
-          </Card>
-          <Card 
-            className={`p-4 bg-amber-50 border-amber-200 cursor-pointer transition-all ${filterType === 'no-pres2' ? 'ring-2 ring-amber-500' : 'hover:shadow-md'}`}
-            onClick={() => setFilterType('no-pres2')}
-          >
-            <p className="text-sm text-amber-600">ללא מצגת 2</p>
-            <p className="text-2xl font-bold text-amber-700">{stats.teamsWithoutPres2}</p>
-          </Card>
-        </div>
+        <Card className="p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Specification */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                מסמך איפיון
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                <Card 
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'with-spec' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-green-50 border-green-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'with-spec' ? 'all' : 'with-spec')}
+                >
+                  <p className="text-xs text-green-600">עם מסמך</p>
+                  <p className="text-xl font-bold text-green-700">{stats.teamsWithSpec}</p>
+                </Card>
+                <Card 
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'no-spec' ? 'ring-2 ring-red-500 bg-red-50' : 'bg-red-50 border-red-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'no-spec' ? 'all' : 'no-spec')}
+                >
+                  <p className="text-xs text-red-600">ללא מסמך</p>
+                  <p className="text-xl font-bold text-red-700">{stats.teamsWithoutSpec}</p>
+                </Card>
+              </div>
+            </div>
+
+            {/* Presentation 1 */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <Presentation className="w-4 h-4" />
+                מצגת 1
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                <Card 
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'with-pres1' ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-blue-50 border-blue-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'with-pres1' ? 'all' : 'with-pres1')}
+                >
+                  <p className="text-xs text-blue-600">עם מצגת</p>
+                  <p className="text-xl font-bold text-blue-700">{stats.teamsWithPres1}</p>
+                </Card>
+                <Card 
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'no-pres1' ? 'ring-2 ring-orange-500 bg-orange-50' : 'bg-orange-50 border-orange-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'no-pres1' ? 'all' : 'no-pres1')}
+                >
+                  <p className="text-xs text-orange-600">ללא מצגת</p>
+                  <p className="text-xl font-bold text-orange-700">{stats.teamsWithoutPres1}</p>
+                </Card>
+              </div>
+            </div>
+
+            {/* Presentation 2 */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <Presentation className="w-4 h-4" />
+                מצגת 2
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                <Card 
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'with-pres2' ? 'ring-2 ring-purple-500 bg-purple-50' : 'bg-purple-50 border-purple-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'with-pres2' ? 'all' : 'with-pres2')}
+                >
+                  <p className="text-xs text-purple-600">עם מצגת</p>
+                  <p className="text-xl font-bold text-purple-700">{stats.teamsWithPres2}</p>
+                </Card>
+                <Card 
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'no-pres2' ? 'ring-2 ring-amber-500 bg-amber-50' : 'bg-amber-50 border-amber-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'no-pres2' ? 'all' : 'no-pres2')}
+                >
+                  <p className="text-xs text-amber-600">ללא מצגת</p>
+                  <p className="text-xl font-bold text-amber-700">{stats.teamsWithoutPres2}</p>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Departments and Teams Status */}
         <div className="space-y-6">
