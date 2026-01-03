@@ -43,10 +43,16 @@ export default function ManagePermissions() {
     { id: 'MySchedule', name: 'לוח הזמנים שלי', area: 'classroom' },
     { id: 'ManageCrews', name: 'ניהול פלוגות', area: 'classroom' },
     { id: 'ManageSquads', name: 'ניהול צוותים', area: 'classroom' },
+    { id: 'HackalonOverview', name: 'HackAlon - סקירה', area: 'hackalon' },
+    { id: 'HackalonTeamArea', name: 'HackAlon - אזור הצוות', area: 'hackalon' },
+    { id: 'HackalonStatus', name: 'HackAlon - תמונת מצב', area: 'hackalon' },
+    { id: 'HackalonAssignment', name: 'HackAlon - שיבוץ צוערים', area: 'hackalon' },
+    { id: 'HackalonManageProblems', name: 'HackAlon - ניהול בעיות', area: 'hackalon' },
   ];
   
   // Pages under classroom management (only these require access toggle)
   const classroomPages = availablePages.filter(p => p.area === 'classroom');
+  const hackalonPages = availablePages.filter(p => p.area === 'hackalon');
 
   // Available entities for CRUD permissions
   const availableEntities = [
@@ -277,7 +283,7 @@ export default function ManagePermissions() {
                           {/* Pages Access */}
                           <div className="mb-6">
                         <h4 className="text-md font-semibold text-slate-700 mb-3">
-                          גישה לעמודים
+                          גישה לעמודים - ניהול כיתות
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {classroomPages.map((page) => {
@@ -289,6 +295,36 @@ export default function ManagePermissions() {
                                 className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                                   hasAccess
                                     ? 'bg-blue-50 border-blue-300'
+                                    : 'bg-white border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Checkbox checked={hasAccess} />
+                                  <Label className="cursor-pointer text-sm">
+                                    {page.name}
+                                  </Label>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* HackAlon Pages Access */}
+                      <div className="mb-6">
+                        <h4 className="text-md font-semibold text-slate-700 mb-3">
+                          גישה לעמודים - HackAlon
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {hackalonPages.map((page) => {
+                            const hasAccess = pagesAccess.includes(page.id);
+                            return (
+                              <div
+                                key={page.id}
+                                onClick={() => handlePageToggle(position, page.id)}
+                                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                                  hasAccess
+                                    ? 'bg-purple-50 border-purple-300'
                                     : 'bg-white border-slate-200 hover:border-slate-300'
                                 }`}
                               >

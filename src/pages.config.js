@@ -4,6 +4,7 @@ import HackalonAssignment from './pages/HackalonAssignment';
 import HackalonManageProblems from './pages/HackalonManageProblems';
 import HackalonOverview from './pages/HackalonOverview';
 import HackalonStatus from './pages/HackalonStatus';
+import HackalonTeamArea from './pages/HackalonTeamArea';
 import Home from './pages/Home';
 import KeyAllocation from './pages/KeyAllocation';
 import ManageCrews from './pages/ManageCrews';
@@ -16,7 +17,6 @@ import ManageZones from './pages/ManageZones';
 import MyProfile from './pages/MyProfile';
 import MySchedule from './pages/MySchedule';
 import Onboarding from './pages/Onboarding';
-import HackalonTeamArea from './pages/HackalonTeamArea';
 import __Layout from './Layout.jsx';
 
 
@@ -27,6 +27,7 @@ export const PAGES = {
     "HackalonManageProblems": HackalonManageProblems,
     "HackalonOverview": HackalonOverview,
     "HackalonStatus": HackalonStatus,
+    "HackalonTeamArea": HackalonTeamArea,
     "Home": Home,
     "KeyAllocation": KeyAllocation,
     "ManageCrews": ManageCrews,
@@ -39,7 +40,6 @@ export const PAGES = {
     "MyProfile": MyProfile,
     "MySchedule": MySchedule,
     "Onboarding": Onboarding,
-    "HackalonTeamArea": HackalonTeamArea,
 }
 
 export const pagesConfig = {
