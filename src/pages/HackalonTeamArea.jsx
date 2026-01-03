@@ -122,6 +122,14 @@ export default function HackalonTeamArea() {
   const uploadMutation = useMutation({
     mutationFn: async ({ file, type, existingSubmission }) => {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      // Check if late submission for specification
+      let isLate = false;
+      if (type === 'specification' && teamInfo?.specification_deadline) {
+        const deadline = new Date(teamInfo.specification_deadline);
+        const now = new Date();
+        isLate = now > deadline;
+      }
 
       if (existingSubmission) {
         // Update existing
@@ -130,7 +138,8 @@ export default function HackalonTeamArea() {
           file_url: file_url,
           file_name: file.name,
           uploaded_by: user.email,
-          upload_date: new Date().toISOString()
+          upload_date: new Date().toISOString(),
+          is_late: isLate
         });
       } else {
         // Create new
@@ -141,7 +150,8 @@ export default function HackalonTeamArea() {
           file_url: file_url,
           file_name: file.name,
           uploaded_by: user.email,
-          upload_date: new Date().toISOString()
+          upload_date: new Date().toISOString(),
+          is_late: isLate
         });
       }
     },
@@ -158,13 +168,22 @@ export default function HackalonTeamArea() {
 
   const addLinkMutation = useMutation({
     mutationFn: async ({ url, type, existingSubmission }) => {
+      // Check if late submission for specification
+      let isLate = false;
+      if (type === 'specification' && teamInfo?.specification_deadline) {
+        const deadline = new Date(teamInfo.specification_deadline);
+        const now = new Date();
+        isLate = now > deadline;
+      }
+      
       if (existingSubmission) {
         return base44.entities.HackalonSubmission.update(existingSubmission.id, {
           submission_method: 'link',
           file_url: url,
           file_name: 'קישור חיצוני',
           uploaded_by: user.email,
-          upload_date: new Date().toISOString()
+          upload_date: new Date().toISOString(),
+          is_late: isLate
         });
       } else {
         return base44.entities.HackalonSubmission.create({
@@ -174,7 +193,8 @@ export default function HackalonTeamArea() {
           file_url: url,
           file_name: 'קישור חיצוני',
           uploaded_by: user.email,
-          upload_date: new Date().toISOString()
+          upload_date: new Date().toISOString(),
+          is_late: isLate
         });
       }
     },
@@ -257,8 +277,12 @@ export default function HackalonTeamArea() {
 
   const getSubmission = (type) => submissions.find((s) => s.submission_type === type);
   const specSubmission = getSubmission('specification');
-  const pres1Submission = getSubmission('presentation1');
-  const pres2Submission = getSubmission('presentation2');
+  const finalProductSubmission = getSubmission('final_product');
+  
+  // Check if specification deadline passed
+  const isSpecDeadlinePassed = teamInfo?.specification_deadline 
+    ? new Date() > new Date(teamInfo.specification_deadline)
+    : false;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
@@ -365,13 +389,37 @@ export default function HackalonTeamArea() {
         </div>
 
         {/* Submissions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Specification */}
           <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <FileText className="w-6 h-6 text-green-600" />
-              <h3 className="text-lg font-bold text-slate-800">מסמך איפיון</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <FileText className="w-6 h-6 text-green-600" />
+                <h3 className="text-lg font-bold text-slate-800">מסמך איפיון</h3>
+              </div>
+              {teamInfo?.specification_deadline && (
+                <div className="text-xs text-slate-500">
+                  <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')}</div>
+                  {isSpecDeadlinePassed && !specSubmission && (
+                    <div className="text-red-600 font-semibold">חלף המועד!</div>
+                  )}
+                </div>
+              )}
             </div>
+            
+            {/* Download Template */}
+            {teamInfo?.specification_template_url && !specSubmission && (
+              <a 
+                href={teamInfo.specification_template_url} 
+                download
+                className="block mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                <div className="flex items-center gap-2 text-blue-700">
+                  <FileText className="w-4 h-4" />
+                  <span className="text-sm font-medium">📥 הורד טמפלייט</span>
+                </div>
+              </a>
+            )}
             {specSubmission ?
             <div className="space-y-2">
                 <a href={specSubmission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
@@ -379,6 +427,9 @@ export default function HackalonTeamArea() {
                     <div className="flex-1">
                       <p className="font-medium text-green-800 text-sm">{specSubmission.file_name}</p>
                       <p className="text-xs text-green-600 mt-1">הועלה על ידי {specSubmission.uploaded_by}</p>
+                      {specSubmission.is_late && (
+                        <p className="text-xs text-red-600 font-semibold mt-1">⚠️ הוגש באיחור</p>
+                      )}
                     </div>
                     <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(specSubmission);}} className="text-red-600">
                       <Trash2 className="w-4 h-4" />
@@ -405,60 +456,21 @@ export default function HackalonTeamArea() {
             }
           </Card>
 
-          {/* Presentation 1 */}
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Presentation className="w-6 h-6 text-blue-600" />
-              <h3 className="text-lg font-bold text-slate-800">מצגת 1</h3>
-            </div>
-            {pres1Submission ?
-            <div className="space-y-2">
-                <a href={pres1Submission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <p className="font-medium text-blue-800 text-sm">{pres1Submission.file_name}</p>
-                      <p className="text-xs text-blue-600 mt-1">הועלה על ידי {pres1Submission.uploaded_by}</p>
-                    </div>
-                    <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(pres1Submission);}} className="text-red-600">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </a>
-              </div> :
-
-            <div className="space-y-2">
-                <input type="file" id="pres1-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'presentation1')} disabled={uploading === 'presentation1'} />
-                <label htmlFor="pres1-upload">
-                  <Button asChild disabled={uploading === 'presentation1'} className="w-full cursor-pointer">
-                    <span>
-                      {uploading === 'presentation1' ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Upload className="w-4 h-4 ml-2" />}
-                      {uploading === 'presentation1' ? 'מעלה...' : 'העלה קובץ'}
-                    </span>
-                  </Button>
-                </label>
-                <Button variant="outline" onClick={() => {setShowLinkModal('presentation1');setLinkUrl('');}} className="w-full">
-                  <LinkIcon className="w-4 h-4 ml-2" />
-                  הוסף קישור
-                </Button>
-              </div>
-            }
-          </Card>
-
-          {/* Presentation 2 */}
+          {/* Final Product */}
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <Presentation className="w-6 h-6 text-purple-600" />
-              <h3 className="text-lg font-bold text-slate-800">מצגת 2</h3>
+              <h3 className="text-lg font-bold text-slate-800">תוצר סופי</h3>
             </div>
-            {pres2Submission ?
+            {finalProductSubmission ?
             <div className="space-y-2">
-                <a href={pres2Submission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
+                <a href={finalProductSubmission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="font-medium text-purple-800 text-sm">{pres2Submission.file_name}</p>
-                      <p className="text-xs text-purple-600 mt-1">הועלה על ידי {pres2Submission.uploaded_by}</p>
+                      <p className="font-medium text-purple-800 text-sm">{finalProductSubmission.file_name}</p>
+                      <p className="text-xs text-purple-600 mt-1">הועלה על ידי {finalProductSubmission.uploaded_by}</p>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(pres2Submission);}} className="text-red-600">
+                    <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(finalProductSubmission);}} className="text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -466,16 +478,16 @@ export default function HackalonTeamArea() {
               </div> :
 
             <div className="space-y-2">
-                <input type="file" id="pres2-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'presentation2')} disabled={uploading === 'presentation2'} />
-                <label htmlFor="pres2-upload">
-                  <Button asChild disabled={uploading === 'presentation2'} className="w-full cursor-pointer">
+                <input type="file" id="final-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'final_product')} disabled={uploading === 'final_product'} />
+                <label htmlFor="final-upload">
+                  <Button asChild disabled={uploading === 'final_product'} className="w-full cursor-pointer">
                     <span>
-                      {uploading === 'presentation2' ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Upload className="w-4 h-4 ml-2" />}
-                      {uploading === 'presentation2' ? 'מעלה...' : 'העלה קובץ'}
+                      {uploading === 'final_product' ? <Loader2 className="w-4 h-4 ml-2 animate-spin" /> : <Upload className="w-4 h-4 ml-2" />}
+                      {uploading === 'final_product' ? 'מעלה...' : 'העלה קובץ'}
                     </span>
                   </Button>
                 </label>
-                <Button variant="outline" onClick={() => {setShowLinkModal('presentation2');setLinkUrl('');}} className="w-full">
+                <Button variant="outline" onClick={() => {setShowLinkModal('final_product');setLinkUrl('');}} className="w-full">
                   <LinkIcon className="w-4 h-4 ml-2" />
                   הוסף קישור
                 </Button>
