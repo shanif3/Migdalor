@@ -82,35 +82,35 @@ export default function HackalonAssignment() {
   });
 
   const deleteDeptMutation = useMutation({
-  mutationFn: async (deptId) => {
-    const dept = departments.find(d => d.id === deptId);
-    
-    // Delete all teams in this department first
-    const deptTeams = teams.filter(t => t.department_name === dept.name);
-    for (const team of deptTeams) {
-      // Remove team assignments from all users
-      const teamUsers = users.filter(u => u.hackalon_team === team.name);
-      for (const user of teamUsers) {
-        await base44.entities.User.update(user.id, {
-          hackalon_team: null,
-          hackalon_department: null
-        });
+    mutationFn: async (deptId) => {
+      const dept = departments.find((d) => d.id === deptId);
+
+      // Delete all teams in this department first
+      const deptTeams = teams.filter((t) => t.department_name === dept.name);
+      for (const team of deptTeams) {
+        // Remove team assignments from all users
+        const teamUsers = users.filter((u) => u.hackalon_team === team.name);
+        for (const user of teamUsers) {
+          await base44.entities.User.update(user.id, {
+            hackalon_team: null,
+            hackalon_department: null
+          });
+        }
+
+        // Delete the team
+        await base44.entities.HackalonTeam.delete(team.id);
       }
-      
-      // Delete the team
-      await base44.entities.HackalonTeam.delete(team.id);
+
+      // Finally delete the department
+      return base44.entities.HackalonDepartment.delete(deptId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
+      queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('המדור וכל הצוותים שלו נמחקו בהצלחה');
     }
-    
-    // Finally delete the department
-    return base44.entities.HackalonDepartment.delete(deptId);
-  },
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
-    queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
-    queryClient.invalidateQueries({ queryKey: ['users'] });
-    toast.success('המדור וכל הצוותים שלו נמחקו בהצלחה');
-  }
-});
+  });
 
   // Team mutations
   const createTeamMutation = useMutation({
@@ -364,35 +364,35 @@ export default function HackalonAssignment() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {deptTeams.map((team) =>
-<Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
+                  <Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
   <div className="flex items-start justify-between mb-2">
     <div className="flex-1">
       <p className="font-semibold text-slate-800">{team.name}</p>
     </div>
     <div className="flex gap-1">
       <Button
-        size="sm"
-        variant="ghost"
-        onClick={(e) => {
-          e.stopPropagation();
-          setEditingTeam(team);
-          setTeamForm({ name: team.name, department: team.department_name });
-          setShowTeamModal(true);
-        }}
-      >
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingTeam(team);
+                            setTeamForm({ name: team.name, department: team.department_name });
+                            setShowTeamModal(true);
+                          }}>
+
         <Edit2 className="w-3 h-3" />
       </Button>
       <Button
-        size="sm"
-        variant="ghost"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (window.confirm(`האם אתה בטוח שברצונך למחוק את הצוות "${team.name}"?`)) {
-            deleteTeamMutation.mutate(team.id);
-          }
-        }}
-        className="text-red-600 hover:text-red-700"
-      >
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm(`האם אתה בטוח שברצונך למחוק את הצוות "${team.name}"?`)) {
+                              deleteTeamMutation.mutate(team.id);
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-700">
+
         <Trash2 className="w-3 h-3" />
       </Button>
     </div>
@@ -403,17 +403,17 @@ export default function HackalonAssignment() {
     <span>{team.member_names?.length || 0} צוערים</span>
   </div>
 
-  {team.member_names && team.member_names.length > 0 && (
-    <div className="mt-2 space-y-1">
-      {team.member_names.slice(0, 3).map((name, idx) => (
-        <p key={idx} className="text-xs text-slate-500">• {name}</p>
-      ))}
-      {team.member_names.length > 3 && (
-        <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
-      )}
+  {team.member_names && team.member_names.length > 0 &&
+                    <div className="mt-2 space-y-1">
+      {team.member_names.slice(0, 3).map((name, idx) =>
+                      <p key={idx} className="text-xs text-slate-500">• {name}</p>
+                      )}
+      {team.member_names.length > 3 &&
+                      <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
+                      }
     </div>
-  )}
-</Card>
+                    }
+                  </Card>
                   )}
                   
                   <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => {setShowTeamModal(true);setEditingTeam(null);setTeamForm({ name: '', department: dept.name });}}>
@@ -526,7 +526,7 @@ export default function HackalonAssignment() {
         <Dialog open={showDeptModal} onOpenChange={setShowDeptModal}>
           <DialogContent dir="rtl">
             <DialogHeader>
-              <DialogTitle>{editingDept ? 'ערוך מדור' : 'הוסף מדור'}</DialogTitle>
+              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">{editingDept ? 'ערוך מדור' : 'הוסף מדור'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
