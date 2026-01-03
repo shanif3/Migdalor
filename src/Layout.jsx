@@ -78,7 +78,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if we're in the "User Management" area
   const isUserManagementArea = currentPageName === 'ManageUsers' || currentPageName === 'ManagePermissions' || currentPageName === 'ManagePositions';
-  const isHackalonArea = ['HackalonOverview', 'HackalonAssignment', 'HackalonTeamArea', 'HackalonManageProblems', 'HackalonStatus'].includes(currentPageName);
+  const isHackalonArea = ['HackalonSchedule', 'HackalonOverview', 'HackalonAssignment', 'HackalonTeamArea', 'HackalonManageProblems', 'HackalonStatus'].includes(currentPageName);
 
   // Classroom Management Navigation
   const allNavItems = [
@@ -124,8 +124,9 @@ export default function Layout({ children, currentPageName }) {
 
   // HackAlon Navigation
   const allHackalonNavItems = [
-    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית', adminOnly: true },
+    { name: 'לוח זמנים', icon: Calendar, page: 'HackalonSchedule', tooltip: 'לוח זמנים ואירועים' },
     { name: 'אזור הצוות', icon: Users, page: 'HackalonTeamArea', tooltip: 'אזור הצוות שלי' },
+    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית', adminOnly: true },
     { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות', adminOnly: true },
     { name: 'שיבוץ צוערים', icon: Target, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים', adminOnly: true },
     { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים', adminOnly: true },
