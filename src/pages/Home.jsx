@@ -188,10 +188,10 @@ export default function Home() {
                     </div>
                     <h3 className="text-xl font-bold text-slate-800 mb-2">
                       {feature.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-indigo-600 font-medium group-hover:gap-3 transition-all"> <span>כניסה</span> <ArrowLeft className="w-4 h-4" /> </div>
-                  
+                    </h3>                  
                     <p className="text-slate-600 mb-4">{feature.description}</p>
+                    <div className="flex items-center gap-2 text-indigo-600 font-medium group-hover:gap-3 transition-all"> <span>כניסה</span> <ArrowLeft className="w-4 h-4" /> </div>
+
                   </Card>
                 </Link> :
 
