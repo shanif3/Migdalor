@@ -18,7 +18,17 @@ export default function HackalonTeamArea() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const loadUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {}
+    };
+    loadUser();
+    
+    // Reload user data every 2 seconds to catch updates from other pages
+    const interval = setInterval(loadUser, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   const { data: teamInfo, isLoading: teamLoading } = useQuery({
