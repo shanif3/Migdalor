@@ -49,7 +49,23 @@ export default function ManageUsers() {
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: async () => {
+      const allUsers = await base44.entities.User.list();
+      
+      // Auto-assign 'צוער' to users without positions
+      const usersWithoutPositions = allUsers.filter(u => !u.positions || u.positions.length === 0);
+      
+      for (const user of usersWithoutPositions) {
+        await base44.entities.User.update(user.id, { positions: ['צוער'] });
+      }
+      
+      // Fetch updated list if we made changes
+      if (usersWithoutPositions.length > 0) {
+        return await base44.entities.User.list();
+      }
+      
+      return allUsers;
+    },
     enabled: isAdmin
   });
 
