@@ -202,7 +202,19 @@ useEffect(() => {
     onError: () => {
       toast.error('שגיאה בהעלאת הקובץ');
       setUploading(null);
-    }
+    
+    },
+        catch (error) {
+      console.error('Upload error details:', error);
+      throw error; // זה חשוב כדי שה-onError יתפוס את השגיאה
+    },
+  
+  onError: (error) => {
+    console.error('Mutation error:', error);
+    toast.error(`שגיאה בהעלאת הקובץ: ${error.message || 'שגיאה לא ידועה'}`);
+    setUploading(null);
+  }
+    
   });
 
   const addLinkMutation = useMutation({
