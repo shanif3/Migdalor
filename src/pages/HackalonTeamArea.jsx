@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, Presentation, Users, MapPin, Lightbulb, Loader2, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { Upload, FileText, Presentation, Users, MapPin, Lightbulb, Loader2, Link as LinkIcon, Trash2,AppWindow } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -498,7 +498,7 @@ useEffect(() => {
           {/* Final Product */}
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Presentation className="w-6 h-6 text-purple-600" />
+              <AppWindow className="w-6 h-6 text-purple-600" />
               <h3 className="text-lg font-bold text-slate-800">תוצר סופי</h3>
             </div>
             {finalProductSubmission ?
