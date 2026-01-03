@@ -165,7 +165,7 @@ export default function Home() {
           </h1>
           {user &&
           <p className="text-lg text-slate-600">
-             מגדלור כאן בשבילך 🙂
+             מגדלור, כאן בשבילך 🙂
             </p>
           }
           <p className="text-slate-500 mt-2">״כשהאור תמיד דולק, הדרך ברורה.״</p>
