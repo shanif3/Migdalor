@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut, Lightbulb } from 'lucide-react';
-import { createIcons, sparkles } from 'lucide';
+import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles} from 'lucide-react';
 
 import { motion } from 'framer-motion';
 
@@ -81,7 +80,7 @@ export default function Home() {
   {
     title: 'המוצר שלכם יהיה ממש כאן!',
     description: 'וכאן התיאור שלו...',
-    icon: sparkles,
+    icon: Sparkles,
     path: null,
     color: 'bg-purple-500',
     available: false
