@@ -26,105 +26,105 @@ export default function HackalonTeamArea() {
     enabled: !!user?.hackalon_team
   });
 
-  // Auto-assign user if name matches team member list
-  useEffect(() => {
-    const autoAssign = async () => {
-      if (!user) return;
+// Auto-assign user if name matches team member list
+useEffect(() => {
+  const autoAssign = async () => {
+    if (!user) return;
+    
+    const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
+    if (!userName) return;
+    
+    try {
+      const allTeams = await base44.entities.HackalonTeam.list();
+      const matchingTeam = allTeams.find(team => 
+        team.member_names?.some(name => name.trim().toLowerCase() === userName)
+      );
+      
+      // Check if current team/department still exists
+      const currentTeamExists = user.hackalon_team ? 
+        allTeams.some(t => t.name === user.hackalon_team) : false;
+      
+      // If assigned team was deleted - remove assignment
+      if (user.hackalon_team && !currentTeamExists) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: null,
+          hackalon_department: null
+        });
+        
+        const updatedUser = await base44.auth.me();
+        setUser(updatedUser);
+        toast.info('הצוות שלך נמחק - הוסרת מהשיבוץ');
+        return;
+      }
+      
+      // If name matches a team but user isn't assigned - assign them
+      if (matchingTeam && user.hackalon_team !== matchingTeam.name) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: matchingTeam.name,
+          hackalon_department: matchingTeam.department_name
+        });
+        
+        const updatedUser = await base44.auth.me();
+        setUser(updatedUser);
+        toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
+      }
+      
+      // If name doesn't match current team - remove assignment
+      if (!matchingTeam && user.hackalon_team && currentTeamExists) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: null,
+          hackalon_department: null
+        });
+        
+        const updatedUser = await base44.auth.me();
+        setUser(updatedUser);
+        toast.info('הוסרת מהצוות כי השם שלך השתנה');
+      }
+    } catch (error) {
+      console.error('Auto-assign failed:', error);
+    }
+  };
+  
+  autoAssign();
+}, [user?.onboarding_full_name, user?.full_name]);
 
-      const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
-      if (!userName) return;
-
-      try {
+useEffect(() => {
+  const loadUser = async () => {
+    try {
+      const userData = await base44.auth.me();
+      
+      // Check if assigned team still exists
+      if (userData.hackalon_team) {
         const allTeams = await base44.entities.HackalonTeam.list();
-        const matchingTeam = allTeams.find((team) =>
-        team.member_names?.some((name) => name.trim().toLowerCase() === userName)
-        );
-
-        // Check if current team/department still exists
-        const currentTeamExists = user.hackalon_team ?
-        allTeams.some((t) => t.name === user.hackalon_team) : false;
-
-        // If assigned team was deleted - remove assignment
-        if (user.hackalon_team && !currentTeamExists) {
-          await base44.entities.User.update(user.id, {
+        const teamExists = allTeams.some(t => t.name === userData.hackalon_team);
+        
+        if (!teamExists) {
+          console.log('Team deleted, removing assignment...');
+          // Team was deleted - remove assignment
+          await base44.entities.User.update(userData.id, {
             hackalon_team: null,
             hackalon_department: null
           });
-
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
+          
+          // Force reload from server
+          const freshUser = await base44.auth.me();
+          setUser(freshUser);
           toast.info('הצוות שלך נמחק - הוסרת מהשיבוץ');
           return;
         }
-
-        // If name matches a team but user isn't assigned - assign them
-        if (matchingTeam && user.hackalon_team !== matchingTeam.name) {
-          await base44.entities.User.update(user.id, {
-            hackalon_team: matchingTeam.name,
-            hackalon_department: matchingTeam.department_name
-          });
-
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
-          toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
-        }
-
-        // If name doesn't match current team - remove assignment
-        if (!matchingTeam && user.hackalon_team && currentTeamExists) {
-          await base44.entities.User.update(user.id, {
-            hackalon_team: null,
-            hackalon_department: null
-          });
-
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
-          toast.info('הוסרת מהצוות כי השם שלך השתנה');
-        }
-      } catch (error) {
-        console.error('Auto-assign failed:', error);
       }
-    };
+      
+      setUser(userData);
+    } catch (error) {
+      console.error('Load user error:', error);
+    }
+  };
+  loadUser();
 
-    autoAssign();
-  }, [user?.onboarding_full_name, user?.full_name]);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await base44.auth.me();
-
-        // Check if assigned team still exists
-        if (userData.hackalon_team) {
-          const allTeams = await base44.entities.HackalonTeam.list();
-          const teamExists = allTeams.some((t) => t.name === userData.hackalon_team);
-
-          if (!teamExists) {
-            console.log('Team deleted, removing assignment...');
-            // Team was deleted - remove assignment
-            await base44.entities.User.update(userData.id, {
-              hackalon_team: null,
-              hackalon_department: null
-            });
-
-            // Force reload from server
-            const freshUser = await base44.auth.me();
-            setUser(freshUser);
-            toast.info('הצוות שלך נמחק - הוסרת מהשיבוץ');
-            return;
-          }
-        }
-
-        setUser(userData);
-      } catch (error) {
-        console.error('Load user error:', error);
-      }
-    };
-    loadUser();
-
-    // Reload user data every 2 seconds to catch updates from other pages
-    const interval = setInterval(loadUser, 2000);
-    return () => clearInterval(interval);
-  }, []);
+  // Reload user data every 2 seconds to catch updates from other pages
+  const interval = setInterval(loadUser, 2000);
+  return () => clearInterval(interval);
+}, []);
 
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
     queryKey: ['hackalon-team-members', user?.hackalon_team, teamInfo?.member_names],
@@ -161,7 +161,7 @@ export default function HackalonTeamArea() {
   const uploadMutation = useMutation({
     mutationFn: async ({ file, type, existingSubmission }) => {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
+      
       // Check if late submission for specification
       let isLate = false;
       if (type === 'specification' && teamInfo?.specification_deadline) {
@@ -214,7 +214,7 @@ export default function HackalonTeamArea() {
         const now = new Date();
         isLate = now > deadline;
       }
-
+      
       if (existingSubmission) {
         return base44.entities.HackalonSubmission.update(existingSubmission.id, {
           submission_method: 'link',
@@ -317,11 +317,11 @@ export default function HackalonTeamArea() {
   const getSubmission = (type) => submissions.find((s) => s.submission_type === type);
   const specSubmission = getSubmission('specification');
   const finalProductSubmission = getSubmission('final_product');
-
+  
   // Check if specification deadline passed
-  const isSpecDeadlinePassed = teamInfo?.specification_deadline ?
-  new Date() > new Date(teamInfo.specification_deadline) :
-  false;
+  const isSpecDeadlinePassed = teamInfo?.specification_deadline 
+    ? new Date() > new Date(teamInfo.specification_deadline)
+    : false;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
@@ -436,29 +436,29 @@ export default function HackalonTeamArea() {
                 <FileText className="w-6 h-6 text-green-600" />
                 <h3 className="text-lg font-bold text-slate-800">מסמך איפיון</h3>
               </div>
-              {teamInfo?.specification_deadline &&
-              <div className="text-xs text-slate-500">
-                  <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')}</div>
-                  {isSpecDeadlinePassed && !specSubmission &&
-                <div className="text-red-600 font-semibold">חלף המועד!</div>
-                }
-                </div>
-              }
+              {teamInfo?.specification_deadline && (
+  <div className="text-xs text-slate-500">
+    <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')} {new Date(teamInfo.specification_deadline).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}</div>
+    {isSpecDeadlinePassed && !specSubmission && (
+      <div className="text-red-600 font-semibold">חלף המועד!</div>
+    )}
+  </div>
+)}
             </div>
             
             {/* Download Template */}
-            {teamInfo?.specification_template_url && !specSubmission &&
-            <a
-              href={teamInfo.specification_template_url}
-              download
-              className="block mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
-
+            {teamInfo?.specification_template_url && !specSubmission && (
+              <a 
+                href={teamInfo.specification_template_url} 
+                download
+                className="block mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+              >
                 <div className="flex items-center gap-2 text-blue-700">
                   <FileText className="w-4 h-4" />
                   <span className="text-sm font-medium">📥 הורד טמפלייט</span>
                 </div>
               </a>
-            }
+            )}
             {specSubmission ?
             <div className="space-y-2">
                 <a href={specSubmission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
@@ -466,9 +466,9 @@ export default function HackalonTeamArea() {
                     <div className="flex-1">
                       <p className="font-medium text-green-800 text-sm">{specSubmission.file_name}</p>
                       <p className="text-xs text-green-600 mt-1">הועלה על ידי {specSubmission.uploaded_by}</p>
-                      {specSubmission.is_late &&
-                    <p className="text-xs text-red-600 font-semibold mt-1">⚠️ הוגש באיחור</p>
-                    }
+                      {specSubmission.is_late && (
+                        <p className="text-xs text-red-600 font-semibold mt-1">⚠️ הוגש באיחור</p>
+                      )}
                     </div>
                     <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(specSubmission);}} className="text-red-600">
                       <Trash2 className="w-4 h-4" />
@@ -478,7 +478,7 @@ export default function HackalonTeamArea() {
               </div> :
 
             <div className="space-y-2">
-                <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'} accept=".doc,.docx,.pdf,.txt,.pptx,.xlsx" />
+                <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'}   accept=".doc,.docx,.pdf,.txt,.pptx,.xlsx" />
                 <label htmlFor="spec-upload">
                   <Button asChild disabled={uploading === 'specification'} className="w-full cursor-pointer">
                     <span>
@@ -539,7 +539,7 @@ export default function HackalonTeamArea() {
         <Dialog open={!!showLinkModal} onOpenChange={() => setShowLinkModal(null)}>
           <DialogContent dir="ltr">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">הוסף קישור</DialogTitle>
+              <DialogTitle>הוסף קישור</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -548,7 +548,7 @@ export default function HackalonTeamArea() {
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                   placeholder="https://..."
-                  type="url" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm text-left" />
+                  type="url" />
 
               </div>
               <div className="flex gap-2">
