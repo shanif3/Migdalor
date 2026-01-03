@@ -26,7 +26,7 @@ export default function HackalonTeamArea() {
     };
     loadUser();
 
-    
+
     // Reload user data every 2 seconds to catch updates from other pages
     const interval = setInterval(loadUser, 2000);
     return () => clearInterval(interval);
@@ -37,73 +37,73 @@ export default function HackalonTeamArea() {
     queryKey: ['hackalon-team-info', user?.hackalon_team],
     queryFn: async () => {
       const teams = await base44.entities.HackalonTeam.list();
-      return teams.find(t => t.name === user.hackalon_team);
+      return teams.find((t) => t.name === user.hackalon_team);
     },
     enabled: !!user?.hackalon_team
   });
 
- // Auto-assign user if name matches team member list
-useEffect(() => {
-  const autoAssign = async () => {
-    if (!user) return;
-    
-    const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
-    if (!userName) return;
-    
-    try {
-      const allTeams = await base44.entities.HackalonTeam.list();
-      const matchingTeam = allTeams.find(team => 
-        team.member_names?.some(name => name.trim().toLowerCase() === userName)
-      );
-      
-      // If name matches a team but user isn't assigned - assign them
-      if (matchingTeam && user.hackalon_team !== matchingTeam.name) {
-        await base44.entities.User.update(user.id, {
-          hackalon_team: matchingTeam.name,
-          hackalon_department: matchingTeam.department_name
-        });
-        
-        const updatedUser = await base44.auth.me();
-        setUser(updatedUser);
-        toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
+  // Auto-assign user if name matches team member list
+  useEffect(() => {
+    const autoAssign = async () => {
+      if (!user) return;
+
+      const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
+      if (!userName) return;
+
+      try {
+        const allTeams = await base44.entities.HackalonTeam.list();
+        const matchingTeam = allTeams.find((team) =>
+        team.member_names?.some((name) => name.trim().toLowerCase() === userName)
+        );
+
+        // If name matches a team but user isn't assigned - assign them
+        if (matchingTeam && user.hackalon_team !== matchingTeam.name) {
+          await base44.entities.User.update(user.id, {
+            hackalon_team: matchingTeam.name,
+            hackalon_department: matchingTeam.department_name
+          });
+
+          const updatedUser = await base44.auth.me();
+          setUser(updatedUser);
+          toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
+        }
+
+        // If name doesn't match current team - remove assignment
+        if (!matchingTeam && user.hackalon_team) {
+          await base44.entities.User.update(user.id, {
+            hackalon_team: null,
+            hackalon_department: null
+          });
+
+          const updatedUser = await base44.auth.me();
+          setUser(updatedUser);
+          toast.info('הוסרת מהצוות כי השם שלך לא תואם למשתתפי הצוות');
+        }
+      } catch (error) {
+        console.error('Auto-assign failed:', error);
       }
-      
-      // If name doesn't match current team - remove assignment
-      if (!matchingTeam && user.hackalon_team) {
-        await base44.entities.User.update(user.id, {
-          hackalon_team: null,
-          hackalon_department: null
-        });
-        
-        const updatedUser = await base44.auth.me();
-        setUser(updatedUser);
-        toast.info('הוסרת מהצוות כי השם שלך לא תואם למשתתפי הצוות');
-      }
-    } catch (error) {
-      console.error('Auto-assign failed:', error);
-    }
-  };
-  
-  autoAssign();
-}, [user?.onboarding_full_name, user?.full_name]);
+    };
+
+    autoAssign();
+  }, [user?.onboarding_full_name, user?.full_name]);
 
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
     queryKey: ['hackalon-team-members', user?.hackalon_team, teamInfo?.member_names],
     queryFn: async () => {
       const allUsers = await base44.entities.User.list();
       // Find by hackalon_team OR by name match in member_names
-      return allUsers.filter(u => {
+      return allUsers.filter((u) => {
         // Direct team assignment
         if (u.hackalon_team === user.hackalon_team) return true;
-        
+
         // Check if user's name is in the team's member_names list
         if (teamInfo?.member_names) {
           const userName = (u.onboarding_full_name || u.full_name || '').trim().toLowerCase();
-          return teamInfo.member_names.some(name => 
-            name.trim().toLowerCase() === userName
+          return teamInfo.member_names.some((name) =>
+          name.trim().toLowerCase() === userName
           );
         }
-        
+
         return false;
       });
     },
@@ -114,7 +114,7 @@ useEffect(() => {
     queryKey: ['hackalon-submissions', user?.hackalon_team],
     queryFn: async () => {
       const allSubmissions = await base44.entities.HackalonSubmission.list();
-      return allSubmissions.filter(s => s.team_name === user.hackalon_team);
+      return allSubmissions.filter((s) => s.team_name === user.hackalon_team);
     },
     enabled: !!user?.hackalon_team
   });
@@ -122,7 +122,7 @@ useEffect(() => {
   const uploadMutation = useMutation({
     mutationFn: async ({ file, type, existingSubmission }) => {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      
+
       if (existingSubmission) {
         // Update existing
         return base44.entities.HackalonSubmission.update(existingSubmission.id, {
@@ -203,27 +203,27 @@ useEffect(() => {
   const handleFileUpload = async (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     const existingSubmission = getSubmission(type);
-    
+
     if (existingSubmission) {
       const confirmed = window.confirm(
         `כבר קיים קובץ שהועלה על ידי ${existingSubmission.uploaded_by}.\nהאם לדרוס את הקובץ הקיים?`
       );
-      
+
       if (!confirmed) {
         e.target.value = '';
         return;
       }
     }
-    
+
     setUploading(type);
     uploadMutation.mutate({ file, type, existingSubmission });
   };
 
   const handleAddLink = (type) => {
     if (!linkUrl.trim()) return;
-    
+
     const existingSubmission = getSubmission(type);
     addLinkMutation.mutate({ url: linkUrl, type, existingSubmission });
   };
@@ -239,8 +239,8 @@ useEffect(() => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    );
+      </div>);
+
   }
 
   if (!user.hackalon_team) {
@@ -251,11 +251,11 @@ useEffect(() => {
           <h2 className="text-2xl font-bold text-slate-800 mb-2">לא שובצת לצוות</h2>
           <p className="text-slate-600">פנה למנהל המערכת לשיבוץ</p>
         </Card>
-      </div>
-    );
+      </div>);
+
   }
 
-  const getSubmission = (type) => submissions.find(s => s.submission_type === type);
+  const getSubmission = (type) => submissions.find((s) => s.submission_type === type);
   const specSubmission = getSubmission('specification');
   const pres1Submission = getSubmission('presentation1');
   const pres2Submission = getSubmission('presentation2');
@@ -266,10 +266,10 @@ useEffect(() => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            🚀 אזור הצוות שלי
+          className="mb-8">
+
+          <h1 className="text-3xl font-bold text-slate-800 mb-2"> אזור הצוות שלי 🚀
+
           </h1>
           <p className="text-slate-500">{user.hackalon_team} • {user.hackalon_department}</p>
         </motion.div>
@@ -283,45 +283,45 @@ useEffect(() => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-slate-800">הבעיה שלנו</h2>
-                {teamInfo?.classroom_number && (
-                  <p className="text-sm text-slate-500 flex items-center gap-1">
+                {teamInfo?.classroom_number &&
+                <p className="text-sm text-slate-500 flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
                     כיתה {teamInfo.classroom_number}
                   </p>
-                )}
+                }
               </div>
             </div>
             
-{teamInfo?.problem_name ? (
-              <div className="space-y-4">
+            {teamInfo?.problem_name ?
+            <div className="space-y-4">
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 mb-3">{teamInfo.problem_name}</h3>
                 </div>
 
                 <div className="space-y-4">
-                  {teamInfo.problem_intro && (
-                    <div>
+                  {teamInfo.problem_intro &&
+                <div>
                       <h4 className="text-sm font-semibold text-purple-600 mb-2">מבוא</h4>
                       <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_intro}</p>
                     </div>
-                  )}
-                  {teamInfo.problem_objective && (
-                    <div>
+                }
+                  {teamInfo.problem_objective &&
+                <div>
                       <h4 className="text-sm font-semibold text-purple-600 mb-2">מטרת המוצר</h4>
                       <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_objective}</p>
                     </div>
-                  )}
-                  {teamInfo.problem_requirements && (
-                    <div>
+                }
+                  {teamInfo.problem_requirements &&
+                <div>
                       <h4 className="text-sm font-semibold text-purple-600 mb-2">דרישות מרכזיות</h4>
                       <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_requirements}</p>
                     </div>
-                  )}
+                }
                 </div>
-              </div>
-            ) : (
-              <p className="text-slate-400 text-center py-8">המנהל עדיין לא הגדיר את הבעיה</p>
-            )}
+              </div> :
+
+            <p className="text-slate-400 text-center py-8">המנהל עדיין לא הגדיר את הבעיה</p>
+            }
           </Card>
 
           {/* Team Members */}
@@ -333,33 +333,33 @@ useEffect(() => {
               <h3 className="text-lg font-bold text-slate-800">חברי הצוות</h3>
             </div>
             <div className="space-y-2">
-              {teamInfo?.member_names && teamInfo.member_names.length > 0 ? (
-                teamInfo.member_names.map((name, idx) => {
-                  const matchedUser = teamMembers.find(u => 
-                    (u.onboarding_full_name || u.full_name || '').trim().toLowerCase() === name.trim().toLowerCase()
-                  );
-                  
-                  return (
-                    <div key={idx} className="p-2 bg-slate-50 rounded-lg">
+              {teamInfo?.member_names && teamInfo.member_names.length > 0 ?
+              teamInfo.member_names.map((name, idx) => {
+                const matchedUser = teamMembers.find((u) =>
+                (u.onboarding_full_name || u.full_name || '').trim().toLowerCase() === name.trim().toLowerCase()
+                );
+
+                return (
+                  <div key={idx} className="p-2 bg-slate-50 rounded-lg">
                       <p className="font-medium text-slate-800 text-sm">{name}</p>
-                      {matchedUser ? (
-                        <p className="text-xs text-slate-500">{matchedUser.email}</p>
-                      ) : (
-                        <p className="text-xs text-slate-400"></p>
-                      )}
-                    </div>
-                  );
-                })
-              ) : teamMembers.length > 0 ? (
-                teamMembers.map(member => (
-                  <div key={member.id} className="p-2 bg-slate-50 rounded-lg">
+                      {matchedUser ?
+                    <p className="text-xs text-slate-500">{matchedUser.email}</p> :
+
+                    <p className="text-xs text-slate-400"></p>
+                    }
+                    </div>);
+
+              }) :
+              teamMembers.length > 0 ?
+              teamMembers.map((member) =>
+              <div key={member.id} className="p-2 bg-slate-50 rounded-lg">
                     <p className="font-medium text-slate-800 text-sm">{member.onboarding_full_name || member.full_name}</p>
                     <p className="text-xs text-slate-500">{member.email}</p>
                   </div>
-                ))
-              ) : (
-                <p className="text-slate-400 text-sm text-center py-4">אין חברי צוות</p>
-              )}
+              ) :
+
+              <p className="text-slate-400 text-sm text-center py-4">אין חברי צוות</p>
+              }
             </div>
           </Card>
         </div>
@@ -372,22 +372,22 @@ useEffect(() => {
               <FileText className="w-6 h-6 text-green-600" />
               <h3 className="text-lg font-bold text-slate-800">מסמך איפיון</h3>
             </div>
-            {specSubmission ? (
-              <div className="space-y-2">
+            {specSubmission ?
+            <div className="space-y-2">
                 <a href={specSubmission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-medium text-green-800 text-sm">{specSubmission.file_name}</p>
                       <p className="text-xs text-green-600 mt-1">הועלה על ידי {specSubmission.uploaded_by}</p>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={(e) => { e.preventDefault(); handleDelete(specSubmission); }} className="text-red-600">
+                    <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(specSubmission);}} className="text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </a>
-              </div>
-            ) : (
-              <div className="space-y-2">
+              </div> :
+
+            <div className="space-y-2">
                 <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'} />
                 <label htmlFor="spec-upload">
                   <Button asChild disabled={uploading === 'specification'} className="w-full cursor-pointer">
@@ -397,12 +397,12 @@ useEffect(() => {
                     </span>
                   </Button>
                 </label>
-                <Button variant="outline" onClick={() => { setShowLinkModal('specification'); setLinkUrl(''); }} className="w-full">
+                <Button variant="outline" onClick={() => {setShowLinkModal('specification');setLinkUrl('');}} className="w-full">
                   <LinkIcon className="w-4 h-4 ml-2" />
                   הוסף קישור
                 </Button>
               </div>
-            )}
+            }
           </Card>
 
           {/* Presentation 1 */}
@@ -411,22 +411,22 @@ useEffect(() => {
               <Presentation className="w-6 h-6 text-blue-600" />
               <h3 className="text-lg font-bold text-slate-800">מצגת 1</h3>
             </div>
-            {pres1Submission ? (
-              <div className="space-y-2">
+            {pres1Submission ?
+            <div className="space-y-2">
                 <a href={pres1Submission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-medium text-blue-800 text-sm">{pres1Submission.file_name}</p>
                       <p className="text-xs text-blue-600 mt-1">הועלה על ידי {pres1Submission.uploaded_by}</p>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={(e) => { e.preventDefault(); handleDelete(pres1Submission); }} className="text-red-600">
+                    <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(pres1Submission);}} className="text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </a>
-              </div>
-            ) : (
-              <div className="space-y-2">
+              </div> :
+
+            <div className="space-y-2">
                 <input type="file" id="pres1-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'presentation1')} disabled={uploading === 'presentation1'} />
                 <label htmlFor="pres1-upload">
                   <Button asChild disabled={uploading === 'presentation1'} className="w-full cursor-pointer">
@@ -436,12 +436,12 @@ useEffect(() => {
                     </span>
                   </Button>
                 </label>
-                <Button variant="outline" onClick={() => { setShowLinkModal('presentation1'); setLinkUrl(''); }} className="w-full">
+                <Button variant="outline" onClick={() => {setShowLinkModal('presentation1');setLinkUrl('');}} className="w-full">
                   <LinkIcon className="w-4 h-4 ml-2" />
                   הוסף קישור
                 </Button>
               </div>
-            )}
+            }
           </Card>
 
           {/* Presentation 2 */}
@@ -450,22 +450,22 @@ useEffect(() => {
               <Presentation className="w-6 h-6 text-purple-600" />
               <h3 className="text-lg font-bold text-slate-800">מצגת 2</h3>
             </div>
-            {pres2Submission ? (
-              <div className="space-y-2">
+            {pres2Submission ?
+            <div className="space-y-2">
                 <a href={pres2Submission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-medium text-purple-800 text-sm">{pres2Submission.file_name}</p>
                       <p className="text-xs text-purple-600 mt-1">הועלה על ידי {pres2Submission.uploaded_by}</p>
                     </div>
-                    <Button size="sm" variant="ghost" onClick={(e) => { e.preventDefault(); handleDelete(pres2Submission); }} className="text-red-600">
+                    <Button size="sm" variant="ghost" onClick={(e) => {e.preventDefault();handleDelete(pres2Submission);}} className="text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </a>
-              </div>
-            ) : (
-              <div className="space-y-2">
+              </div> :
+
+            <div className="space-y-2">
                 <input type="file" id="pres2-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'presentation2')} disabled={uploading === 'presentation2'} />
                 <label htmlFor="pres2-upload">
                   <Button asChild disabled={uploading === 'presentation2'} className="w-full cursor-pointer">
@@ -475,12 +475,12 @@ useEffect(() => {
                     </span>
                   </Button>
                 </label>
-                <Button variant="outline" onClick={() => { setShowLinkModal('presentation2'); setLinkUrl(''); }} className="w-full">
+                <Button variant="outline" onClick={() => {setShowLinkModal('presentation2');setLinkUrl('');}} className="w-full">
                   <LinkIcon className="w-4 h-4 ml-2" />
                   הוסף קישור
                 </Button>
               </div>
-            )}
+            }
           </Card>
         </div>
 
@@ -493,12 +493,12 @@ useEffect(() => {
             <div className="space-y-4">
               <div>
                 <Label>URL</Label>
-                <Input 
+                <Input
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
                   placeholder="https://..."
-                  type="url"
-                />
+                  type="url" />
+
               </div>
               <div className="flex gap-2">
                 <Button onClick={() => handleAddLink(showLinkModal)} disabled={!linkUrl.trim()} className="flex-1">הוסף</Button>
@@ -508,6 +508,6 @@ useEffect(() => {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
-  );
+    </div>);
+
 }
