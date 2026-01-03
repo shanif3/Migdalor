@@ -99,10 +99,17 @@ export default function Layout({ children, currentPageName }) {
       return [];
     }
     
-    return allNavItems.filter(item => {
-      if (item.adminOnly) return false;
-      return userPermissions.pages_access.includes(item.page);
-    });
+    // If user has classroom management access, show all non-admin items
+    // Or filter by specific pages if pages_access is defined and not empty
+    if (userPermissions.pages_access && userPermissions.pages_access.length > 0) {
+      return allNavItems.filter(item => {
+        if (item.adminOnly) return false;
+        return userPermissions.pages_access.includes(item.page);
+      });
+    } else {
+      // Show all non-admin items if pages_access is not specified
+      return allNavItems.filter(item => !item.adminOnly);
+    }
   };
 
   const adminNavItems = isAdmin ? allNavItems : [];
