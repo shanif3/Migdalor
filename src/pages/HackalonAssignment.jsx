@@ -15,13 +15,15 @@ export default function HackalonAssignment() {
   const [user, setUser] = useState(null);
   const [showDeptModal, setShowDeptModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
-  const [showUserModal, setShowUserModal] = useState(false);
+  const [showAddMembersModal, setShowAddMembersModal] = useState(false);
   const [editingDept, setEditingDept] = useState(null);
   const [editingTeam, setEditingTeam] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null);
   const [deptName, setDeptName] = useState('');
   const [teamForm, setTeamForm] = useState({ name: '', department: '', classroom: '' });
-  const [userAssignment, setUserAssignment] = useState({ department: '', team: '' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [newMemberName, setNewMemberName] = useState('');
+  const [filterView, setFilterView] = useState('all');
 
   const queryClient = useQueryClient();
 
@@ -109,15 +111,52 @@ export default function HackalonAssignment() {
     }
   });
 
-  // User assignment mutation
-  const assignUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
+  // Add member to team mutation
+  const addMemberMutation = useMutation({
+    mutationFn: async ({ teamId, memberName, userId }) => {
+      const team = teams.find(t => t.id === teamId);
+      const updatedMembers = [...(team.member_names || []), memberName];
+      
+      await base44.entities.HackalonTeam.update(teamId, { member_names: updatedMembers });
+      
+      // If user exists, assign them
+      if (userId) {
+        await base44.entities.User.update(userId, {
+          hackalon_department: team.department_name,
+          hackalon_team: team.name
+        });
+      }
+    },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      setShowUserModal(false);
-      setSelectedUser(null);
-      setUserAssignment({ department: '', team: '' });
-      toast.success('השיבוץ בוצע בהצלחה');
+      toast.success('הצוער נוסף בהצלחה');
+      setSearchQuery('');
+      setNewMemberName('');
+    }
+  });
+
+  // Remove member from team mutation
+  const removeMemberMutation = useMutation({
+    mutationFn: async ({ teamId, memberName }) => {
+      const team = teams.find(t => t.id === teamId);
+      const updatedMembers = (team.member_names || []).filter(m => m !== memberName);
+      
+      await base44.entities.HackalonTeam.update(teamId, { member_names: updatedMembers });
+      
+      // Remove assignment from user if exists
+      const userToUpdate = users.find(u => (u.onboarding_full_name || u.full_name) === memberName && u.hackalon_team === team.name);
+      if (userToUpdate) {
+        await base44.entities.User.update(userToUpdate.id, {
+          hackalon_department: null,
+          hackalon_team: null
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      toast.success('הצוער הוסר בהצלחה');
     }
   });
 
@@ -147,16 +186,26 @@ export default function HackalonAssignment() {
     }
   };
 
-  const handleAssignUser = () => {
-    if (!selectedUser || !userAssignment.department || !userAssignment.team) return;
-    
-    assignUserMutation.mutate({
-      userId: selectedUser.id,
-      data: {
-        hackalon_department: userAssignment.department,
-        hackalon_team: userAssignment.team
-      }
-    });
+  const handleOpenAddMembers = (team) => {
+    setSelectedTeam(team);
+    setShowAddMembersModal(true);
+    setSearchQuery('');
+    setNewMemberName('');
+  };
+
+  const handleAddExistingUser = (u) => {
+    if (!selectedTeam) return;
+    const memberName = u.onboarding_full_name || u.full_name;
+    addMemberMutation.mutate({ teamId: selectedTeam.id, memberName, userId: u.id });
+  };
+
+  const handleAddNewMember = () => {
+    if (!selectedTeam || !newMemberName.trim()) return;
+    addMemberMutation.mutate({ teamId: selectedTeam.id, memberName: newMemberName.trim(), userId: null });
+  };
+
+  const handleRemoveMember = (teamId, memberName) => {
+    removeMemberMutation.mutate({ teamId, memberName });
   };
 
   if (!user) {
@@ -181,6 +230,26 @@ export default function HackalonAssignment() {
 
   const assignedUsers = users.filter(u => u.hackalon_team);
   const unassignedUsers = users.filter(u => !u.hackalon_team);
+  
+  // Get total members including those not yet registered
+  const getTotalMembers = () => {
+    return teams.reduce((sum, team) => sum + (team.member_names?.length || 0), 0);
+  };
+
+  // Filter users for search
+  const filteredUsers = users.filter(u => {
+    const name = (u.onboarding_full_name || u.full_name || '').toLowerCase();
+    const email = (u.email || '').toLowerCase();
+    const query = searchQuery.toLowerCase();
+    return name.includes(query) || email.includes(query);
+  });
+
+  // Filter view logic
+  const getDisplayedUsers = () => {
+    if (filterView === 'assigned') return assignedUsers;
+    if (filterView === 'unassigned') return unassignedUsers;
+    return users;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
@@ -197,23 +266,119 @@ export default function HackalonAssignment() {
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <Card className="p-4">
-            <p className="text-sm text-slate-500">משתמשים משובצים</p>
-            <p className="text-2xl font-bold text-slate-800">{assignedUsers.length}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+          <Card 
+            className={`p-4 cursor-pointer transition-all ${filterView === 'all' ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'}`}
+            onClick={() => setFilterView('all')}
+          >
+            <p className="text-sm text-slate-500">סה״כ משתמשים</p>
+            <p className="text-2xl font-bold text-slate-800">{users.length}</p>
           </Card>
-          <Card className="p-4 bg-orange-50 border-orange-200">
+          <Card 
+            className={`p-4 cursor-pointer transition-all ${filterView === 'assigned' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-green-50 border-green-200 hover:shadow-md'}`}
+            onClick={() => setFilterView('assigned')}
+          >
+            <p className="text-sm text-green-600">משובצים</p>
+            <p className="text-2xl font-bold text-green-700">{assignedUsers.length}</p>
+          </Card>
+          <Card 
+            className={`p-4 cursor-pointer transition-all ${filterView === 'unassigned' ? 'ring-2 ring-orange-500 bg-orange-50' : 'bg-orange-50 border-orange-200 hover:shadow-md'}`}
+            onClick={() => setFilterView('unassigned')}
+          >
             <p className="text-sm text-orange-600">ממתינים לשיבוץ</p>
             <p className="text-2xl font-bold text-orange-700">{unassignedUsers.length}</p>
           </Card>
-          <Card className="p-4 bg-blue-50 border-blue-200">
-            <p className="text-sm text-blue-600">סה״כ צוותים</p>
-            <p className="text-2xl font-bold text-blue-700">{teams.length}</p>
+          <Card className="p-4 bg-purple-50 border-purple-200">
+            <p className="text-sm text-purple-600">סה״כ צוערים בצוותים</p>
+            <p className="text-2xl font-bold text-purple-700">{getTotalMembers()}</p>
           </Card>
         </div>
 
-        {/* Management Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Teams by Department */}
+        <div className="space-y-6 mb-6">
+          {departments.map((dept) => {
+            const deptTeams = teams.filter(t => t.department_name === dept.name);
+            return (
+              <Card key={dept.id} className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Building2 className="w-6 h-6 text-blue-600" />
+                    <h2 className="text-xl font-bold text-slate-800">{dept.name}</h2>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => { setEditingDept(dept); setDeptName(dept.name); setShowDeptModal(true); }}>
+                      <Edit2 className="w-4 h-4 ml-2" />
+                      ערוך מדור
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => deleteDeptMutation.mutate(dept.id)} className="text-red-600">
+                      <Trash2 className="w-4 h-4 ml-2" />
+                      מחק
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {deptTeams.map(team => (
+                    <Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <p className="font-semibold text-slate-800">{team.name}</p>
+                          <p className="text-xs text-slate-500">כיתה {team.classroom_number || 'לא הוגדר'}</p>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            setEditingTeam(team); 
+                            setTeamForm({ name: team.name, department: team.department_name, classroom: team.classroom_number || '' }); 
+                            setShowTeamModal(true); 
+                          }}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
+                        <Users className="w-4 h-4" />
+                        <span>{team.member_names?.length || 0} צוערים</span>
+                      </div>
+
+                      {team.member_names && team.member_names.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {team.member_names.slice(0, 3).map((name, idx) => (
+                            <p key={idx} className="text-xs text-slate-500">• {name}</p>
+                          ))}
+                          {team.member_names.length > 3 && (
+                            <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
+                          )}
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                  
+                  <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: dept.name, classroom: '' }); }}>
+                    <div className="text-center">
+                      <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                      <p className="text-sm text-slate-500">הוסף צוות</p>
+                    </div>
+                  </Card>
+                </div>
+              </Card>
+            );
+          })}
+
+          {/* Add Department Card */}
+          <Card className="p-6 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptName(''); }}>
+            <div className="text-center">
+              <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <p className="text-sm text-slate-500">הוסף מדור</p>
+            </div>
+          </Card>
+        </div>
+
+        {/* Management Sections - Hidden */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 hidden">
           {/* Departments */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -274,11 +439,11 @@ export default function HackalonAssignment() {
           </Card>
         </div>
 
-        {/* User Assignment */}
+        {/* User List */}
         <Card className="p-6">
-          <h2 className="text-xl font-bold text-slate-800 mb-4">שיבוץ צוערים</h2>
+          <h2 className="text-xl font-bold text-slate-800 mb-4">רשימת צוערים</h2>
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {users.map(u => (
+            {getDisplayedUsers().map(u => (
               <div key={u.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <div>
                   <p className="font-medium text-slate-800">{u.onboarding_full_name || u.full_name}</p>
@@ -287,15 +452,11 @@ export default function HackalonAssignment() {
                     <p className="text-sm text-green-600 mt-1">✓ {u.hackalon_department} • {u.hackalon_team}</p>
                   )}
                 </div>
-                <Button size="sm" onClick={() => {
-                  setSelectedUser(u);
-                  setUserAssignment({ department: u.hackalon_department || '', team: u.hackalon_team || '' });
-                  setShowUserModal(true);
-                }}>
-                  {u.hackalon_team ? 'ערוך שיבוץ' : 'שבץ'}
-                </Button>
               </div>
             ))}
+            {getDisplayedUsers().length === 0 && (
+              <p className="text-center text-slate-400 py-8">אין משתמשים להצגה</p>
+            )}
           </div>
         </Card>
 
@@ -348,32 +509,69 @@ export default function HackalonAssignment() {
           </DialogContent>
         </Dialog>
 
-        {/* User Assignment Modal */}
-        <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
-          <DialogContent dir="rtl">
+        {/* Add Members Modal */}
+        <Dialog open={showAddMembersModal} onOpenChange={setShowAddMembersModal}>
+          <DialogContent dir="rtl" className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
             <DialogHeader>
-              <DialogTitle>שיבוץ צוער</DialogTitle>
+              <DialogTitle>הוספת צוערים - {selectedTeam?.name}</DialogTitle>
             </DialogHeader>
-            {selectedUser && (
-              <div className="space-y-4">
-                <p className="text-slate-600">{selectedUser.onboarding_full_name || selectedUser.full_name}</p>
-                <div>
-                  <Label>מדור</Label>
-                  <select value={userAssignment.department} onChange={(e) => setUserAssignment({...userAssignment, department: e.target.value, team: ''})} className="w-full px-3 py-2 border rounded-md">
-                    <option value="">בחר מדור...</option>
-                    {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
-                  </select>
+            
+            {selectedTeam && (
+              <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+                {/* Current Members */}
+                <div className="border-b pb-4">
+                  <h3 className="font-semibold text-slate-700 mb-2">צוערים בצוות ({selectedTeam.member_names?.length || 0})</h3>
+                  {selectedTeam.member_names && selectedTeam.member_names.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTeam.member_names.map((name, idx) => (
+                        <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-lg">
+                          <span className="text-sm">{name}</span>
+                          <button onClick={() => handleRemoveMember(selectedTeam.id, name)} className="text-red-600 hover:text-red-700">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400">אין צוערים עדיין</p>
+                  )}
                 </div>
-                <div>
-                  <Label>צוות</Label>
-                  <select value={userAssignment.team} onChange={(e) => setUserAssignment({...userAssignment, team: e.target.value})} className="w-full px-3 py-2 border rounded-md" disabled={!userAssignment.department}>
-                    <option value="">בחר צוות...</option>
-                    {teams.filter(t => t.department_name === userAssignment.department).map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
-                  </select>
+
+                {/* Search Existing Users */}
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  <h3 className="font-semibold text-slate-700 mb-2">הוסף צוער קיים</h3>
+                  <Input 
+                    placeholder="חפש לפי שם או אימייל..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="mb-2"
+                  />
+                  <div className="space-y-2 overflow-y-auto flex-1">
+                    {filteredUsers
+                      .filter(u => !selectedTeam.member_names?.includes(u.onboarding_full_name || u.full_name))
+                      .map(u => (
+                        <div key={u.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                          <div>
+                            <p className="text-sm font-medium">{u.onboarding_full_name || u.full_name}</p>
+                            <p className="text-xs text-slate-500">{u.email}</p>
+                          </div>
+                          <Button size="sm" onClick={() => handleAddExistingUser(u)}>הוסף</Button>
+                        </div>
+                      ))}
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleAssignUser} disabled={!userAssignment.department || !userAssignment.team} className="flex-1">שבץ</Button>
-                  <Button variant="outline" onClick={() => setShowUserModal(false)} className="flex-1">ביטול</Button>
+
+                {/* Add New Member */}
+                <div className="border-t pt-4">
+                  <h3 className="font-semibold text-slate-700 mb-2">הוסף צוער שעדיין לא נרשם</h3>
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="שם מלא"
+                      value={newMemberName}
+                      onChange={(e) => setNewMemberName(e.target.value)}
+                    />
+                    <Button onClick={handleAddNewMember} disabled={!newMemberName.trim()}>הוסף</Button>
+                  </div>
                 </div>
               </div>
             )}

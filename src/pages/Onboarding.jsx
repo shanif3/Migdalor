@@ -40,18 +40,39 @@ export default function Onboarding() {
 
   const updateMutation = useMutation({
     mutationFn: async (data) => {
-      // Update all fields via User entity (includes both built-in and custom)
-      await base44.entities.User.update(user.id, {
+      // Check for HackAlon team assignment based on name
+      const allTeams = await base44.entities.HackalonTeam.list();
+      const matchingTeam = allTeams.find(team => 
+        team.member_names && team.member_names.some(name => 
+          name.trim().toLowerCase() === data.full_name.trim().toLowerCase()
+        )
+      );
+
+      const updateData = {
         full_name: data.full_name,
         onboarding_full_name: data.full_name,
         squad_name: data.squad_name,
         platoon_name: data.platoon_name,
         phone_number: data.phone_number,
         onboarding_completed: data.onboarding_completed
-      });
+      };
+
+      // If matching team found, assign automatically
+      if (matchingTeam) {
+        updateData.hackalon_department = matchingTeam.department_name;
+        updateData.hackalon_team = matchingTeam.name;
+      }
+
+      await base44.entities.User.update(user.id, updateData);
+      
+      return { assignedToTeam: !!matchingTeam, teamName: matchingTeam?.name };
     },
-    onSuccess: () => {
-      toast.success('פרטים נשמרו בהצלחה!');
+    onSuccess: (result) => {
+      if (result.assignedToTeam) {
+        toast.success(`פרטים נשמרו ושובצת לצוות ${result.teamName}! 🎉`);
+      } else {
+        toast.success('פרטים נשמרו בהצלחה!');
+      }
       setTimeout(() => {
         window.location.href = createPageUrl('Home');
       }, 1000);
