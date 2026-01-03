@@ -21,9 +21,8 @@ export default function HackalonAssignment() {
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [selectedUserForAssign, setSelectedUserForAssign] = useState(null);
   const [showUserAssignModal, setShowUserAssignModal] = useState(false);
-  const [deptName, setDeptName] = useState('');
-  const [deptIcon, setDeptIcon] = useState('Users');
-  const [teamForm, setTeamForm] = useState({ name: '', department: '', classroom: '' });
+  const [deptForm, setDeptForm] = useState({ name: '', icon: 'Users', classroom: '' });
+  const [teamForm, setTeamForm] = useState({ name: '', department: '' });
   const [searchQuery, setSearchQuery] = useState('');
   const [newMemberName, setNewMemberName] = useState('');
   const [filterView, setFilterView] = useState('all');
@@ -66,8 +65,7 @@ export default function HackalonAssignment() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
       setShowDeptModal(false);
-      setDeptName('');
-      setDeptIcon('Users');
+      setDeptForm({ name: '', icon: 'Users', classroom: '' });
       toast.success('המדור נוצר בהצלחה');
     }
   });
@@ -78,8 +76,7 @@ export default function HackalonAssignment() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
       setShowDeptModal(false);
       setEditingDept(null);
-      setDeptName('');
-      setDeptIcon('Users');
+      setDeptForm({ name: '', icon: 'Users', classroom: '' });
       toast.success('המדור עודכן בהצלחה');
     }
   });
@@ -98,7 +95,7 @@ export default function HackalonAssignment() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowTeamModal(false);
-      setTeamForm({ name: '', department: '', classroom: '' });
+      setTeamForm({ name: '', department: '' });
       toast.success('הצוות נוצר בהצלחה');
     }
   });
@@ -109,7 +106,7 @@ export default function HackalonAssignment() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowTeamModal(false);
       setEditingTeam(null);
-      setTeamForm({ name: '', department: '', classroom: '' });
+      setTeamForm({ name: '', department: '' });
       toast.success('הצוות עודכן בהצלחה');
     }
   });
@@ -172,12 +169,12 @@ export default function HackalonAssignment() {
   });
 
   const handleSaveDept = () => {
-    if (!deptName.trim()) return;
+    if (!deptForm.name.trim()) return;
     
     if (editingDept) {
-      updateDeptMutation.mutate({ id: editingDept.id, data: { name: deptName, icon: deptIcon } });
+      updateDeptMutation.mutate({ id: editingDept.id, data: deptForm });
     } else {
-      createDeptMutation.mutate({ name: deptName, icon: deptIcon });
+      createDeptMutation.mutate(deptForm);
     }
   };
 
@@ -202,8 +199,7 @@ export default function HackalonAssignment() {
     
     const data = {
       name: teamForm.name,
-      department_name: teamForm.department,
-      classroom_number: teamForm.classroom
+      department_name: teamForm.department
     };
 
     if (editingTeam) {
@@ -326,10 +322,13 @@ export default function HackalonAssignment() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Building2 className="w-6 h-6 text-blue-600" />
-                    <h2 className="text-xl font-bold text-slate-800">{dept.name}</h2>
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">{dept.name}</h2>
+                      <p className="text-sm text-slate-500">כיתה {dept.classroom_number || 'לא הוגדר'}</p>
+                    </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => { setEditingDept(dept); setDeptName(dept.name); setShowDeptModal(true); }}>
+                    <Button size="sm" variant="outline" onClick={() => { setEditingDept(dept); setDeptForm({ name: dept.name, icon: dept.icon, classroom: dept.classroom_number || '' }); setShowDeptModal(true); }}>
                       <Edit2 className="w-4 h-4 ml-2" />
                       ערוך מדור
                     </Button>
@@ -346,7 +345,6 @@ export default function HackalonAssignment() {
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <p className="font-semibold text-slate-800">{team.name}</p>
-                          <p className="text-xs text-slate-500">כיתה {team.classroom_number || 'לא הוגדר'}</p>
                         </div>
                         <Button 
                           size="sm" 
@@ -354,7 +352,7 @@ export default function HackalonAssignment() {
                           onClick={(e) => { 
                             e.stopPropagation(); 
                             setEditingTeam(team); 
-                            setTeamForm({ name: team.name, department: team.department_name, classroom: team.classroom_number || '' }); 
+                            setTeamForm({ name: team.name, department: team.department_name }); 
                             setShowTeamModal(true); 
                           }}
                         >
@@ -380,7 +378,7 @@ export default function HackalonAssignment() {
                     </Card>
                   ))}
                   
-                  <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: dept.name, classroom: '' }); }}>
+                  <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: dept.name }); }}>
                     <div className="text-center">
                       <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                       <p className="text-sm text-slate-500">הוסף צוות</p>
@@ -392,7 +390,7 @@ export default function HackalonAssignment() {
           })}
 
           {/* Add Department Card */}
-          <Card className="p-6 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptName(''); }}>
+          <Card className="p-6 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptForm({ name: '', icon: 'Users', classroom: '' }); }}>
             <div className="text-center">
               <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
               <p className="text-sm text-slate-500">הוסף מדור</p>
@@ -406,7 +404,7 @@ export default function HackalonAssignment() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-800">מדורים</h2>
-              <Button onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptName(''); }} size="sm">
+              <Button onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptForm({ name: '', icon: 'Users', classroom: '' }); }} size="sm">
                 <Plus className="w-4 h-4 ml-2" />
                 הוסף מדור
               </Button>
@@ -416,7 +414,7 @@ export default function HackalonAssignment() {
                 <div key={dept.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <span className="font-medium text-slate-800">{dept.name}</span>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => { setEditingDept(dept); setDeptName(dept.name); setShowDeptModal(true); }}>
+                    <Button size="sm" variant="ghost" onClick={() => { setEditingDept(dept); setDeptForm({ name: dept.name, icon: dept.icon, classroom: dept.classroom_number || '' }); setShowDeptModal(true); }}>
                       <Edit2 className="w-4 h-4" />
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => deleteDeptMutation.mutate(dept.id)} className="text-red-600">
@@ -432,7 +430,7 @@ export default function HackalonAssignment() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-800">צוותים</h2>
-              <Button onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: '', classroom: '' }); }} size="sm">
+              <Button onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: '' }); }} size="sm">
                 <Plus className="w-4 h-4 ml-2" />
                 הוסף צוות
               </Button>
@@ -442,12 +440,12 @@ export default function HackalonAssignment() {
                 <div key={team.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <div>
                     <p className="font-medium text-slate-800">{team.name}</p>
-                    <p className="text-sm text-slate-500">{team.department_name} • כיתה {team.classroom_number || 'לא הוגדר'}</p>
+                    <p className="text-sm text-slate-500">{team.department_name}</p>
                   </div>
                   <div className="flex gap-2">
                     <Button size="sm" variant="ghost" onClick={() => { 
                       setEditingTeam(team); 
-                      setTeamForm({ name: team.name, department: team.department_name, classroom: team.classroom_number || '' }); 
+                      setTeamForm({ name: team.name, department: team.department_name }); 
                       setShowTeamModal(true); 
                     }}>
                       <Edit2 className="w-4 h-4" />
@@ -495,11 +493,18 @@ export default function HackalonAssignment() {
             <div className="space-y-4">
               <div>
                 <Label>שם המדור</Label>
-                <Input value={deptName} onChange={(e) => setDeptName(e.target.value)} placeholder="הזן שם מדור" />
+                <Input value={deptForm.name} onChange={(e) => setDeptForm({...deptForm, name: e.target.value})} placeholder="הזן שם מדור" />
+              </div>
+              <div>
+                <Label>מספר כיתה</Label>
+                <select value={deptForm.classroom} onChange={(e) => setDeptForm({...deptForm, classroom: e.target.value})} className="w-full px-3 py-2 border rounded-md">
+                  <option value="">בחר כיתה...</option>
+                  {classroomKeys.map(key => <option key={key.id} value={key.room_number}>כיתה {key.room_number} ({key.room_type})</option>)}
+                </select>
               </div>
               <div>
                 <Label>אייקון</Label>
-                <select value={deptIcon} onChange={(e) => setDeptIcon(e.target.value)} className="w-full px-3 py-2 border rounded-md">
+                <select value={deptForm.icon} onChange={(e) => setDeptForm({...deptForm, icon: e.target.value})} className="w-full px-3 py-2 border rounded-md">
                   <option value="Users">Users - 👥</option>
                   <option value="Briefcase">Briefcase - 💼</option>
                   <option value="Target">Target - 🎯</option>
@@ -513,7 +518,7 @@ export default function HackalonAssignment() {
                 </select>
               </div>
               <div className="flex gap-2">
-                <Button onClick={handleSaveDept} disabled={!deptName.trim()} className="flex-1">שמור</Button>
+                <Button onClick={handleSaveDept} disabled={!deptForm.name.trim()} className="flex-1">שמור</Button>
                 <Button variant="outline" onClick={() => setShowDeptModal(false)} className="flex-1">ביטול</Button>
               </div>
             </div>
@@ -535,14 +540,7 @@ export default function HackalonAssignment() {
                 <Label>מדור</Label>
                 <select value={teamForm.department} onChange={(e) => setTeamForm({...teamForm, department: e.target.value})} className="w-full px-3 py-2 border rounded-md">
                   <option value="">בחר מדור...</option>
-                  {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <Label>מספר כיתה</Label>
-                <select value={teamForm.classroom} onChange={(e) => setTeamForm({...teamForm, classroom: e.target.value})} className="w-full px-3 py-2 border rounded-md">
-                  <option value="">בחר כיתה...</option>
-                  {classroomKeys.map(key => <option key={key.id} value={key.room_number}>כיתה {key.room_number} ({key.room_type})</option>)}
+                  {departments.map(d => <option key={d.id} value={d.name}>{d.name} - כיתה {d.classroom_number}</option>)}
                 </select>
               </div>
               <div className="flex gap-2">
@@ -573,7 +571,7 @@ export default function HackalonAssignment() {
                           className="w-full justify-start"
                           onClick={() => handleAssignUserToTeam(team.id, team.name, dept.name)}
                         >
-                          {team.name} - כיתה {team.classroom_number || 'לא הוגדר'}
+                          {team.name}
                         </Button>
                       ))}
                     </div>

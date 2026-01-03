@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 
 export default function HackalonStatus() {
   const [user, setUser] = useState(null);
+  const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -62,16 +63,32 @@ export default function HackalonStatus() {
     const teamsWithSpec = new Set(submissions.filter(s => s.submission_type === 'specification').map(s => s.team_name)).size;
     const teamsWithPres1 = new Set(submissions.filter(s => s.submission_type === 'presentation1').map(s => s.team_name)).size;
     const teamsWithPres2 = new Set(submissions.filter(s => s.submission_type === 'presentation2').map(s => s.team_name)).size;
-    const teamsComplete = teams.filter(t => {
-      return getSubmission(t.name, 'specification') && 
-             getSubmission(t.name, 'presentation1') && 
-             getSubmission(t.name, 'presentation2');
-    }).length;
+    
+    const teamsWithoutSpec = totalTeams - teamsWithSpec;
+    const teamsWithoutPres1 = totalTeams - teamsWithPres1;
+    const teamsWithoutPres2 = totalTeams - teamsWithPres2;
 
-    return { totalTeams, teamsWithSpec, teamsWithPres1, teamsWithPres2, teamsComplete };
+    return { totalTeams, teamsWithSpec, teamsWithPres1, teamsWithPres2, teamsWithoutSpec, teamsWithoutPres1, teamsWithoutPres2 };
   };
 
   const stats = getStats();
+
+  const getDeptStats = (deptName) => {
+    const deptTeams = teams.filter(t => t.department_name === deptName);
+    const deptTotal = deptTeams.length;
+    const deptSpec = deptTeams.filter(t => getSubmission(t.name, 'specification')).length;
+    const deptPres1 = deptTeams.filter(t => getSubmission(t.name, 'presentation1')).length;
+    const deptPres2 = deptTeams.filter(t => getSubmission(t.name, 'presentation2')).length;
+    return { deptTotal, deptSpec, deptPres1, deptPres2 };
+  };
+
+  const shouldShowTeam = (team) => {
+    if (filterType === 'all') return true;
+    if (filterType === 'no-spec') return !getSubmission(team.name, 'specification');
+    if (filterType === 'no-pres1') return !getSubmission(team.name, 'presentation1');
+    if (filterType === 'no-pres2') return !getSubmission(team.name, 'presentation2');
+    return true;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
@@ -87,27 +104,35 @@ export default function HackalonStatus() {
           <p className="text-slate-500">מעקב אחר העלאות והגשות של הצוותים</p>
         </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-6">
-          <Card className="p-4">
+        {/* Stats with filters */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <Card 
+            className={`p-4 cursor-pointer transition-all ${filterType === 'all' ? 'ring-2 ring-slate-500 bg-slate-50' : 'hover:shadow-md'}`}
+            onClick={() => setFilterType('all')}
+          >
             <p className="text-sm text-slate-500">סה״כ צוותים</p>
             <p className="text-2xl font-bold text-slate-800">{stats.totalTeams}</p>
           </Card>
-          <Card className="p-4 bg-green-50 border-green-200">
-            <p className="text-sm text-green-600">מסמכי איפיון</p>
-            <p className="text-2xl font-bold text-green-700">{stats.teamsWithSpec}/{stats.totalTeams}</p>
+          <Card 
+            className={`p-4 bg-red-50 border-red-200 cursor-pointer transition-all ${filterType === 'no-spec' ? 'ring-2 ring-red-500' : 'hover:shadow-md'}`}
+            onClick={() => setFilterType('no-spec')}
+          >
+            <p className="text-sm text-red-600">ללא מסמך איפיון</p>
+            <p className="text-2xl font-bold text-red-700">{stats.teamsWithoutSpec}</p>
           </Card>
-          <Card className="p-4 bg-blue-50 border-blue-200">
-            <p className="text-sm text-blue-600">מצגת 1</p>
-            <p className="text-2xl font-bold text-blue-700">{stats.teamsWithPres1}/{stats.totalTeams}</p>
+          <Card 
+            className={`p-4 bg-orange-50 border-orange-200 cursor-pointer transition-all ${filterType === 'no-pres1' ? 'ring-2 ring-orange-500' : 'hover:shadow-md'}`}
+            onClick={() => setFilterType('no-pres1')}
+          >
+            <p className="text-sm text-orange-600">ללא מצגת 1</p>
+            <p className="text-2xl font-bold text-orange-700">{stats.teamsWithoutPres1}</p>
           </Card>
-          <Card className="p-4 bg-purple-50 border-purple-200">
-            <p className="text-sm text-purple-600">מצגת 2</p>
-            <p className="text-2xl font-bold text-purple-700">{stats.teamsWithPres2}/{stats.totalTeams}</p>
-          </Card>
-          <Card className="p-4 bg-amber-50 border-amber-200">
-            <p className="text-sm text-amber-600">הושלמו</p>
-            <p className="text-2xl font-bold text-amber-700">{stats.teamsComplete}</p>
+          <Card 
+            className={`p-4 bg-amber-50 border-amber-200 cursor-pointer transition-all ${filterType === 'no-pres2' ? 'ring-2 ring-amber-500' : 'hover:shadow-md'}`}
+            onClick={() => setFilterType('no-pres2')}
+          >
+            <p className="text-sm text-amber-600">ללא מצגת 2</p>
+            <p className="text-2xl font-bold text-amber-700">{stats.teamsWithoutPres2}</p>
           </Card>
         </div>
 
@@ -115,6 +140,11 @@ export default function HackalonStatus() {
         <div className="space-y-6">
           {departments.map((dept, index) => {
             const deptTeams = teams.filter(t => t.department_name === dept.name);
+            const visibleTeams = deptTeams.filter(shouldShowTeam);
+            const deptStats = getDeptStats(dept.name);
+            
+            if (visibleTeams.length === 0 && filterType !== 'all') return null;
+            
             return (
               <motion.div
                 key={dept.id}
@@ -123,11 +153,32 @@ export default function HackalonStatus() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Card className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4">{dept.name}</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-800">{dept.name}</h3>
+                      <p className="text-sm text-slate-500">כיתה {dept.classroom_number || 'לא הוגדר'}</p>
+                    </div>
+                    
+                    {/* Department Stats */}
+                    <div className="flex gap-3 text-sm">
+                      <div className="text-center px-3 py-1 bg-green-50 rounded-lg">
+                        <p className="text-xs text-green-600">מסמכי איפיון</p>
+                        <p className="font-bold text-green-700">{deptStats.deptSpec}/{deptStats.deptTotal}</p>
+                      </div>
+                      <div className="text-center px-3 py-1 bg-blue-50 rounded-lg">
+                        <p className="text-xs text-blue-600">מצגת 1</p>
+                        <p className="font-bold text-blue-700">{deptStats.deptPres1}/{deptStats.deptTotal}</p>
+                      </div>
+                      <div className="text-center px-3 py-1 bg-purple-50 rounded-lg">
+                        <p className="text-xs text-purple-600">מצגת 2</p>
+                        <p className="font-bold text-purple-700">{deptStats.deptPres2}/{deptStats.deptTotal}</p>
+                      </div>
+                    </div>
+                  </div>
                   
-                  {deptTeams.length > 0 ? (
+                  {visibleTeams.length > 0 ? (
                     <div className="space-y-3">
-                      {deptTeams.map(team => {
+                      {visibleTeams.map(team => {
                         const specSubmission = getSubmission(team.name, 'specification');
                         const pres1Submission = getSubmission(team.name, 'presentation1');
                         const pres2Submission = getSubmission(team.name, 'presentation2');
@@ -137,7 +188,6 @@ export default function HackalonStatus() {
                             <div className="flex items-start justify-between mb-3">
                               <div>
                                 <h4 className="font-semibold text-slate-800">{team.name}</h4>
-                                <p className="text-sm text-slate-500">כיתה {team.classroom_number || 'לא הוגדר'}</p>
                               </div>
                             </div>
                             
