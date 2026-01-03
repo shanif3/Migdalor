@@ -16,7 +16,7 @@ export default function HackalonManageProblems() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [problemForm, setProblemForm] = useState({ description: '', intro: '', objective: '', requirements: '' });
+  const [problemForm, setProblemForm] = useState({ name: '', intro: '', objective: '', requirements: '' });
 
   const queryClient = useQueryClient();
 
@@ -44,7 +44,7 @@ export default function HackalonManageProblems() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowModal(false);
       setSelectedTeam(null);
-      setProblemForm({ description: '', intro: '', objective: '', requirements: '' });
+      setProblemForm({ name: '', intro: '', objective: '', requirements: '' });
       toast.success('הבעיה עודכנה בהצלחה');
     }
   });
@@ -52,7 +52,7 @@ export default function HackalonManageProblems() {
   const handleEditProblem = (team) => {
     setSelectedTeam(team);
     setProblemForm({
-      description: team.problem_description || '',
+      name: team.problem_name || '',
       intro: team.problem_intro || '',
       objective: team.problem_objective || '',
       requirements: team.problem_requirements || ''
@@ -79,7 +79,7 @@ export default function HackalonManageProblems() {
     updateProblemMutation.mutate({
       id: selectedTeam.id,
       data: {
-        problem_description: problemForm.description,
+        problem_name: problemForm.name,
         problem_intro: problemForm.intro,
         problem_objective: problemForm.objective,
         problem_requirements: problemForm.requirements
@@ -129,7 +129,7 @@ export default function HackalonManageProblems() {
           </Card>
           <Card className="p-4 bg-green-50 border-green-200">
             <p className="text-sm text-green-600">צוותים עם בעיה מוגדרת</p>
-            <p className="text-2xl font-bold text-green-700">{teams.filter(t => t.problem_description || t.problem_intro).length}</p>
+            <p className="text-2xl font-bold text-green-700">{teams.filter(t => t.problem_name).length}</p>
           </Card>
         </div>
 
@@ -158,9 +158,9 @@ export default function HackalonManageProblems() {
                                 <span className="text-sm text-slate-500">• כיתה {team.classroom_number || 'לא הוגדר'}</span>
                               </div>
                               
-                              {team.problem_description || team.problem_intro || team.problem_objective || team.problem_requirements ? (
+                              {team.problem_name ? (
                                 <div>
-                                  <p className="text-sm text-slate-700">{team.problem_description || 'בעיה מוגדרת'}</p>
+                                  <p className="text-sm text-slate-700">{team.problem_name}</p>
                                 </div>
                               ) : (
                                 <p className="text-sm text-slate-400 italic">אין בעיה מוגדרת</p>
@@ -169,7 +169,7 @@ export default function HackalonManageProblems() {
                             
                             <Button size="sm" onClick={() => handleEditProblem(team)} className="mr-4">
                               <Edit2 className="w-4 h-4 ml-2" />
-                              {team.problem_description ? 'ערוך' : 'הגדר בעיה'}
+                              {team.problem_name ? 'ערוך' : 'הגדר בעיה'}
                             </Button>
                           </div>
                         </Card>
@@ -192,55 +192,49 @@ export default function HackalonManageProblems() {
             </DialogHeader>
             <div className="space-y-6">
               <div>
-                <Label className="text-base font-semibold mb-2 block">תיאור הבעיה</Label>
-                <p className="text-xs text-slate-500 mb-2">תיאור כללי וקצר של הבעיה</p>
-                <Textarea 
-                  value={problemForm.description}
-                  onChange={(e) => setProblemForm({...problemForm, description: e.target.value})}
-                  placeholder="תיאור כללי של הבעיה"
-                  rows={3}
+                <Label className="text-base font-semibold mb-2 block">שם הבעיה</Label>
+                <Input 
+                  value={problemForm.name}
+                  onChange={(e) => setProblemForm({...problemForm, name: e.target.value})}
+                  placeholder="הזן שם לבעיה"
                 />
               </div>
 
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-bold text-slate-700 mb-4">תיאור מפורט</h3>
-                
-                <div className="space-y-6">
-                  <div>
-                    <Label className="text-base font-semibold mb-2 block">מבוא</Label>
-                    <p className="text-xs text-slate-500 mb-2">הצג את ההקשר והרקע לבעיה</p>
-                    <ReactQuill 
-                      value={problemForm.intro}
-                      onChange={(value) => setProblemForm({...problemForm, intro: value})}
-                      modules={quillModules}
-                      theme="snow"
-                      className="bg-white"
-                    />
-                  </div>
+              <div className="border-t pt-4 space-y-6">
+                <div>
+                  <Label className="text-base font-semibold mb-2 block">מבוא</Label>
+                  <p className="text-xs text-slate-500 mb-2">הצג את ההקשר והרקע לבעיה</p>
+                  <ReactQuill 
+                    value={problemForm.intro}
+                    onChange={(value) => setProblemForm({...problemForm, intro: value})}
+                    modules={quillModules}
+                    theme="snow"
+                    className="bg-white"
+                  />
+                </div>
 
-                  <div>
-                    <Label className="text-base font-semibold mb-2 block">מטרת המוצר</Label>
-                    <p className="text-xs text-slate-500 mb-2">מה המוצר אמור להשיג ולמי הוא מיועד</p>
-                    <ReactQuill 
-                      value={problemForm.objective}
-                      onChange={(value) => setProblemForm({...problemForm, objective: value})}
-                      modules={quillModules}
-                      theme="snow"
-                      className="bg-white"
-                    />
-                  </div>
+                <div>
+                  <Label className="text-base font-semibold mb-2 block">מטרת המוצר</Label>
+                  <p className="text-xs text-slate-500 mb-2">מה המוצר אמור להשיג ולמי הוא מיועד</p>
+                  <ReactQuill 
+                    value={problemForm.objective}
+                    onChange={(value) => setProblemForm({...problemForm, objective: value})}
+                    modules={quillModules}
+                    theme="snow"
+                    className="bg-white"
+                  />
+                </div>
 
-                  <div>
-                    <Label className="text-base font-semibold mb-2 block">דרישות מרכזיות</Label>
-                    <p className="text-xs text-slate-500 mb-2">פרט את הדרישות והפיצ׳רים העיקריים</p>
-                    <ReactQuill 
-                      value={problemForm.requirements}
-                      onChange={(value) => setProblemForm({...problemForm, requirements: value})}
-                      modules={quillModules}
-                      theme="snow"
-                      className="bg-white"
-                    />
-                  </div>
+                <div>
+                  <Label className="text-base font-semibold mb-2 block">דרישות מרכזיות</Label>
+                  <p className="text-xs text-slate-500 mb-2">פרט את הדרישות והפיצ׳רים העיקריים</p>
+                  <ReactQuill 
+                    value={problemForm.requirements}
+                    onChange={(value) => setProblemForm({...problemForm, requirements: value})}
+                    modules={quillModules}
+                    theme="snow"
+                    className="bg-white"
+                  />
                 </div>
               </div>
 

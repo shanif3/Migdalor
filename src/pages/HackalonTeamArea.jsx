@@ -221,36 +221,32 @@ export default function HackalonTeamArea() {
               </div>
             </div>
             
-{teamInfo?.problem_description || teamInfo?.problem_intro || teamInfo?.problem_objective || teamInfo?.problem_requirements ? (
+{teamInfo?.problem_name ? (
               <div className="space-y-4">
-                {teamInfo.problem_description && (
-                  <div>
-                    <p className="text-slate-700 font-medium">{teamInfo.problem_description}</p>
-                  </div>
-                )}
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-3">{teamInfo.problem_name}</h3>
+                </div>
 
-                {(teamInfo.problem_intro || teamInfo.problem_objective || teamInfo.problem_requirements) && (
-                  <div className="border-t pt-4 space-y-4">
-                    {teamInfo.problem_intro && (
-                      <div>
-                        <h3 className="text-sm font-semibold text-purple-600 mb-1">מבוא</h3>
-                        <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_intro }} />
-                      </div>
-                    )}
-                    {teamInfo.problem_objective && (
-                      <div>
-                        <h3 className="text-sm font-semibold text-purple-600 mb-1">מטרת המוצר</h3>
-                        <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_objective }} />
-                      </div>
-                    )}
-                    {teamInfo.problem_requirements && (
-                      <div>
-                        <h3 className="text-sm font-semibold text-purple-600 mb-1">דרישות מרכזיות</h3>
-                        <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_requirements }} />
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="space-y-4">
+                  {teamInfo.problem_intro && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-purple-600 mb-2">מבוא</h4>
+                      <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_intro }} />
+                    </div>
+                  )}
+                  {teamInfo.problem_objective && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-purple-600 mb-2">מטרת המוצר</h4>
+                      <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_objective }} />
+                    </div>
+                  )}
+                  {teamInfo.problem_requirements && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-purple-600 mb-2">דרישות מרכזיות</h4>
+                      <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_requirements }} />
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <p className="text-slate-400 text-center py-8">המנהל עדיין לא הגדיר את הבעיה</p>
