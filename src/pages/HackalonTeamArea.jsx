@@ -288,7 +288,7 @@ export default function HackalonTeamArea() {
                       {matchedUser ? (
                         <p className="text-xs text-slate-500">{matchedUser.email}</p>
                       ) : (
-                        <p className="text-xs text-slate-400">טרם נרשם למערכת</p>
+                        <p className="text-xs text-slate-400"></p>
                       )}
                     </div>
                   );
