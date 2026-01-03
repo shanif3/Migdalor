@@ -137,12 +137,12 @@ export default function Layout({ children, currentPageName }) {
       return allHackalonNavItems;
     }
 
-    if (!userPermissions?.pages_access) {
-      return [];
-    }
-
     return allHackalonNavItems.filter(item => {
-      if (item.adminOnly) return false;
+      // Always show non-admin items
+      if (!item.adminOnly) return true;
+
+      // For admin-only items, check permissions
+      if (!userPermissions?.pages_access) return false;
       return userPermissions.pages_access.includes(item.page);
     });
   };
