@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, Building2, Loader2, FileText, Presentation, Download, X } from 'lucide-react';
+import { Users, Building2, Loader2, FileText, Presentation, Download, X, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HackalonOverview() {
@@ -16,25 +16,42 @@ export default function HackalonOverview() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  const isAdmin = user?.role === 'admin';
+
   const { data: departments = [], isLoading: depsLoading } = useQuery({
     queryKey: ['hackalon-departments'],
-    queryFn: () => base44.entities.HackalonDepartment.list('order')
+    queryFn: () => base44.entities.HackalonDepartment.list('order'),
+    enabled: isAdmin
   });
 
   const { data: teams = [], isLoading: teamsLoading } = useQuery({
     queryKey: ['hackalon-teams'],
-    queryFn: () => base44.entities.HackalonTeam.list('order')
+    queryFn: () => base44.entities.HackalonTeam.list('order'),
+    enabled: isAdmin
   });
 
   const { data: submissions = [] } = useQuery({
     queryKey: ['hackalon-submissions'],
-    queryFn: () => base44.entities.HackalonSubmission.list()
+    queryFn: () => base44.entities.HackalonSubmission.list(),
+    enabled: isAdmin
   });
 
   if (!user || depsLoading || teamsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center" dir="rtl">
+        <Card className="p-8 text-center max-w-md">
+          <Shield className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">אין הרשאת גישה</h2>
+          <p className="text-slate-600">רק מנהלי מערכת יכולים לצפות בסקירה</p>
+        </Card>
       </div>
     );
   }
