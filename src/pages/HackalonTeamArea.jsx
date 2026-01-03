@@ -478,7 +478,7 @@ useEffect(() => {
               </div> :
 
             <div className="space-y-2">
-                <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'}   accept=".doc,.docx,.pdf,.txt,.pptx,.xlsx" />
+                <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'} />
                 <label htmlFor="spec-upload">
                   <Button asChild disabled={uploading === 'specification'} className="w-full cursor-pointer">
                     <span>
