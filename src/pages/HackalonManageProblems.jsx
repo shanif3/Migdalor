@@ -69,7 +69,6 @@ export default function HackalonManageProblems() {
       [{ 'color': [] }, { 'background': [] }],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
       [{ 'align': [] }],
-      ['link', 'image'],
       ['clean']
     ]
   };
