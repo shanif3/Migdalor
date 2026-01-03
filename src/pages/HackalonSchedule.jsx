@@ -258,7 +258,7 @@ export default function HackalonSchedule() {
             {Object.entries(eventTypeColors).map(([type, color]) => (
               <div key={type} className="flex items-center gap-2">
                 <div className={`w-4 h-4 rounded ${color}`}></div>
-                <span className="text-sm">{eventTypeIcons[type]} {type}</span>
+                <span className="text-sm">{type} {eventTypeIcons[type]}</span>
               </div>
             ))}
           </div>
