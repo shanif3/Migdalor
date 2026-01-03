@@ -62,12 +62,14 @@ export default function HackalonManageProblems() {
 
   const quillModules = {
     toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
       ['bold', 'italic', 'underline', 'strike'],
       [{ 'color': [] }, { 'background': [] }],
       [{ 'list': 'ordered'}, { 'list': 'bullet' }],
       [{ 'align': [] }],
-      ['link'],
+      ['link', 'image'],
       ['clean']
     ]
   };
@@ -128,7 +130,7 @@ export default function HackalonManageProblems() {
           </Card>
           <Card className="p-4 bg-green-50 border-green-200">
             <p className="text-sm text-green-600">צוותים עם בעיה מוגדרת</p>
-            <p className="text-2xl font-bold text-green-700">{teams.filter(t => t.problem_title).length}</p>
+            <p className="text-2xl font-bold text-green-700">{teams.filter(t => t.problem_description || t.problem_intro).length}</p>
           </Card>
         </div>
 
@@ -157,17 +159,9 @@ export default function HackalonManageProblems() {
                                 <span className="text-sm text-slate-500">• כיתה {team.classroom_number || 'לא הוגדר'}</span>
                               </div>
                               
-                              {team.problem_intro || team.problem_objective ? (
+                              {team.problem_description || team.problem_intro || team.problem_objective || team.problem_requirements ? (
                                 <div>
-                                  <p className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                                    <Lightbulb className="w-4 h-4 text-yellow-600" />
-                                    בעיה מוגדרת
-                                  </p>
-                                  <p className="text-xs text-slate-500 mt-1">
-                                    {team.problem_intro ? '✓ מבוא' : ''} 
-                                    {team.problem_objective ? ' ✓ מטרה' : ''} 
-                                    {team.problem_requirements ? ' ✓ דרישות' : ''}
-                                  </p>
+                                  <p className="text-sm text-slate-700">{team.problem_description || 'בעיה מוגדרת'}</p>
                                 </div>
                               ) : (
                                 <p className="text-sm text-slate-400 italic">אין בעיה מוגדרת</p>
@@ -176,7 +170,7 @@ export default function HackalonManageProblems() {
                             
                             <Button size="sm" onClick={() => handleEditProblem(team)} className="mr-4">
                               <Edit2 className="w-4 h-4 ml-2" />
-                              {team.problem_title ? 'ערוך' : 'הגדר בעיה'}
+                              {team.problem_description ? 'ערוך' : 'הגדר בעיה'}
                             </Button>
                           </div>
                         </Card>
