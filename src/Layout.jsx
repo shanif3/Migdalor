@@ -131,8 +131,8 @@ export default function Layout({ children, currentPageName }) {
   const allHackalonNavItems = [
     { name: 'לוח זמנים', icon: Calendar, page: 'HackalonSchedule', tooltip: 'לוח זמנים ואירועים' },
     { name: 'אזור הצוות', icon: Users, page: 'HackalonTeamArea', tooltip: 'אזור הצוות שלי' },
-    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית', adminOnly: true },
-    { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות', adminOnly: true },
+    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית' },
+    { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות'},
     { name: 'שיבוץ צוערים', icon: Users, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים', adminOnly: true },
     { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים', adminOnly: true },
   ];
