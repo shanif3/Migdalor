@@ -84,9 +84,9 @@ export default function Layout({ children, currentPageName }) {
   const allNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
     { name: 'תמונת מצב', icon: Image, page: 'DailyOverview', tooltip: 'תמונת מצב' },
+    { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation', tooltip: 'הקצאה' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
-    { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
   ];
 
   // Filter nav items based on permissions
