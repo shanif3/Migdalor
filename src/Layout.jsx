@@ -79,7 +79,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'הקצאת מפתחות', icon: Target, page: 'KeyAllocation', tooltip: 'הקצאה' },
     { name: 'מפתחות', icon: Key, page: 'ManageKeys', tooltip: 'מפתחות' },
     { name: 'לוח הזמנים שלי', icon: Calendar, page: 'MySchedule', tooltip: 'לוח זמנים' },
-    //{ name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding', adminOnly: true },
+    { name: 'Onboarding', icon: Users, page: 'Onboarding', tooltip: 'צפייה ב-Onboarding', adminOnly: true },
   ];
 
   // Filter nav items based on permissions
