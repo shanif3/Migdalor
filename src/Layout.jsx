@@ -71,6 +71,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if we're in the "User Management" area
   const isUserManagementArea = currentPageName === 'ManageUsers' || currentPageName === 'ManagePermissions' || currentPageName === 'ManagePositions';
+  const isHackalonArea = ['HackalonOverview', 'HackalonAssignment', 'HackalonTeamArea', 'HackalonManageProblems'].includes(currentPageName);
 
   // Classroom Management Navigation
   const allNavItems = [
@@ -107,6 +108,17 @@ export default function Layout({ children, currentPageName }) {
     { name: 'הרשאות', icon: Shield, page: 'ManagePermissions', tooltip: 'ניהול הרשאות תפקידים' },
   ];
 
+  // HackAlon Navigation
+  const hackalonNavItems = [
+    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית' },
+    { name: 'אזור הצוות', icon: Users, page: 'HackalonTeamArea', tooltip: 'אזור הצוות שלי' },
+  ];
+
+  const hackalonAdminItems = isAdmin ? [
+    { name: 'שיבוץ צוערים', icon: Target, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים' },
+    { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים' },
+  ] : [];
+
   const allManagementItems = [
     { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
     { name: 'צוותים', page: 'ManageSquads', icon: Users },
@@ -124,7 +136,9 @@ export default function Layout({ children, currentPageName }) {
 
   const managementPages = managementItems.map(item => item.page);
 
-  const navItems = isUserManagementArea ? userManagementNavItems : (isAdmin ? adminNavItems : userNavItems);
+  const navItems = isUserManagementArea ? userManagementNavItems : 
+                   isHackalonArea ? [...hackalonNavItems, ...hackalonAdminItems] :
+                   (isAdmin ? adminNavItems : userNavItems);
   const isManagementPage = managementPages.includes(currentPageName);
   
   // Show management dropdown only in classroom area
