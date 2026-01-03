@@ -197,13 +197,16 @@ export default function ManageUsers() {
 
         {/* Stats */}
         <div className="mb-8 flex flex-wrap gap-4">
-          <Card className="p-4 border-slate-200">
+          <Card 
+            className={`p-4 border-2 cursor-pointer transition-all ${!filters.platoon && !filters.noPermissions ? 'border-blue-400 bg-blue-50' : 'border-slate-200 hover:border-blue-300'}`}
+            onClick={() => setFilters({ name: '', email: '', role: '', squad: '', platoon: '', position: '', noPermissions: false })}
+          >
             <p className="text-sm text-slate-500">סה״כ משתמשים</p>
             <p className="text-2xl font-bold text-slate-800">{users.length}</p>
           </Card>
           <Card 
             className={`p-4 border-2 cursor-pointer transition-all ${filters.noPermissions ? 'border-amber-400 bg-amber-50' : 'border-slate-200 hover:border-amber-300'}`}
-            onClick={() => setFilters({ ...filters, noPermissions: !filters.noPermissions })}
+            onClick={() => setFilters({ ...filters, noPermissions: !filters.noPermissions, platoon: '' })}
           >
             <p className="text-sm text-slate-500">ללא הרשאות</p>
             <p className="text-2xl font-bold text-slate-800">
@@ -211,7 +214,11 @@ export default function ManageUsers() {
             </p>
           </Card>
           {Object.entries(usersByPlatoon).map(([platoon, platoonUsers]) => (
-            <Card key={platoon} className="p-4 border-slate-200">
+            <Card 
+              key={platoon} 
+              className={`p-4 border-2 cursor-pointer transition-all ${filters.platoon === platoon ? 'border-green-400 bg-green-50' : 'border-slate-200 hover:border-green-300'}`}
+              onClick={() => setFilters({ ...filters, platoon: filters.platoon === platoon ? '' : platoon, noPermissions: false })}
+            >
               <p className="text-sm text-slate-500">{platoon}</p>
               <p className="text-2xl font-bold text-slate-800">{platoonUsers.length}</p>
             </Card>
