@@ -16,6 +16,7 @@ import HackalonOverview from './pages/HackalonOverview';
 import HackalonAssignment from './pages/HackalonAssignment';
 import HackalonTeamArea from './pages/HackalonTeamArea';
 import HackalonManageProblems from './pages/HackalonManageProblems';
+import HackalonStatus from './pages/HackalonStatus';
 import __Layout from './Layout.jsx';
 
 
@@ -38,6 +39,7 @@ export const PAGES = {
     "HackalonAssignment": HackalonAssignment,
     "HackalonTeamArea": HackalonTeamArea,
     "HackalonManageProblems": HackalonManageProblems,
+    "HackalonStatus": HackalonStatus,
 }
 
 export const pagesConfig = {

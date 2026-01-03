@@ -71,7 +71,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Check if we're in the "User Management" area
   const isUserManagementArea = currentPageName === 'ManageUsers' || currentPageName === 'ManagePermissions' || currentPageName === 'ManagePositions';
-  const isHackalonArea = ['HackalonOverview', 'HackalonAssignment', 'HackalonTeamArea', 'HackalonManageProblems'].includes(currentPageName);
+  const isHackalonArea = ['HackalonOverview', 'HackalonAssignment', 'HackalonTeamArea', 'HackalonManageProblems', 'HackalonStatus'].includes(currentPageName);
 
   // Classroom Management Navigation
   const allNavItems = [
@@ -115,6 +115,7 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const hackalonAdminItems = isAdmin ? [
+    { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות' },
     { name: 'שיבוץ צוערים', icon: Target, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים' },
     { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים' },
   ] : [];

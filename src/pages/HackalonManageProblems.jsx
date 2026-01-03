@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Edit2, Lightbulb, Loader2, Shield } from 'lucide-react';
+import ReactQuill from 'react-quill';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -15,7 +16,7 @@ export default function HackalonManageProblems() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [problemForm, setProblemForm] = useState({ title: '', description: '' });
+  const [problemForm, setProblemForm] = useState({ intro: '', objective: '', requirements: '' });
 
   const queryClient = useQueryClient();
 
@@ -43,7 +44,7 @@ export default function HackalonManageProblems() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowModal(false);
       setSelectedTeam(null);
-      setProblemForm({ title: '', description: '' });
+      setProblemForm({ intro: '', objective: '', requirements: '' });
       toast.success('הבעיה עודכנה בהצלחה');
     }
   });
@@ -51,10 +52,23 @@ export default function HackalonManageProblems() {
   const handleEditProblem = (team) => {
     setSelectedTeam(team);
     setProblemForm({
-      title: team.problem_title || '',
-      description: team.problem_description || ''
+      intro: team.problem_intro || '',
+      objective: team.problem_objective || '',
+      requirements: team.problem_requirements || ''
     });
     setShowModal(true);
+  };
+
+  const quillModules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'align': [] }],
+      ['link'],
+      ['clean']
+    ]
   };
 
   const handleSaveProblem = () => {
@@ -63,8 +77,9 @@ export default function HackalonManageProblems() {
     updateProblemMutation.mutate({
       id: selectedTeam.id,
       data: {
-        problem_title: problemForm.title,
-        problem_description: problemForm.description
+        problem_intro: problemForm.intro,
+        problem_objective: problemForm.objective,
+        problem_requirements: problemForm.requirements
       }
     });
   };
@@ -140,15 +155,17 @@ export default function HackalonManageProblems() {
                                 <span className="text-sm text-slate-500">• כיתה {team.classroom_number || 'לא הוגדר'}</span>
                               </div>
                               
-                              {team.problem_title ? (
+                              {team.problem_intro || team.problem_objective ? (
                                 <div>
                                   <p className="text-sm font-medium text-slate-700 flex items-center gap-2">
                                     <Lightbulb className="w-4 h-4 text-yellow-600" />
-                                    {team.problem_title}
+                                    בעיה מוגדרת
                                   </p>
-                                  {team.problem_description && (
-                                    <p className="text-sm text-slate-600 mt-1 line-clamp-2">{team.problem_description}</p>
-                                  )}
+                                  <p className="text-xs text-slate-500 mt-1">
+                                    {team.problem_intro ? '✓ מבוא' : ''} 
+                                    {team.problem_objective ? ' ✓ מטרה' : ''} 
+                                    {team.problem_requirements ? ' ✓ דרישות' : ''}
+                                  </p>
                                 </div>
                               ) : (
                                 <p className="text-sm text-slate-400 italic">אין בעיה מוגדרת</p>
@@ -174,29 +191,48 @@ export default function HackalonManageProblems() {
 
         {/* Edit Problem Modal */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
-          <DialogContent dir="rtl" className="max-w-2xl">
+          <DialogContent dir="rtl" className="max-w-4xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>הגדרת בעיה - {selectedTeam?.name}</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <Label>כותרת הבעיה</Label>
-                <Input 
-                  value={problemForm.title} 
-                  onChange={(e) => setProblemForm({...problemForm, title: e.target.value})} 
-                  placeholder="הזן כותרת קצרה ותמציתית" 
+                <Label className="text-base font-semibold mb-2 block">מבוא</Label>
+                <p className="text-xs text-slate-500 mb-2">הצג את ההקשר והרקע לבעיה</p>
+                <ReactQuill 
+                  value={problemForm.intro}
+                  onChange={(value) => setProblemForm({...problemForm, intro: value})}
+                  modules={quillModules}
+                  theme="snow"
+                  className="bg-white"
                 />
               </div>
+
               <div>
-                <Label>תיאור מפורט</Label>
-                <Textarea 
-                  value={problemForm.description} 
-                  onChange={(e) => setProblemForm({...problemForm, description: e.target.value})} 
-                  placeholder="תאר את הבעיה במלואה, כולל הקשר, אתגרים ומטרות"
-                  rows={8}
+                <Label className="text-base font-semibold mb-2 block">מטרת המוצר</Label>
+                <p className="text-xs text-slate-500 mb-2">מה המוצר אמור להשיג ולמי הוא מיועד</p>
+                <ReactQuill 
+                  value={problemForm.objective}
+                  onChange={(value) => setProblemForm({...problemForm, objective: value})}
+                  modules={quillModules}
+                  theme="snow"
+                  className="bg-white"
                 />
               </div>
-              <div className="flex gap-2">
+
+              <div>
+                <Label className="text-base font-semibold mb-2 block">דרישות מרכזיות</Label>
+                <p className="text-xs text-slate-500 mb-2">פרט את הדרישות והפיצ׳רים העיקריים</p>
+                <ReactQuill 
+                  value={problemForm.requirements}
+                  onChange={(value) => setProblemForm({...problemForm, requirements: value})}
+                  modules={quillModules}
+                  theme="snow"
+                  className="bg-white"
+                />
+              </div>
+
+              <div className="flex gap-2 sticky bottom-0 bg-white pt-4 border-t">
                 <Button onClick={handleSaveProblem} className="flex-1">שמור</Button>
                 <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">ביטול</Button>
               </div>

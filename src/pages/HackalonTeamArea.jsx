@@ -44,16 +44,28 @@ export default function HackalonTeamArea() {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: async ({ file, type }) => {
+    mutationFn: async ({ file, type, existingSubmission }) => {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      return base44.entities.HackalonSubmission.create({
-        team_name: user.hackalon_team,
-        submission_type: type,
-        file_url: file_url,
-        file_name: file.name,
-        uploaded_by: user.email,
-        upload_date: new Date().toISOString()
-      });
+      
+      if (existingSubmission) {
+        // Update existing
+        return base44.entities.HackalonSubmission.update(existingSubmission.id, {
+          file_url: file_url,
+          file_name: file.name,
+          uploaded_by: user.email,
+          upload_date: new Date().toISOString()
+        });
+      } else {
+        // Create new
+        return base44.entities.HackalonSubmission.create({
+          team_name: user.hackalon_team,
+          submission_type: type,
+          file_url: file_url,
+          file_name: file.name,
+          uploaded_by: user.email,
+          upload_date: new Date().toISOString()
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hackalon-submissions'] });
@@ -70,8 +82,21 @@ export default function HackalonTeamArea() {
     const file = e.target.files[0];
     if (!file) return;
     
+    const existingSubmission = getSubmission(type);
+    
+    if (existingSubmission) {
+      const confirmed = window.confirm(
+        `כבר קיים קובץ שהועלה על ידי ${existingSubmission.uploaded_by}.\nהאם לדרוס את הקובץ הקיים?`
+      );
+      
+      if (!confirmed) {
+        e.target.value = '';
+        return;
+      }
+    }
+    
     setUploading(type);
-    uploadMutation.mutate({ file, type });
+    uploadMutation.mutate({ file, type, existingSubmission });
   };
 
   if (!user || teamLoading || membersLoading) {
@@ -131,10 +156,26 @@ export default function HackalonTeamArea() {
               </div>
             </div>
             
-            {teamInfo?.problem_title ? (
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-2">{teamInfo.problem_title}</h3>
-                <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_description || 'אין תיאור עדיין'}</p>
+{teamInfo?.problem_intro || teamInfo?.problem_objective || teamInfo?.problem_requirements ? (
+              <div className="space-y-4">
+                {teamInfo.problem_intro && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-purple-600 mb-1">מבוא</h3>
+                    <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: teamInfo.problem_intro }} />
+                  </div>
+                )}
+                {teamInfo.problem_objective && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-purple-600 mb-1">מטרת המוצר</h3>
+                    <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: teamInfo.problem_objective }} />
+                  </div>
+                )}
+                {teamInfo.problem_requirements && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-purple-600 mb-1">דרישות מרכזיות</h3>
+                    <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: teamInfo.problem_requirements }} />
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-slate-400 text-center py-8">המנהל עדיין לא הגדיר את הבעיה</p>
