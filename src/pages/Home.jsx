@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut, Lightbulb,sparkles } from 'lucide-react';
+import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut, Lightbulb } from 'lucide-react';
+import { createIcons, sparkles } from 'lucide';
+
 import { motion } from 'framer-motion';
 
 export default function Home() {
