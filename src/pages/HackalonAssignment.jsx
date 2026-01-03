@@ -191,21 +191,15 @@ export default function HackalonAssignment() {
     }
   });
 
-const handleSaveDept = () => {
-  if (!deptForm.name.trim()) return;
-  
-  const data = {
-    name: deptForm.name,
-    icon: deptForm.icon,
-    classroom_number: deptForm.classroom  // ← זה השינוי!
+  const handleSaveDept = () => {
+    if (!deptForm.name.trim()) return;
+
+    if (editingDept) {
+      updateDeptMutation.mutate({ id: editingDept.id, data: deptForm });
+    } else {
+      createDeptMutation.mutate(deptForm);
+    }
   };
-  
-  if (editingDept) {
-    updateDeptMutation.mutate({ id: editingDept.id, data });
-  } else {
-    createDeptMutation.mutate(data);
-  }
-};
 
   const handleAssignUserToTeam = (teamId, teamName, deptName) => {
     if (!selectedUserForAssign) return;
