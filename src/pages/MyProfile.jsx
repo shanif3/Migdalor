@@ -79,72 +79,7 @@ export default function MyProfile() {
               />
               <h2 className="text-lg font-semibold text-slate-800">אזור אישי</h2>
             </div>
-                        {/* Nav Links */}
-            <div className="flex items-center gap-1">
-              {navItems.map((item) => {
-                const isActive = currentPageName === item.page;
-                return (
-                  <Link
-                    key={item.page}
-                    to={createPageUrl(item.page)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all group relative ${
-                      isActive
-                        ? 'bg-slate-100 text-slate-900'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`}
-                    title={item.tooltip}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span className="hidden sm:block text-sm font-medium">{item.name}</span>
-                    {/* Mobile tooltip */}
-                    <span className="sm:hidden absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                      {item.tooltip}
-                    </span>
-                  </Link>
-                );
-              })}
-              
-              {/* Management Dropdown - Only show in classroom area */}
-              {showManagementDropdown && (
-              <DropdownMenu dir="rtl">
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all group relative ${
-                      isManagementPage
-                        ? 'bg-slate-100 text-slate-900'
-                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                    }`}
-                    title="ניהול"
-                  >
-                    <Users className="w-4 h-4" />
-                    <span className="hidden sm:flex items-center gap-1 text-sm font-medium">
-                      ניהול
-                      <ChevronDown className="w-3 h-3" />
-                    </span>
-                    {/* Mobile tooltip */}
-                    <span className="sm:hidden absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                      ניהול
-                    </span>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  {managementItems.map((item) => (
-                    <DropdownMenuItem key={item.page} asChild>
-                      <Link 
-                        to={createPageUrl(item.page)}
-                        className={`cursor-pointer flex items-center gap-2 ${currentPageName === item.page ? 'bg-slate-100' : ''}`}
-                      >
-                        <item.icon className="w-4 h-4" />
-                        {item.name}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              )}
-
-
-            </div>
+         
 
             {user && (
               <div className="flex items-center gap-3">
