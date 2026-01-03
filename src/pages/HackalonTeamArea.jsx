@@ -17,22 +17,6 @@ export default function HackalonTeamArea() {
   const [linkUrl, setLinkUrl] = useState('');
   const queryClient = useQueryClient();
 
-  // useEffect(() => {
-  //   const loadUser = async () => {
-  //     try {
-  //       const userData = await base44.auth.me();
-  //       setUser(userData);
-  //     } catch (error) {}
-  //   };
-  //   loadUser();
-
-
-  //   // Reload user data every 2 seconds to catch updates from other pages
-  //   const interval = setInterval(loadUser, 2000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-
   const { data: teamInfo, isLoading: teamLoading } = useQuery({
     queryKey: ['hackalon-team-info', user?.hackalon_team],
     queryFn: async () => {
@@ -453,13 +437,13 @@ useEffect(() => {
                 <h3 className="text-lg font-bold text-slate-800">מסמך איפיון</h3>
               </div>
               {teamInfo?.specification_deadline && (
-                <div className="text-xs text-slate-500">
-                  <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')}</div>
-                  {isSpecDeadlinePassed && !specSubmission && (
-                    <div className="text-red-600 font-semibold">חלף המועד!</div>
-                  )}
-                </div>
-              )}
+  <div className="text-xs text-slate-500">
+    <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })} {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')}</div>
+    {isSpecDeadlinePassed && !specSubmission && (
+      <div className="text-red-600 font-semibold">חלף המועד!</div>
+    )}
+  </div>
+)}
             </div>
             
             {/* Download Template */}
@@ -471,7 +455,7 @@ useEffect(() => {
               >
                 <div className="flex items-center gap-2 text-blue-700">
                   <FileText className="w-4 h-4" />
-                  <span className="text-sm font-medium">📥 הורד טמפלייט</span>
+                  <span className="text-sm font-medium"> הורד טמפלייט</span>
                 </div>
               </a>
             )}
@@ -494,7 +478,7 @@ useEffect(() => {
               </div> :
 
             <div className="space-y-2">
-                <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'} />
+                <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'}   accept=".doc,.docx,.pdf,.txt,.pptx,.xlsx" />
                 <label htmlFor="spec-upload">
                   <Button asChild disabled={uploading === 'specification'} className="w-full cursor-pointer">
                     <span>
@@ -553,7 +537,7 @@ useEffect(() => {
 
         {/* Link Modal */}
         <Dialog open={!!showLinkModal} onOpenChange={() => setShowLinkModal(null)}>
-          <DialogContent dir="rtl">
+          <DialogContent dir="ltr">
             <DialogHeader>
               <DialogTitle>הוסף קישור</DialogTitle>
             </DialogHeader>
