@@ -129,7 +129,7 @@ export default function Layout({ children, currentPageName }) {
 
   // HackAlon Navigation - Default page is HackalonSchedule
   const allHackalonNavItems = [
-    { name: 'Hackalon', icon: Target, page: 'HackalonSchedule', tooltip: 'לוח זמנים ואירועים' },
+    { name: 'לוח זמנים', icon: Calendar, page: 'HackalonSchedule', tooltip: 'לוח זמנים ואירועים' },
     { name: 'אזור הצוות', icon: Users, page: 'HackalonTeamArea', tooltip: 'אזור הצוות שלי' },
     { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית', adminOnly: true },
     { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות', adminOnly: true },
