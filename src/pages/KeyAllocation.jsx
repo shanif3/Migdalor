@@ -474,6 +474,26 @@ export default function KeyAllocation() {
   const assignedCount = lessons.filter((l) => l.status === 'assigned').length;
   const specialRequestsCount = specialRequests.length;
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (user.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center" dir="rtl">
+        <Card className="p-8 text-center max-w-md">
+          <Shield className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-800 mb-2">אין הרשאת גישה</h2>
+          <p className="text-slate-600">רק מנהלי מערכת יכולים לגשת להקצאת מפתחות</p>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
