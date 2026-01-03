@@ -160,11 +160,12 @@ export default function Home() {
             className="w-24 h-24 object-contain mx-auto mb-6" />
 
           <h1 className="text-4xl font-bold text-slate-800 mb-3">
-            ברוך הבא למגדלור 👋
+           שלום {user.onboarding_full_name || user.full_name} 👋
+           
           </h1>
           {user &&
           <p className="text-lg text-slate-600">
-              שלום {user.onboarding_full_name || user.full_name}
+             מגדלור כאן בשבילך 🙂
             </p>
           }
           <p className="text-slate-500 mt-2">״כשהאור תמיד דולק, הדרך ברורה.״</p>
