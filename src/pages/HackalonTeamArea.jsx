@@ -262,12 +262,23 @@ export default function HackalonTeamArea() {
               <h3 className="text-lg font-bold text-slate-800">חברי הצוות</h3>
             </div>
             <div className="space-y-2">
-              {teamMembers.map(member => (
-                <div key={member.id} className="p-2 bg-slate-50 rounded-lg">
-                  <p className="font-medium text-slate-800 text-sm">{member.onboarding_full_name || member.full_name}</p>
-                  <p className="text-xs text-slate-500">{member.email}</p>
-                </div>
-              ))}
+              {teamMembers.length > 0 ? (
+                teamMembers.map(member => (
+                  <div key={member.id} className="p-2 bg-slate-50 rounded-lg">
+                    <p className="font-medium text-slate-800 text-sm">{member.onboarding_full_name || member.full_name}</p>
+                    <p className="text-xs text-slate-500">{member.email}</p>
+                  </div>
+                ))
+              ) : teamInfo?.member_names && teamInfo.member_names.length > 0 ? (
+                teamInfo.member_names.map((name, idx) => (
+                  <div key={idx} className="p-2 bg-slate-50 rounded-lg">
+                    <p className="font-medium text-slate-800 text-sm">{name}</p>
+                    <p className="text-xs text-slate-400">טרם נרשם למערכת</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-400 text-sm text-center py-4">אין חברי צוות</p>
+              )}
             </div>
           </Card>
         </div>
