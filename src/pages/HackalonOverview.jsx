@@ -11,29 +11,47 @@ export default function HackalonOverview() {
   const [user, setUser] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [userPermissions, setUserPermissions] = useState(null);
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    const loadUserData = async () => {
+      try {
+        const u = await base44.auth.me();
+        setUser(u);
+
+        // Load user permissions
+        if (u.positions && u.positions.length > 0) {
+          const allPermissions = await base44.entities.PositionPermission.list();
+          const userPositionPerms = allPermissions.filter(p => u.positions.includes(p.position_name));
+          const mergedPerms = {
+            pages_access: [...new Set(userPositionPerms.flatMap(p => p.pages_access || []))]
+          };
+          setUserPermissions(mergedPerms);
+        }
+      } catch (error) {}
+    };
+    loadUserData();
   }, []);
 
   const isAdmin = user?.role === 'admin';
+  const hasAccess = isAdmin || (userPermissions?.pages_access?.includes('HackalonOverview'));
 
   const { data: departments = [], isLoading: depsLoading } = useQuery({
     queryKey: ['hackalon-departments'],
     queryFn: () => base44.entities.HackalonDepartment.list('order'),
-    enabled: isAdmin
+    enabled: hasAccess
   });
 
   const { data: teams = [], isLoading: teamsLoading } = useQuery({
     queryKey: ['hackalon-teams'],
     queryFn: () => base44.entities.HackalonTeam.list('order'),
-    enabled: isAdmin
+    enabled: hasAccess
   });
 
   const { data: submissions = [] } = useQuery({
     queryKey: ['hackalon-submissions'],
     queryFn: () => base44.entities.HackalonSubmission.list(),
-    enabled: isAdmin
+    enabled: hasAccess
   });
 
   if (!user || depsLoading || teamsLoading) {
@@ -44,13 +62,13 @@ export default function HackalonOverview() {
     );
   }
 
-  if (!isAdmin) {
+  if (!hasAccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center" dir="rtl">
         <Card className="p-8 text-center max-w-md">
           <Shield className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-slate-800 mb-2">אין הרשאת גישה</h2>
-          <p className="text-slate-600">רק מנהלי מערכת יכולים לצפות בסקירה</p>
+          <p className="text-slate-600">אין לך הרשאה לצפות בעמוד זה</p>
         </Card>
       </div>
     );
