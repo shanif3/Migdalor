@@ -122,11 +122,11 @@ export default function HackalonAssignment() {
   // Add member to team mutation
   const addMemberMutation = useMutation({
     mutationFn: async ({ teamId, memberName, userId }) => {
-      const team = teams.find(t => t.id === teamId);
+      const team = teams.find((t) => t.id === teamId);
       const updatedMembers = [...(team.member_names || []), memberName];
-      
+
       await base44.entities.HackalonTeam.update(teamId, { member_names: updatedMembers });
-      
+
       // If user exists, assign them
       if (userId) {
         await base44.entities.User.update(userId, {
@@ -147,13 +147,13 @@ export default function HackalonAssignment() {
   // Remove member from team mutation
   const removeMemberMutation = useMutation({
     mutationFn: async ({ teamId, memberName }) => {
-      const team = teams.find(t => t.id === teamId);
-      const updatedMembers = (team.member_names || []).filter(m => m !== memberName);
-      
+      const team = teams.find((t) => t.id === teamId);
+      const updatedMembers = (team.member_names || []).filter((m) => m !== memberName);
+
       await base44.entities.HackalonTeam.update(teamId, { member_names: updatedMembers });
-      
+
       // Remove assignment from user if exists
-      const userToUpdate = users.find(u => (u.onboarding_full_name || u.full_name) === memberName && u.hackalon_team === team.name);
+      const userToUpdate = users.find((u) => (u.onboarding_full_name || u.full_name) === memberName && u.hackalon_team === team.name);
       if (userToUpdate) {
         await base44.entities.User.update(userToUpdate.id, {
           hackalon_department: null,
@@ -170,7 +170,7 @@ export default function HackalonAssignment() {
 
   const handleSaveDept = () => {
     if (!deptForm.name.trim()) return;
-    
+
     if (editingDept) {
       updateDeptMutation.mutate({ id: editingDept.id, data: deptForm });
     } else {
@@ -180,23 +180,23 @@ export default function HackalonAssignment() {
 
   const handleAssignUserToTeam = (teamId, teamName, deptName) => {
     if (!selectedUserForAssign) return;
-    
-    const team = teams.find(t => t.id === teamId);
+
+    const team = teams.find((t) => t.id === teamId);
     const memberName = selectedUserForAssign.onboarding_full_name || selectedUserForAssign.full_name;
-    
-    addMemberMutation.mutate({ 
-      teamId, 
-      memberName, 
-      userId: selectedUserForAssign.id 
+
+    addMemberMutation.mutate({
+      teamId,
+      memberName,
+      userId: selectedUserForAssign.id
     });
-    
+
     setShowUserAssignModal(false);
     setSelectedUserForAssign(null);
   };
 
   const handleSaveTeam = () => {
     if (!teamForm.name.trim() || !teamForm.department) return;
-    
+
     const data = {
       name: teamForm.name,
       department_name: teamForm.department
@@ -235,8 +235,8 @@ export default function HackalonAssignment() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    );
+      </div>);
+
   }
 
   if (!isAdmin) {
@@ -247,20 +247,20 @@ export default function HackalonAssignment() {
           <h2 className="text-2xl font-bold text-slate-800 mb-2">אין הרשאת גישה</h2>
           <p className="text-slate-600">רק מנהלי מערכת יכולים לשבץ צוערים</p>
         </Card>
-      </div>
-    );
+      </div>);
+
   }
 
-  const assignedUsers = users.filter(u => u.hackalon_team);
-  const unassignedUsers = users.filter(u => !u.hackalon_team);
-  
+  const assignedUsers = users.filter((u) => u.hackalon_team);
+  const unassignedUsers = users.filter((u) => !u.hackalon_team);
+
   // Get total members including those not yet registered
   const getTotalMembers = () => {
     return teams.reduce((sum, team) => sum + (team.member_names?.length || 0), 0);
   };
 
   // Filter users for search
-  const filteredUsers = users.filter(u => {
+  const filteredUsers = users.filter((u) => {
     const name = (u.onboarding_full_name || u.full_name || '').toLowerCase();
     const email = (u.email || '').toLowerCase();
     const query = searchQuery.toLowerCase();
@@ -280,8 +280,8 @@ export default function HackalonAssignment() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             📋 שיבוץ צוערים ל-HackAlon
           </h1>
@@ -290,24 +290,24 @@ export default function HackalonAssignment() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <Card 
+          <Card
             className={`p-4 cursor-pointer transition-all ${filterView === 'all' ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'}`}
-            onClick={() => setFilterView('all')}
-          >
+            onClick={() => setFilterView('all')}>
+
             <p className="text-sm text-slate-500">סה״כ משתמשים</p>
             <p className="text-2xl font-bold text-slate-800">{users.length}</p>
           </Card>
-          <Card 
+          <Card
             className={`p-4 cursor-pointer transition-all ${filterView === 'assigned' ? 'ring-2 ring-green-500 bg-green-50' : 'bg-green-50 border-green-200 hover:shadow-md'}`}
-            onClick={() => setFilterView('assigned')}
-          >
+            onClick={() => setFilterView('assigned')}>
+
             <p className="text-sm text-green-600">משובצים</p>
             <p className="text-2xl font-bold text-green-700">{assignedUsers.length}</p>
           </Card>
-          <Card 
+          <Card
             className={`p-4 cursor-pointer transition-all ${filterView === 'unassigned' ? 'ring-2 ring-orange-500 bg-orange-50' : 'bg-orange-50 border-orange-200 hover:shadow-md'}`}
-            onClick={() => setFilterView('unassigned')}
-          >
+            onClick={() => setFilterView('unassigned')}>
+
             <p className="text-sm text-orange-600">ממתינים לשיבוץ</p>
             <p className="text-2xl font-bold text-orange-700">{unassignedUsers.length}</p>
           </Card>
@@ -316,7 +316,7 @@ export default function HackalonAssignment() {
         {/* Teams by Department */}
         <div className="space-y-6 mb-6">
           {departments.map((dept) => {
-            const deptTeams = teams.filter(t => t.department_name === dept.name);
+            const deptTeams = teams.filter((t) => t.department_name === dept.name);
             return (
               <Card key={dept.id} className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -328,7 +328,7 @@ export default function HackalonAssignment() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => { setEditingDept(dept); setDeptForm({ name: dept.name, icon: dept.icon, classroom: dept.classroom_number || '' }); setShowDeptModal(true); }}>
+                    <Button size="sm" variant="outline" onClick={() => {setEditingDept(dept);setDeptForm({ name: dept.name, icon: dept.icon, classroom: dept.classroom_number || '' });setShowDeptModal(true);}}>
                       <Edit2 className="w-4 h-4 ml-2" />
                       ערוך מדור
                     </Button>
@@ -340,22 +340,22 @@ export default function HackalonAssignment() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {deptTeams.map(team => (
-                    <Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
+                  {deptTeams.map((team) =>
+                  <Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <p className="font-semibold text-slate-800">{team.name}</p>
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            setEditingTeam(team); 
-                            setTeamForm({ name: team.name, department: team.department_name }); 
-                            setShowTeamModal(true); 
-                          }}
-                        >
+                        <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingTeam(team);
+                          setTeamForm({ name: team.name, department: team.department_name });
+                          setShowTeamModal(true);
+                        }}>
+
                           <Edit2 className="w-3 h-3" />
                         </Button>
                       </div>
@@ -365,32 +365,32 @@ export default function HackalonAssignment() {
                         <span>{team.member_names?.length || 0} צוערים</span>
                       </div>
 
-                      {team.member_names && team.member_names.length > 0 && (
-                        <div className="mt-2 space-y-1">
-                          {team.member_names.slice(0, 3).map((name, idx) => (
-                            <p key={idx} className="text-xs text-slate-500">• {name}</p>
-                          ))}
-                          {team.member_names.length > 3 && (
-                            <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
-                          )}
-                        </div>
+                      {team.member_names && team.member_names.length > 0 &&
+                    <div className="mt-2 space-y-1">
+                          {team.member_names.slice(0, 3).map((name, idx) =>
+                      <p key={idx} className="text-xs text-slate-500">• {name}</p>
                       )}
+                          {team.member_names.length > 3 &&
+                      <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
+                      }
+                        </div>
+                    }
                     </Card>
-                  ))}
+                  )}
                   
-                  <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: dept.name }); }}>
+                  <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => {setShowTeamModal(true);setEditingTeam(null);setTeamForm({ name: '', department: dept.name });}}>
                     <div className="text-center">
                       <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                       <p className="text-sm text-slate-500">הוסף צוות</p>
                     </div>
                   </Card>
                 </div>
-              </Card>
-            );
+              </Card>);
+
           })}
 
           {/* Add Department Card */}
-          <Card className="p-6 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptForm({ name: '', icon: 'Users', classroom: '' }); }}>
+          <Card className="p-6 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => {setShowDeptModal(true);setEditingDept(null);setDeptForm({ name: '', icon: 'Users', classroom: '' });}}>
             <div className="text-center">
               <Plus className="w-8 h-8 text-slate-400 mx-auto mb-2" />
               <p className="text-sm text-slate-500">הוסף מדור</p>
@@ -404,17 +404,17 @@ export default function HackalonAssignment() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-800">מדורים</h2>
-              <Button onClick={() => { setShowDeptModal(true); setEditingDept(null); setDeptForm({ name: '', icon: 'Users', classroom: '' }); }} size="sm">
+              <Button onClick={() => {setShowDeptModal(true);setEditingDept(null);setDeptForm({ name: '', icon: 'Users', classroom: '' });}} size="sm">
                 <Plus className="w-4 h-4 ml-2" />
                 הוסף מדור
               </Button>
             </div>
             <div className="space-y-2">
-              {departments.map(dept => (
-                <div key={dept.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+              {departments.map((dept) =>
+              <div key={dept.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <span className="font-medium text-slate-800">{dept.name}</span>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => { setEditingDept(dept); setDeptForm({ name: dept.name, icon: dept.icon, classroom: dept.classroom_number || '' }); setShowDeptModal(true); }}>
+                    <Button size="sm" variant="ghost" onClick={() => {setEditingDept(dept);setDeptForm({ name: dept.name, icon: dept.icon, classroom: dept.classroom_number || '' });setShowDeptModal(true);}}>
                       <Edit2 className="w-4 h-4" />
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => deleteDeptMutation.mutate(dept.id)} className="text-red-600">
@@ -422,7 +422,7 @@ export default function HackalonAssignment() {
                     </Button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </Card>
 
@@ -430,24 +430,24 @@ export default function HackalonAssignment() {
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-800">צוותים</h2>
-              <Button onClick={() => { setShowTeamModal(true); setEditingTeam(null); setTeamForm({ name: '', department: '' }); }} size="sm">
+              <Button onClick={() => {setShowTeamModal(true);setEditingTeam(null);setTeamForm({ name: '', department: '' });}} size="sm">
                 <Plus className="w-4 h-4 ml-2" />
                 הוסף צוות
               </Button>
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto">
-              {teams.map(team => (
-                <div key={team.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+              {teams.map((team) =>
+              <div key={team.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                   <div>
                     <p className="font-medium text-slate-800">{team.name}</p>
                     <p className="text-sm text-slate-500">{team.department_name}</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => { 
-                      setEditingTeam(team); 
-                      setTeamForm({ name: team.name, department: team.department_name }); 
-                      setShowTeamModal(true); 
-                    }}>
+                    <Button size="sm" variant="ghost" onClick={() => {
+                    setEditingTeam(team);
+                    setTeamForm({ name: team.name, department: team.department_name });
+                    setShowTeamModal(true);
+                  }}>
                       <Edit2 className="w-4 h-4" />
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => deleteTeamMutation.mutate(team.id)} className="text-red-600">
@@ -455,7 +455,7 @@ export default function HackalonAssignment() {
                     </Button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </Card>
         </div>
@@ -464,23 +464,23 @@ export default function HackalonAssignment() {
         <Card className="p-6">
           <h2 className="text-xl font-bold text-slate-800 mb-4">רשימת צוערים</h2>
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {getDisplayedUsers().map(u => (
-              <div key={u.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+            {getDisplayedUsers().map((u) =>
+            <div key={u.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                 <div>
                   <p className="font-medium text-slate-800">{u.onboarding_full_name || u.full_name}</p>
                   <p className="text-sm text-slate-500">{u.email}</p>
-                  {u.hackalon_team && (
-                    <p className="text-sm text-green-600 mt-1">✓ {u.hackalon_department} • {u.hackalon_team}</p>
-                  )}
+                  {u.hackalon_team &&
+                <p className="text-sm text-green-600 mt-1">✓ {u.hackalon_department} • {u.hackalon_team}</p>
+                }
                 </div>
-                <Button size="sm" onClick={() => { setSelectedUserForAssign(u); setShowUserAssignModal(true); }}>
+                <Button size="sm" onClick={() => {setSelectedUserForAssign(u);setShowUserAssignModal(true);}}>
                   {u.hackalon_team ? 'שנה צוות' : 'שבץ לצוות'}
                 </Button>
               </div>
-            ))}
-            {getDisplayedUsers().length === 0 && (
-              <p className="text-center text-slate-400 py-8">אין משתמשים להצגה</p>
             )}
+            {getDisplayedUsers().length === 0 &&
+            <p className="text-center text-slate-400 py-8">אין משתמשים להצגה</p>
+            }
           </div>
         </Card>
 
@@ -493,18 +493,18 @@ export default function HackalonAssignment() {
             <div className="space-y-4">
               <div>
                 <Label>שם המדור</Label>
-                <Input value={deptForm.name} onChange={(e) => setDeptForm({...deptForm, name: e.target.value})} placeholder="הזן שם מדור" />
+                <Input value={deptForm.name} onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })} placeholder="הזן שם מדור" />
               </div>
               <div>
                 <Label>מספר כיתה</Label>
-                <select value={deptForm.classroom} onChange={(e) => setDeptForm({...deptForm, classroom: e.target.value})} className="w-full px-3 py-2 border rounded-md">
+                <select value={deptForm.classroom} onChange={(e) => setDeptForm({ ...deptForm, classroom: e.target.value })} className="w-full px-3 py-2 border rounded-md">
                   <option value="">בחר כיתה...</option>
-                  {classroomKeys.map(key => <option key={key.id} value={key.room_number}>כיתה {key.room_number} ({key.room_type})</option>)}
+                  {classroomKeys.map((key) => <option key={key.id} value={key.room_number}>כיתה {key.room_number} ({key.room_type})</option>)}
                 </select>
               </div>
               <div>
                 <Label>אייקון</Label>
-                <select value={deptForm.icon} onChange={(e) => setDeptForm({...deptForm, icon: e.target.value})} className="w-full px-3 py-2 border rounded-md">
+                <select value={deptForm.icon} onChange={(e) => setDeptForm({ ...deptForm, icon: e.target.value })} className="w-full px-3 py-2 border rounded-md">
                   <option value="Users">Users - 👥</option>
                   <option value="Briefcase">Briefcase - 💼</option>
                   <option value="Target">Target - 🎯</option>
@@ -534,13 +534,13 @@ export default function HackalonAssignment() {
             <div className="space-y-4">
               <div>
                 <Label>שם הצוות</Label>
-                <Input value={teamForm.name} onChange={(e) => setTeamForm({...teamForm, name: e.target.value})} placeholder="הזן שם צוות" />
+                <Input value={teamForm.name} onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })} placeholder="הזן שם צוות" />
               </div>
               <div>
                 <Label>מדור</Label>
-                <select value={teamForm.department} onChange={(e) => setTeamForm({...teamForm, department: e.target.value})} className="w-full px-3 py-2 border rounded-md">
+                <select value={teamForm.department} onChange={(e) => setTeamForm({ ...teamForm, department: e.target.value })} className="w-full px-3 py-2 border rounded-md">
                   <option value="">בחר מדור...</option>
-                  {departments.map(d => <option key={d.id} value={d.name}>{d.name} - כיתה {d.classroom_number}</option>)}
+                  {departments.map((d) => <option key={d.id} value={d.name}>{d.name} - כיתה {d.classroom_number}</option>)}
                 </select>
               </div>
               <div className="flex gap-2">
@@ -558,25 +558,25 @@ export default function HackalonAssignment() {
               <DialogTitle>שבץ לצוות - {selectedUserForAssign?.onboarding_full_name || selectedUserForAssign?.full_name}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {departments.map(dept => {
-                const deptTeams = teams.filter(t => t.department_name === dept.name);
+              {departments.map((dept) => {
+                const deptTeams = teams.filter((t) => t.department_name === dept.name);
                 return (
                   <div key={dept.id} className="border rounded-lg p-3">
                     <h3 className="font-semibold text-slate-800 mb-2">{dept.name}</h3>
                     <div className="space-y-1">
-                      {deptTeams.map(team => (
-                        <Button 
-                          key={team.id} 
-                          variant="outline" 
-                          className="w-full justify-start"
-                          onClick={() => handleAssignUserToTeam(team.id, team.name, dept.name)}
-                        >
+                      {deptTeams.map((team) =>
+                      <Button
+                        key={team.id}
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => handleAssignUserToTeam(team.id, team.name, dept.name)}>
+
                           {team.name}
                         </Button>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                );
+                  </div>);
+
               })}
             </div>
           </DialogContent>
@@ -586,51 +586,51 @@ export default function HackalonAssignment() {
         <Dialog open={showAddMembersModal} onOpenChange={setShowAddMembersModal}>
           <DialogContent dir="rtl" className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
             <DialogHeader>
-              <DialogTitle>הוספת צוערים - {selectedTeam?.name}</DialogTitle>
+              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">הוספת צוערים - {selectedTeam?.name}</DialogTitle>
             </DialogHeader>
             
-            {selectedTeam && (
-              <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+            {selectedTeam &&
+            <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
                 {/* Current Members */}
                 <div className="border-b pb-4">
                   <h3 className="font-semibold text-slate-700 mb-2">צוערים בצוות ({selectedTeam.member_names?.length || 0})</h3>
-                  {selectedTeam.member_names && selectedTeam.member_names.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {selectedTeam.member_names.map((name, idx) => (
-                        <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-lg">
+                  {selectedTeam.member_names && selectedTeam.member_names.length > 0 ?
+                <div className="flex flex-wrap gap-2">
+                      {selectedTeam.member_names.map((name, idx) =>
+                  <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-slate-100 rounded-lg">
                           <span className="text-sm">{name}</span>
                           <button onClick={() => handleRemoveMember(selectedTeam.id, name)} className="text-red-600 hover:text-red-700">
                             <Trash2 className="w-3 h-3" />
                           </button>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-slate-400">אין צוערים עדיין</p>
                   )}
+                    </div> :
+
+                <p className="text-sm text-slate-400">אין צוערים עדיין</p>
+                }
                 </div>
 
                 {/* Search Existing Users */}
                 <div className="flex-1 overflow-hidden flex flex-col">
                   <h3 className="font-semibold text-slate-700 mb-2">הוסף צוער קיים</h3>
-                  <Input 
-                    placeholder="חפש לפי שם או אימייל..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="mb-2"
-                  />
+                  <Input
+                  placeholder="חפש לפי שם או אימייל..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="mb-2" />
+
                   <div className="space-y-2 overflow-y-auto flex-1">
-                    {filteredUsers
-                      .filter(u => !selectedTeam.member_names?.includes(u.onboarding_full_name || u.full_name))
-                      .map(u => (
-                        <div key={u.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                    {filteredUsers.
+                  filter((u) => !selectedTeam.member_names?.includes(u.onboarding_full_name || u.full_name)).
+                  map((u) =>
+                  <div key={u.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
                           <div>
                             <p className="text-sm font-medium">{u.onboarding_full_name || u.full_name}</p>
                             <p className="text-xs text-slate-500">{u.email}</p>
                           </div>
                           <Button size="sm" onClick={() => handleAddExistingUser(u)}>הוסף</Button>
                         </div>
-                      ))}
+                  )}
                   </div>
                 </div>
 
@@ -638,19 +638,19 @@ export default function HackalonAssignment() {
                 <div className="border-t pt-4">
                   <h3 className="font-semibold text-slate-700 mb-2">הוסף צוער שעדיין לא נרשם</h3>
                   <div className="flex gap-2">
-                    <Input 
-                      placeholder="שם מלא"
-                      value={newMemberName}
-                      onChange={(e) => setNewMemberName(e.target.value)}
-                    />
+                    <Input
+                    placeholder="שם מלא"
+                    value={newMemberName}
+                    onChange={(e) => setNewMemberName(e.target.value)} />
+
                     <Button onClick={handleAddNewMember} disabled={!newMemberName.trim()}>הוסף</Button>
                   </div>
                 </div>
               </div>
-            )}
+            }
           </DialogContent>
         </Dialog>
       </div>
-    </div>
-  );
+    </div>);
+
 }
