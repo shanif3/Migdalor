@@ -31,17 +31,24 @@ export default function Layout({ children, currentPageName }) {
         // Load user permissions based on positions
         if (user.positions && user.positions.length > 0) {
           const allPermissions = await base44.entities.PositionPermission.list();
+          console.log('🔍 All permissions:', allPermissions);
+          console.log('👤 User positions:', user.positions);
+          
           const userPositionPerms = allPermissions.filter(p => 
             user.positions.includes(p.position_name)
           );
+          console.log('✅ Matched permissions:', userPositionPerms);
           
           // Merge all permissions
           const mergedPerms = {
             has_classroom_management_access: userPositionPerms.some(p => p.has_classroom_management_access),
             pages_access: [...new Set(userPositionPerms.flatMap(p => p.pages_access || []))]
           };
+          console.log('📋 Final permissions:', mergedPerms);
           
           setUserPermissions(mergedPerms);
+        } else {
+          console.log('⚠️ No positions found for user');
         }
 
         setLoading(false);
