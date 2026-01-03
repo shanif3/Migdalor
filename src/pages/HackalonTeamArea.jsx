@@ -438,7 +438,7 @@ useEffect(() => {
               </div>
               {teamInfo?.specification_deadline && (
   <div className="text-xs text-slate-500">
-    <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')} {new Date(teamInfo.specification_deadline).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}</div>
+    <div>דדליין: {new Date(teamInfo.specification_deadline).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })} {new Date(teamInfo.specification_deadline).toLocaleDateString('he-IL')}</div>
     {isSpecDeadlinePassed && !specSubmission && (
       <div className="text-red-600 font-semibold">חלף המועד!</div>
     )}
