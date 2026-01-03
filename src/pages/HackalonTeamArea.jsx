@@ -231,19 +231,19 @@ export default function HackalonTeamArea() {
                   {teamInfo.problem_intro && (
                     <div>
                       <h4 className="text-sm font-semibold text-purple-600 mb-2">מבוא</h4>
-                      <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_intro }} />
+                      <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_intro}</p>
                     </div>
                   )}
                   {teamInfo.problem_objective && (
                     <div>
                       <h4 className="text-sm font-semibold text-purple-600 mb-2">מטרת המוצר</h4>
-                      <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_objective }} />
+                      <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_objective}</p>
                     </div>
                   )}
                   {teamInfo.problem_requirements && (
                     <div>
                       <h4 className="text-sm font-semibold text-purple-600 mb-2">דרישות מרכזיות</h4>
-                      <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_requirements }} />
+                      <p className="text-slate-600 whitespace-pre-wrap">{teamInfo.problem_requirements}</p>
                     </div>
                   )}
                 </div>

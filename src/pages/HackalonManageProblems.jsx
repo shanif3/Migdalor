@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Edit2, Lightbulb, Loader2, Shield } from 'lucide-react';
-import ReactQuill from 'react-quill';
+
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -60,18 +60,7 @@ export default function HackalonManageProblems() {
     setShowModal(true);
   };
 
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'font': [] }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'align': [] }],
-      ['clean']
-    ]
-  };
+
 
   const handleSaveProblem = () => {
     if (!selectedTeam) return;
@@ -204,36 +193,33 @@ export default function HackalonManageProblems() {
                 <div>
                   <Label className="text-base font-semibold mb-2 block">מבוא</Label>
                   <p className="text-xs text-slate-500 mb-2">הצג את ההקשר והרקע לבעיה</p>
-                  <ReactQuill 
+                  <Textarea 
                     value={problemForm.intro}
-                    onChange={(value) => setProblemForm({...problemForm, intro: value})}
-                    modules={quillModules}
-                    theme="snow"
-                    className="bg-white"
+                    onChange={(e) => setProblemForm({...problemForm, intro: e.target.value})}
+                    placeholder="הזן מבוא"
+                    rows={6}
                   />
                 </div>
 
                 <div>
                   <Label className="text-base font-semibold mb-2 block">מטרת המוצר</Label>
                   <p className="text-xs text-slate-500 mb-2">מה המוצר אמור להשיג ולמי הוא מיועד</p>
-                  <ReactQuill 
+                  <Textarea 
                     value={problemForm.objective}
-                    onChange={(value) => setProblemForm({...problemForm, objective: value})}
-                    modules={quillModules}
-                    theme="snow"
-                    className="bg-white"
+                    onChange={(e) => setProblemForm({...problemForm, objective: e.target.value})}
+                    placeholder="הזן מטרה"
+                    rows={6}
                   />
                 </div>
 
                 <div>
                   <Label className="text-base font-semibold mb-2 block">דרישות מרכזיות</Label>
                   <p className="text-xs text-slate-500 mb-2">פרט את הדרישות והפיצ׳רים העיקריים</p>
-                  <ReactQuill 
+                  <Textarea 
                     value={problemForm.requirements}
-                    onChange={(value) => setProblemForm({...problemForm, requirements: value})}
-                    modules={quillModules}
-                    theme="snow"
-                    className="bg-white"
+                    onChange={(e) => setProblemForm({...problemForm, requirements: e.target.value})}
+                    placeholder="הזן דרישות"
+                    rows={6}
                   />
                 </div>
               </div>
