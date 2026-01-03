@@ -196,9 +196,7 @@ export default function HackalonOverview() {
             <DialogHeader>
               <DialogTitle className="flex items-center justify-between">
                 <span>{selectedTeam?.name}</span>
-                <Button variant="ghost" size="icon" onClick={() => setShowTeamModal(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
+
               </DialogTitle>
             </DialogHeader>
             
