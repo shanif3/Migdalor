@@ -146,7 +146,11 @@ export default function Layout({ children, currentPageName }) {
     : allManagementItems.filter(item => {
         if (item.adminOnly) return false;
         if (!userPermissions?.has_classroom_management_access) return false;
-        return userPermissions.pages_access.includes(item.page);
+        // If pages_access exists and has items, filter by it; otherwise show all non-admin items
+        if (userPermissions.pages_access && userPermissions.pages_access.length > 0) {
+          return userPermissions.pages_access.includes(item.page);
+        }
+        return true;
       });
 
   const managementPages = managementItems.map(item => item.page);
