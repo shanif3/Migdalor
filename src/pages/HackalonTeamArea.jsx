@@ -539,7 +539,7 @@ export default function HackalonTeamArea() {
         <Dialog open={!!showLinkModal} onOpenChange={() => setShowLinkModal(null)}>
           <DialogContent dir="ltr">
             <DialogHeader>
-              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-righ">הוסף קישור</DialogTitle>
+              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">הוסף קישור</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
