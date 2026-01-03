@@ -364,41 +364,56 @@ export default function HackalonAssignment() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {deptTeams.map((team) =>
-                  <Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <p className="font-semibold text-slate-800">{team.name}</p>
-                        </div>
-                        <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingTeam(team);
-                          setTeamForm({ name: team.name, department: team.department_name });
-                          setShowTeamModal(true);
-                        }}>
+<Card key={team.id} className="p-4 hover:shadow-md transition-all cursor-pointer" onClick={() => handleOpenAddMembers(team)}>
+  <div className="flex items-start justify-between mb-2">
+    <div className="flex-1">
+      <p className="font-semibold text-slate-800">{team.name}</p>
+    </div>
+    <div className="flex gap-1">
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={(e) => {
+          e.stopPropagation();
+          setEditingTeam(team);
+          setTeamForm({ name: team.name, department: team.department_name });
+          setShowTeamModal(true);
+        }}
+      >
+        <Edit2 className="w-3 h-3" />
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm(`האם אתה בטוח שברצונך למחוק את הצוות "${team.name}"?`)) {
+            deleteTeamMutation.mutate(team.id);
+          }
+        }}
+        className="text-red-600 hover:text-red-700"
+      >
+        <Trash2 className="w-3 h-3" />
+      </Button>
+    </div>
+  </div>
+  
+  <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
+    <Users className="w-4 h-4" />
+    <span>{team.member_names?.length || 0} צוערים</span>
+  </div>
 
-                          <Edit2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
-                        <Users className="w-4 h-4" />
-                        <span>{team.member_names?.length || 0} צוערים</span>
-                      </div>
-
-                      {team.member_names && team.member_names.length > 0 &&
-                    <div className="mt-2 space-y-1">
-                          {team.member_names.slice(0, 3).map((name, idx) =>
-                      <p key={idx} className="text-xs text-slate-500">• {name}</p>
-                      )}
-                          {team.member_names.length > 3 &&
-                      <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
-                      }
-                        </div>
-                    }
-                    </Card>
+  {team.member_names && team.member_names.length > 0 && (
+    <div className="mt-2 space-y-1">
+      {team.member_names.slice(0, 3).map((name, idx) => (
+        <p key={idx} className="text-xs text-slate-500">• {name}</p>
+      ))}
+      {team.member_names.length > 3 && (
+        <p className="text-xs text-slate-400">ועוד {team.member_names.length - 3}...</p>
+      )}
+    </div>
+  )}
+</Card>
                   )}
                   
                   <Card className="p-4 border-dashed border-2 flex items-center justify-center cursor-pointer hover:bg-slate-50" onClick={() => {setShowTeamModal(true);setEditingTeam(null);setTeamForm({ name: '', department: dept.name });}}>
