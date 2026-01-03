@@ -123,16 +123,31 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   // HackAlon Navigation
-  const hackalonNavItems = [
-    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית' },
+  const allHackalonNavItems = [
+    { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית', adminOnly: true },
     { name: 'אזור הצוות', icon: Users, page: 'HackalonTeamArea', tooltip: 'אזור הצוות שלי' },
+    { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות', adminOnly: true },
+    { name: 'שיבוץ צוערים', icon: Target, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים', adminOnly: true },
+    { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים', adminOnly: true },
   ];
 
-  const hackalonAdminItems = isAdmin ? [
-    { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות' },
-    { name: 'שיבוץ צוערים', icon: Target, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים' },
-    { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים' },
-  ] : [];
+  // Filter HackAlon nav items based on permissions
+  const getFilteredHackalonItems = () => {
+    if (isAdmin) {
+      return allHackalonNavItems;
+    }
+
+    if (!userPermissions?.pages_access) {
+      return [];
+    }
+
+    return allHackalonNavItems.filter(item => {
+      if (item.adminOnly) return false;
+      return userPermissions.pages_access.includes(item.page);
+    });
+  };
+
+  const hackalonNavItems = getFilteredHackalonItems();
 
   const allManagementItems = [
     { name: 'פלוגות', page: 'ManageCrews', icon: Shield },
@@ -156,8 +171,8 @@ export default function Layout({ children, currentPageName }) {
   const managementPages = managementItems.map(item => item.page);
 
   const navItems = isUserManagementArea ? userManagementNavItems : 
-                   isHackalonArea ? [...hackalonNavItems, ...hackalonAdminItems] :
-                   (isAdmin ? adminNavItems : userNavItems);
+                       isHackalonArea ? hackalonNavItems :
+                       (isAdmin ? adminNavItems : userNavItems);
   const isManagementPage = managementPages.includes(currentPageName);
   
   // Show management dropdown only in classroom area
