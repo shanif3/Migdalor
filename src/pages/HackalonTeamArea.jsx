@@ -17,22 +17,6 @@ export default function HackalonTeamArea() {
   const [linkUrl, setLinkUrl] = useState('');
   const queryClient = useQueryClient();
 
-  // useEffect(() => {
-  //   const loadUser = async () => {
-  //     try {
-  //       const userData = await base44.auth.me();
-  //       setUser(userData);
-  //     } catch (error) {}
-  //   };
-  //   loadUser();
-
-
-  //   // Reload user data every 2 seconds to catch updates from other pages
-  //   const interval = setInterval(loadUser, 2000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-
   const { data: teamInfo, isLoading: teamLoading } = useQuery({
     queryKey: ['hackalon-team-info', user?.hackalon_team],
     queryFn: async () => {
