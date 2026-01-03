@@ -158,12 +158,20 @@ export default function ManageUsers() {
   ];
 
   const positionTitles = positions.map(p => p.title);
-
+  const normalize = (str = '') =>
+    str
+      .toString()
+      .trim()
+      .normalize('NFKC');
   // Filter users
   const filteredUsers = users.filter(user => {
-    const matchName = !filters.name || 
-      (user.full_name && user.full_name.toLowerCase().includes(filters.name.toLowerCase()));
-    
+    const nameValue = user.onboarding_full_name || user.full_name || '';
+
+const matchName =
+  !filters.name ||
+  normalize(nameValue).includes(normalize(filters.name));
+
+
     const matchEmail = !filters.email || 
       (user.email && user.email.toLowerCase().includes(filters.email.toLowerCase()));
     
