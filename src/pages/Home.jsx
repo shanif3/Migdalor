@@ -183,17 +183,13 @@ export default function Home() {
               {feature.available ?
             <Link to={createPageUrl(feature.path)}>
                   <Card className="p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group h-full border-slate-200">
-                    <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <div className={`w-10 h-10 ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                       <feature.icon className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-800 mb-2">
                       {feature.title}
                     </h3>
                     <p className="text-slate-600 mb-4">{feature.description}</p>
-                    <div className="flex items-center gap-2 text-indigo-600 font-medium group-hover:gap-3 transition-all">
-                      <span>כניסה</span>
-                      <ArrowLeft className="w-4 h-4" />
-                    </div>
                   </Card>
                 </Link> :
 
