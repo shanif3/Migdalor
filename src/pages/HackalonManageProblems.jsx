@@ -16,7 +16,7 @@ export default function HackalonManageProblems() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [problemForm, setProblemForm] = useState({ intro: '', objective: '', requirements: '' });
+  const [problemForm, setProblemForm] = useState({ description: '', intro: '', objective: '', requirements: '' });
 
   const queryClient = useQueryClient();
 
@@ -44,7 +44,7 @@ export default function HackalonManageProblems() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowModal(false);
       setSelectedTeam(null);
-      setProblemForm({ intro: '', objective: '', requirements: '' });
+      setProblemForm({ description: '', intro: '', objective: '', requirements: '' });
       toast.success('הבעיה עודכנה בהצלחה');
     }
   });
@@ -52,6 +52,7 @@ export default function HackalonManageProblems() {
   const handleEditProblem = (team) => {
     setSelectedTeam(team);
     setProblemForm({
+      description: team.problem_description || '',
       intro: team.problem_intro || '',
       objective: team.problem_objective || '',
       requirements: team.problem_requirements || ''
@@ -77,6 +78,7 @@ export default function HackalonManageProblems() {
     updateProblemMutation.mutate({
       id: selectedTeam.id,
       data: {
+        problem_description: problemForm.description,
         problem_intro: problemForm.intro,
         problem_objective: problemForm.objective,
         problem_requirements: problemForm.requirements
@@ -197,39 +199,56 @@ export default function HackalonManageProblems() {
             </DialogHeader>
             <div className="space-y-6">
               <div>
-                <Label className="text-base font-semibold mb-2 block">מבוא</Label>
-                <p className="text-xs text-slate-500 mb-2">הצג את ההקשר והרקע לבעיה</p>
-                <ReactQuill 
-                  value={problemForm.intro}
-                  onChange={(value) => setProblemForm({...problemForm, intro: value})}
-                  modules={quillModules}
-                  theme="snow"
-                  className="bg-white"
+                <Label className="text-base font-semibold mb-2 block">תיאור הבעיה</Label>
+                <p className="text-xs text-slate-500 mb-2">תיאור כללי וקצר של הבעיה</p>
+                <Textarea 
+                  value={problemForm.description}
+                  onChange={(e) => setProblemForm({...problemForm, description: e.target.value})}
+                  placeholder="תיאור כללי של הבעיה"
+                  rows={3}
                 />
               </div>
 
-              <div>
-                <Label className="text-base font-semibold mb-2 block">מטרת המוצר</Label>
-                <p className="text-xs text-slate-500 mb-2">מה המוצר אמור להשיג ולמי הוא מיועד</p>
-                <ReactQuill 
-                  value={problemForm.objective}
-                  onChange={(value) => setProblemForm({...problemForm, objective: value})}
-                  modules={quillModules}
-                  theme="snow"
-                  className="bg-white"
-                />
-              </div>
+              <div className="border-t pt-4">
+                <h3 className="text-lg font-bold text-slate-700 mb-4">תיאור מפורט</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label className="text-base font-semibold mb-2 block">מבוא</Label>
+                    <p className="text-xs text-slate-500 mb-2">הצג את ההקשר והרקע לבעיה</p>
+                    <ReactQuill 
+                      value={problemForm.intro}
+                      onChange={(value) => setProblemForm({...problemForm, intro: value})}
+                      modules={quillModules}
+                      theme="snow"
+                      className="bg-white"
+                    />
+                  </div>
 
-              <div>
-                <Label className="text-base font-semibold mb-2 block">דרישות מרכזיות</Label>
-                <p className="text-xs text-slate-500 mb-2">פרט את הדרישות והפיצ׳רים העיקריים</p>
-                <ReactQuill 
-                  value={problemForm.requirements}
-                  onChange={(value) => setProblemForm({...problemForm, requirements: value})}
-                  modules={quillModules}
-                  theme="snow"
-                  className="bg-white"
-                />
+                  <div>
+                    <Label className="text-base font-semibold mb-2 block">מטרת המוצר</Label>
+                    <p className="text-xs text-slate-500 mb-2">מה המוצר אמור להשיג ולמי הוא מיועד</p>
+                    <ReactQuill 
+                      value={problemForm.objective}
+                      onChange={(value) => setProblemForm({...problemForm, objective: value})}
+                      modules={quillModules}
+                      theme="snow"
+                      className="bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-base font-semibold mb-2 block">דרישות מרכזיות</Label>
+                    <p className="text-xs text-slate-500 mb-2">פרט את הדרישות והפיצ׳רים העיקריים</p>
+                    <ReactQuill 
+                      value={problemForm.requirements}
+                      onChange={(value) => setProblemForm({...problemForm, requirements: value})}
+                      modules={quillModules}
+                      theme="snow"
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="flex gap-2 sticky bottom-0 bg-white pt-4 border-t">

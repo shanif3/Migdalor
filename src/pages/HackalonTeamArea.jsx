@@ -3,13 +3,18 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, Presentation, Users, MapPin, Lightbulb, Loader2 } from 'lucide-react';
+import { Upload, FileText, Presentation, Users, MapPin, Lightbulb, Loader2, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 export default function HackalonTeamArea() {
   const [user, setUser] = useState(null);
   const [uploading, setUploading] = useState(null);
+  const [showLinkModal, setShowLinkModal] = useState(null);
+  const [linkUrl, setLinkUrl] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -50,6 +55,7 @@ export default function HackalonTeamArea() {
       if (existingSubmission) {
         // Update existing
         return base44.entities.HackalonSubmission.update(existingSubmission.id, {
+          submission_method: 'file',
           file_url: file_url,
           file_name: file.name,
           uploaded_by: user.email,
@@ -60,6 +66,7 @@ export default function HackalonTeamArea() {
         return base44.entities.HackalonSubmission.create({
           team_name: user.hackalon_team,
           submission_type: type,
+          submission_method: 'file',
           file_url: file_url,
           file_name: file.name,
           uploaded_by: user.email,
@@ -75,6 +82,50 @@ export default function HackalonTeamArea() {
     onError: () => {
       toast.error('שגיאה בהעלאת הקובץ');
       setUploading(null);
+    }
+  });
+
+  const addLinkMutation = useMutation({
+    mutationFn: async ({ url, type, existingSubmission }) => {
+      if (existingSubmission) {
+        return base44.entities.HackalonSubmission.update(existingSubmission.id, {
+          submission_method: 'link',
+          file_url: url,
+          file_name: 'קישור חיצוני',
+          uploaded_by: user.email,
+          upload_date: new Date().toISOString()
+        });
+      } else {
+        return base44.entities.HackalonSubmission.create({
+          team_name: user.hackalon_team,
+          submission_type: type,
+          submission_method: 'link',
+          file_url: url,
+          file_name: 'קישור חיצוני',
+          uploaded_by: user.email,
+          upload_date: new Date().toISOString()
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackalon-submissions'] });
+      toast.success('הקישור נוסף בהצלחה');
+      setShowLinkModal(null);
+      setLinkUrl('');
+    },
+    onError: () => {
+      toast.error('שגיאה בהוספת הקישור');
+    }
+  });
+
+  const deleteSubmissionMutation = useMutation({
+    mutationFn: (submissionId) => base44.entities.HackalonSubmission.delete(submissionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackalon-submissions'] });
+      toast.success('הקובץ נמחק בהצלחה');
+    },
+    onError: () => {
+      toast.error('שגיאה במחיקת הקובץ');
     }
   });
 
@@ -97,6 +148,20 @@ export default function HackalonTeamArea() {
     
     setUploading(type);
     uploadMutation.mutate({ file, type, existingSubmission });
+  };
+
+  const handleAddLink = (type) => {
+    if (!linkUrl.trim()) return;
+    
+    const existingSubmission = getSubmission(type);
+    addLinkMutation.mutate({ url: linkUrl, type, existingSubmission });
+  };
+
+  const handleDelete = (submission) => {
+    const confirmed = window.confirm('האם אתה בטוח שברצונך למחוק את הקובץ?');
+    if (confirmed) {
+      deleteSubmissionMutation.mutate(submission.id);
+    }
   };
 
   if (!user || teamLoading || membersLoading) {
@@ -156,24 +221,34 @@ export default function HackalonTeamArea() {
               </div>
             </div>
             
-{teamInfo?.problem_intro || teamInfo?.problem_objective || teamInfo?.problem_requirements ? (
+{teamInfo?.problem_description || teamInfo?.problem_intro || teamInfo?.problem_objective || teamInfo?.problem_requirements ? (
               <div className="space-y-4">
-                {teamInfo.problem_intro && (
+                {teamInfo.problem_description && (
                   <div>
-                    <h3 className="text-sm font-semibold text-purple-600 mb-1">מבוא</h3>
-                    <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: teamInfo.problem_intro }} />
+                    <p className="text-slate-700 font-medium">{teamInfo.problem_description}</p>
                   </div>
                 )}
-                {teamInfo.problem_objective && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 mb-1">מטרת המוצר</h3>
-                    <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: teamInfo.problem_objective }} />
-                  </div>
-                )}
-                {teamInfo.problem_requirements && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-600 mb-1">דרישות מרכזיות</h3>
-                    <div className="text-slate-600" dangerouslySetInnerHTML={{ __html: teamInfo.problem_requirements }} />
+
+                {(teamInfo.problem_intro || teamInfo.problem_objective || teamInfo.problem_requirements) && (
+                  <div className="border-t pt-4 space-y-4">
+                    {teamInfo.problem_intro && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-purple-600 mb-1">מבוא</h3>
+                        <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_intro }} />
+                      </div>
+                    )}
+                    {teamInfo.problem_objective && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-purple-600 mb-1">מטרת המוצר</h3>
+                        <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_objective }} />
+                      </div>
+                    )}
+                    {teamInfo.problem_requirements && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-purple-600 mb-1">דרישות מרכזיות</h3>
+                        <div className="text-slate-600 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: teamInfo.problem_requirements }} />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -212,12 +287,19 @@ export default function HackalonTeamArea() {
             {specSubmission ? (
               <div className="space-y-2">
                 <a href={specSubmission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
-                  <p className="font-medium text-green-800 text-sm">{specSubmission.file_name}</p>
-                  <p className="text-xs text-green-600 mt-1">הועלה על ידי {specSubmission.uploaded_by}</p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-medium text-green-800 text-sm">{specSubmission.file_name}</p>
+                      <p className="text-xs text-green-600 mt-1">הועלה על ידי {specSubmission.uploaded_by}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={(e) => { e.preventDefault(); handleDelete(specSubmission); }} className="text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </a>
               </div>
             ) : (
-              <div>
+              <div className="space-y-2">
                 <input type="file" id="spec-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'specification')} disabled={uploading === 'specification'} />
                 <label htmlFor="spec-upload">
                   <Button asChild disabled={uploading === 'specification'} className="w-full cursor-pointer">
@@ -227,6 +309,10 @@ export default function HackalonTeamArea() {
                     </span>
                   </Button>
                 </label>
+                <Button variant="outline" onClick={() => { setShowLinkModal('specification'); setLinkUrl(''); }} className="w-full">
+                  <LinkIcon className="w-4 h-4 ml-2" />
+                  הוסף קישור
+                </Button>
               </div>
             )}
           </Card>
@@ -240,12 +326,19 @@ export default function HackalonTeamArea() {
             {pres1Submission ? (
               <div className="space-y-2">
                 <a href={pres1Submission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
-                  <p className="font-medium text-blue-800 text-sm">{pres1Submission.file_name}</p>
-                  <p className="text-xs text-blue-600 mt-1">הועלה על ידי {pres1Submission.uploaded_by}</p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-medium text-blue-800 text-sm">{pres1Submission.file_name}</p>
+                      <p className="text-xs text-blue-600 mt-1">הועלה על ידי {pres1Submission.uploaded_by}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={(e) => { e.preventDefault(); handleDelete(pres1Submission); }} className="text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </a>
               </div>
             ) : (
-              <div>
+              <div className="space-y-2">
                 <input type="file" id="pres1-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'presentation1')} disabled={uploading === 'presentation1'} />
                 <label htmlFor="pres1-upload">
                   <Button asChild disabled={uploading === 'presentation1'} className="w-full cursor-pointer">
@@ -255,6 +348,10 @@ export default function HackalonTeamArea() {
                     </span>
                   </Button>
                 </label>
+                <Button variant="outline" onClick={() => { setShowLinkModal('presentation1'); setLinkUrl(''); }} className="w-full">
+                  <LinkIcon className="w-4 h-4 ml-2" />
+                  הוסף קישור
+                </Button>
               </div>
             )}
           </Card>
@@ -268,12 +365,19 @@ export default function HackalonTeamArea() {
             {pres2Submission ? (
               <div className="space-y-2">
                 <a href={pres2Submission.file_url} target="_blank" rel="noopener noreferrer" className="block p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
-                  <p className="font-medium text-purple-800 text-sm">{pres2Submission.file_name}</p>
-                  <p className="text-xs text-purple-600 mt-1">הועלה על ידי {pres2Submission.uploaded_by}</p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className="font-medium text-purple-800 text-sm">{pres2Submission.file_name}</p>
+                      <p className="text-xs text-purple-600 mt-1">הועלה על ידי {pres2Submission.uploaded_by}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={(e) => { e.preventDefault(); handleDelete(pres2Submission); }} className="text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </a>
               </div>
             ) : (
-              <div>
+              <div className="space-y-2">
                 <input type="file" id="pres2-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'presentation2')} disabled={uploading === 'presentation2'} />
                 <label htmlFor="pres2-upload">
                   <Button asChild disabled={uploading === 'presentation2'} className="w-full cursor-pointer">
@@ -283,10 +387,38 @@ export default function HackalonTeamArea() {
                     </span>
                   </Button>
                 </label>
+                <Button variant="outline" onClick={() => { setShowLinkModal('presentation2'); setLinkUrl(''); }} className="w-full">
+                  <LinkIcon className="w-4 h-4 ml-2" />
+                  הוסף קישור
+                </Button>
               </div>
             )}
           </Card>
         </div>
+
+        {/* Link Modal */}
+        <Dialog open={!!showLinkModal} onOpenChange={() => setShowLinkModal(null)}>
+          <DialogContent dir="rtl">
+            <DialogHeader>
+              <DialogTitle>הוסף קישור</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>URL</Label>
+                <Input 
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="https://..."
+                  type="url"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => handleAddLink(showLinkModal)} disabled={!linkUrl.trim()} className="flex-1">הוסף</Button>
+                <Button variant="outline" onClick={() => setShowLinkModal(null)} className="flex-1">ביטול</Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
