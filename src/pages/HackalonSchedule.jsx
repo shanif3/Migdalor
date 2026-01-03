@@ -265,8 +265,8 @@ export default function HackalonSchedule() {
         </Card>
 
         {/* Timeline View */}
-        <Card className="overflow-hidden">
-          <div className="relative" style={{ minHeight: '1440px' }}>
+        <Card className="overflow-auto max-h-[800px]">
+          <div className="relative" style={{ minHeight: '1440px', minWidth: '600px' }}>
             {/* Time slots */}
             {timeSlots.map((time, idx) => (
               <div
@@ -302,15 +302,15 @@ export default function HackalonSchedule() {
                         key={item.id}
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={`absolute right-0 left-0 ${color} text-white rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden`}
+                        className={`absolute right-0 left-0 ${color} text-white rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden group`}
                         style={style}
                         onClick={() => isAdmin && handleEdit(item)}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1 mb-1">
-                              <span className="text-lg">{eventTypeIcons[item.event_type]}</span>
                               <p className="font-bold text-sm truncate">{item.title}</p>
+                              <span className="text-lg">{eventTypeIcons[item.event_type]}</span>
                             </div>
                             <p className="text-xs opacity-90">
                               {item.start_time} - {item.end_time}
@@ -320,7 +320,7 @@ export default function HackalonSchedule() {
                             )}
                           </div>
                           {isAdmin && (
-                            <div className="flex gap-1 flex-shrink-0">
+                            <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -335,7 +335,7 @@ export default function HackalonSchedule() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-6 w-6 text-white hover:bg-white/20"
+                                className="h-6 w-6 text-white hover:bg-red-600/30"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleDelete(item.id);
@@ -434,11 +434,11 @@ export default function HackalonSchedule() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent dir="rtl">
-                    <SelectItem value="פורום גדודי"> פורום גדודי 👥</SelectItem>
-                    <SelectItem value="פורום מדורי"> פורום מדורי 🏢</SelectItem>
-                    <SelectItem value="הרצאת אורח">🎤 הרצאת אורח </SelectItem>
-                    <SelectItem value="מתפללים"> מתפללים 🙏</SelectItem>
-                    <SelectItem value="ארוחה"> ארוחה 🍽️</SelectItem>
+                    <SelectItem value="פורום גדודי">פורום גדודי 👥</SelectItem>
+                    <SelectItem value="פורום מדורי">פורום מדורי 🏢</SelectItem>
+                    <SelectItem value="הרצאת אורח">הרצאת אורח 🎤</SelectItem>
+                    <SelectItem value="מתפללים">מתפללים 🙏</SelectItem>
+                    <SelectItem value="ארוחה">ארוחה 🍽️</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -127,13 +127,13 @@ export default function Layout({ children, currentPageName }) {
     { name: 'הרשאות', icon: Shield, page: 'ManagePermissions', tooltip: 'ניהול הרשאות תפקידים' },
   ];
 
-  // HackAlon Navigation
+  // HackAlon Navigation - Default page is HackalonSchedule
   const allHackalonNavItems = [
-    { name: 'לוח זמנים', icon: Calendar, page: 'HackalonSchedule', tooltip: 'לוח זמנים ואירועים' },
+    { name: 'Hackalon', icon: Target, page: 'HackalonSchedule', tooltip: 'לוח זמנים', isDefault: true },
     { name: 'אזור הצוות', icon: Users, page: 'HackalonTeamArea', tooltip: 'אזור הצוות שלי' },
     { name: 'סקירה', icon: LayoutDashboard, page: 'HackalonOverview', tooltip: 'סקירה כללית', adminOnly: true },
     { name: 'תמונת מצב', icon: Image, page: 'HackalonStatus', tooltip: 'מעקב אחר העלאות', adminOnly: true },
-    { name: 'שיבוץ צוערים', icon: Target, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים', adminOnly: true },
+    { name: 'שיבוץ צוערים', icon: Users, page: 'HackalonAssignment', tooltip: 'שיבוץ למדורים וצוותים', adminOnly: true },
     { name: 'ניהול בעיות', icon: Settings, page: 'HackalonManageProblems', tooltip: 'הגדרת בעיות לצוותים', adminOnly: true },
   ];
 
