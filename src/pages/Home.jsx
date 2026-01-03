@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut } from 'lucide-react';
+import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut, Lightbulb } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
@@ -69,9 +69,9 @@ export default function Home() {
     available: !!classroomPath
   },
   {
-    title: 'ניהול אירועים',
-    description: 'תכנון וניהול אירועים ופעילויות',
-    icon: Calendar,
+    title: 'HackAlon',
+    description: 'ניהול האקאלון, מחזור 2',
+    icon: Lightbulb,
     path: null,
     color: 'bg-blue-500',
     available: false
