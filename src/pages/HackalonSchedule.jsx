@@ -36,7 +36,7 @@ export default function HackalonSchedule() {
 
   const { data: scheduleItems = [], isLoading } = useQuery({
     queryKey: ['hackalon-schedule', selectedDate],
-    queryFn: () => base44.entities.HackalonScheduleItem.filter({ date: selectedDate }, 'start_time'),
+    queryFn: () => base44.entities.HackalonScheduleItem.filter({ date: selectedDate }, 'start_time')
   });
 
   const createMutation = useMutation({
@@ -122,9 +122,9 @@ export default function HackalonSchedule() {
   };
 
   const changeDate = (days) => {
-    const newDate = days > 0 
-      ? addDays(parseISO(selectedDate), days)
-      : subDays(parseISO(selectedDate), Math.abs(days));
+    const newDate = days > 0 ?
+    addDays(parseISO(selectedDate), days) :
+    subDays(parseISO(selectedDate), Math.abs(days));
     setSelectedDate(format(newDate, 'yyyy-MM-dd'));
   };
 
@@ -179,7 +179,7 @@ export default function HackalonSchedule() {
     const sorted = [...scheduleItems].sort((a, b) => a.start_time.localeCompare(b.start_time));
     const columns = [];
 
-    sorted.forEach(event => {
+    sorted.forEach((event) => {
       let placed = false;
       for (let col of columns) {
         const lastEvent = col[col.length - 1];
@@ -203,8 +203,8 @@ export default function HackalonSchedule() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    );
+      </div>);
+
   }
 
   return (
@@ -214,8 +214,8 @@ export default function HackalonSchedule() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+          className="mb-8">
+
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             📅 לוח זמנים HackAlon
           </h1>
@@ -232,35 +232,35 @@ export default function HackalonSchedule() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-auto"
-            />
+              className="w-auto" />
+
             <Button variant="outline" size="icon" onClick={() => changeDate(1)}>
               <ChevronLeft className="w-4 h-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setSelectedDate(format(new Date(), 'yyyy-MM-dd'))}
-            >
+            <Button
+              variant="outline"
+              onClick={() => setSelectedDate(format(new Date(), 'yyyy-MM-dd'))}>
+
               היום
             </Button>
           </div>
-          {isAdmin && (
-            <Button onClick={openAddModal} className="bg-indigo-600 hover:bg-indigo-700">
+          {isAdmin &&
+          <Button onClick={openAddModal} className="bg-indigo-600 hover:bg-indigo-700">
               <Plus className="w-4 h-4 ml-2" />
               הוסף אירוע
             </Button>
-          )}
+          }
         </div>
 
         {/* Legend */}
         <Card className="p-4 mb-6">
           <div className="flex flex-wrap gap-4">
-            {Object.entries(eventTypeColors).map(([type, color]) => (
-              <div key={type} className="flex items-center gap-2">
+            {Object.entries(eventTypeColors).map(([type, color]) =>
+            <div key={type} className="flex items-center gap-2">
                 <div className={`w-4 h-4 rounded ${color}`}></div>
                 <span className="text-sm">{type} {eventTypeIcons[type]}</span>
               </div>
-            ))}
+            )}
           </div>
         </Card>
 
@@ -268,44 +268,44 @@ export default function HackalonSchedule() {
         <Card className="overflow-auto max-h-[800px]">
           <div className="relative" style={{ minHeight: '1440px', minWidth: '600px' }}>
             {/* Time slots */}
-            {timeSlots.map((time, idx) => (
-              <div
-                key={time}
-                className="absolute left-0 right-0 border-t border-slate-200"
-                style={{ top: `${idx * 80}px` }}
-              >
+            {timeSlots.map((time, idx) =>
+            <div
+              key={time}
+              className="absolute left-0 right-0 border-t border-slate-200"
+              style={{ top: `${idx * 80}px` }}>
+
                 <div className="absolute -top-3 right-4 bg-white px-2 text-sm font-medium text-slate-600">
                   {time}
                 </div>
               </div>
-            ))}
+            )}
 
             {/* Events */}
             <div className="relative pr-20" style={{ minHeight: '1440px' }}>
-              {eventColumns.map((column, colIdx) => (
-                <div
-                  key={colIdx}
-                  className="absolute"
-                  style={{
-                    right: `${20 + colIdx * (100 / eventColumns.length)}%`,
-                    width: `${95 / eventColumns.length}%`,
-                    top: 0,
-                    bottom: 0
-                  }}
-                >
+              {eventColumns.map((column, colIdx) =>
+              <div
+                key={colIdx}
+                className="absolute"
+                style={{
+                  right: `${20 + colIdx * (100 / eventColumns.length)}%`,
+                  width: `${95 / eventColumns.length}%`,
+                  top: 0,
+                  bottom: 0
+                }}>
+
                   {column.map((item) => {
-                    const style = getEventStyle(item.start_time, item.end_time);
-                    const color = eventTypeColors[item.event_type] || 'bg-slate-500 border-slate-600';
-                    
-                    return (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={`absolute right-0 left-0 ${color} text-white rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden group`}
-                        style={style}
-                        onClick={() => isAdmin && handleEdit(item)}
-                      >
+                  const style = getEventStyle(item.start_time, item.end_time);
+                  const color = eventTypeColors[item.event_type] || 'bg-slate-500 border-slate-600';
+
+                  return (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className={`absolute right-0 left-0 ${color} text-white rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden group`}
+                      style={style}
+                      onClick={() => isAdmin && handleEdit(item)}>
+
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1 mb-1">
@@ -315,57 +315,57 @@ export default function HackalonSchedule() {
                             <p className="text-xs opacity-90">
                               {item.start_time} - {item.end_time}
                             </p>
-                            {item.description && (
-                              <p className="text-xs opacity-75 mt-1 line-clamp-2">{item.description}</p>
-                            )}
+                            {item.description &&
+                          <p className="text-xs opacity-75 mt-1 line-clamp-2">{item.description}</p>
+                          }
                           </div>
-                          {isAdmin && (
-                            <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {isAdmin &&
+                        <div className="flex gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                               <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-white hover:bg-white/20"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEdit(item);
-                                }}
-                              >
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-white hover:bg-white/20"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(item);
+                            }}>
+
                                 <Edit2 className="w-3 h-3" />
                               </Button>
                               <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-white hover:bg-red-600/30"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDelete(item.id);
-                                }}
-                              >
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-white hover:bg-red-600/30"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(item.id);
+                            }}>
+
                                 <Trash2 className="w-3 h-3" />
                               </Button>
                             </div>
-                          )}
+                        }
                         </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              ))}
+                      </motion.div>);
 
-              {scheduleItems.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                })}
+                </div>
+              )}
+
+              {scheduleItems.length === 0 &&
+              <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
                     <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                     <p className="text-slate-400">אין אירועים מתוכננים לתאריך זה</p>
-                    {isAdmin && (
-                      <Button onClick={openAddModal} variant="outline" className="mt-4">
+                    {isAdmin &&
+                  <Button onClick={openAddModal} variant="outline" className="mt-4">
                         <Plus className="w-4 h-4 ml-2" />
                         הוסף אירוע ראשון
                       </Button>
-                    )}
+                  }
                   </div>
                 </div>
-              )}
+              }
             </div>
           </div>
         </Card>
@@ -374,7 +374,7 @@ export default function HackalonSchedule() {
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent dir="rtl" className="max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingItem ? 'ערוך אירוע' : 'הוסף אירוע חדש'}</DialogTitle>
+              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">{editingItem ? 'ערוך אירוע' : 'הוסף אירוע חדש'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -382,8 +382,8 @@ export default function HackalonSchedule() {
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="שם האירוע"
-                />
+                  placeholder="שם האירוע" />
+
               </div>
 
               <div>
@@ -392,8 +392,8 @@ export default function HackalonSchedule() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="פרטים נוספים"
-                  rows={3}
-                />
+                  rows={3} />
+
               </div>
 
               <div>
@@ -401,8 +401,8 @@ export default function HackalonSchedule() {
                 <Input
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                />
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors\ntext-right\nfile:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground\nplaceholder:text-muted-foreground\nfocus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\ndisabled:cursor-not-allowed disabled:opacity-50\nmd:text-sm\nflex-row-reverse text-right\n" />
+
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -411,16 +411,16 @@ export default function HackalonSchedule() {
                   <Input
                     type="time"
                     value={formData.start_time}
-                    onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                  />
+                    onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} />
+
                 </div>
                 <div>
                   <Label>שעת סיום *</Label>
                   <Input
                     type="time"
                     value={formData.end_time}
-                    onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                  />
+                    onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} />
+
                 </div>
               </div>
 
@@ -428,8 +428,8 @@ export default function HackalonSchedule() {
                 <Label>סוג אירוע *</Label>
                 <Select
                   value={formData.event_type}
-                  onValueChange={(value) => setFormData({ ...formData, event_type: value })}
-                >
+                  onValueChange={(value) => setFormData({ ...formData, event_type: value })}>
+
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -456,6 +456,6 @@ export default function HackalonSchedule() {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
-  );
+    </div>);
+
 }
