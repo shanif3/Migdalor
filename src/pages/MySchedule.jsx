@@ -99,10 +99,8 @@ export default function MySchedule() {
 
   const isAdmin = user?.role === 'admin';
   
-  // Check if user has create permission for Lesson entity or has specific position
+  // Only קה"ד פלוגתי and מפק"ץ הדרכה can add lessons (besides admins)
   const canAddLessons = isAdmin || 
-    (userPermissions?.entity_permissions?.Lesson && 
-     userPermissions.entity_permissions.Lesson.includes('create')) ||
     (user?.positions && (user.positions.includes('קה״ד פלוגתי') || user.positions.includes('מפק״ץ הדרכה')));
 
   const { data: allLessons = [], isLoading } = useQuery({
