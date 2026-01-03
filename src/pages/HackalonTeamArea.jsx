@@ -31,12 +31,26 @@ export default function HackalonTeamArea() {
   });
 
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
-    queryKey: ['hackalon-team-members', user?.hackalon_team],
+    queryKey: ['hackalon-team-members', user?.hackalon_team, teamInfo?.member_names],
     queryFn: async () => {
       const allUsers = await base44.entities.User.list();
-      return allUsers.filter(u => u.hackalon_team === user.hackalon_team);
+      // Find by hackalon_team OR by name match in member_names
+      return allUsers.filter(u => {
+        // Direct team assignment
+        if (u.hackalon_team === user.hackalon_team) return true;
+        
+        // Check if user's name is in the team's member_names list
+        if (teamInfo?.member_names) {
+          const userName = (u.onboarding_full_name || u.full_name || '').trim().toLowerCase();
+          return teamInfo.member_names.some(name => 
+            name.trim().toLowerCase() === userName
+          );
+        }
+        
+        return false;
+      });
     },
-    enabled: !!user?.hackalon_team
+    enabled: !!user?.hackalon_team && !!teamInfo
   });
 
   const { data: submissions = [] } = useQuery({
