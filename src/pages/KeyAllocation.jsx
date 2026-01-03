@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
@@ -22,17 +22,22 @@ import {
   SelectTrigger,
   SelectValue } from
 "@/components/ui/select";
-import { Wand2, Calendar, Key, RefreshCw, Loader2, AlertTriangle, CheckCircle, Trash2 } from 'lucide-react';
+import { Wand2, Calendar, Key, RefreshCw, Loader2, AlertTriangle, CheckCircle, Trash2, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 
 export default function KeyAllocation() {
+  const [user, setUser] = useState(null);
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [selectedLessons, setSelectedLessons] = useState([]);
   const [isAllocating, setIsAllocating] = useState(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
   const { data: allKeys = [] } = useQuery({
     queryKey: ['keys'],
