@@ -30,11 +30,16 @@ export default function MyProfile() {
 
   const updateNameMutation = useMutation({
     mutationFn: async (newName) => {
+      // Normalize text for comparison
+      const normalize = (str = '') => str.toString().trim().normalize('NFKC').toLowerCase();
+      
       // Check for HackAlon team assignment based on name
       const allTeams = await base44.entities.HackalonTeam.list();
+      const normalizedNewName = normalize(newName);
+      
       const matchingTeam = allTeams.find(team => 
         team.member_names && team.member_names.some(name => 
-          name.trim().toLowerCase() === newName.trim().toLowerCase()
+          normalize(name) === normalizedNewName
         )
       );
 
