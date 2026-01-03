@@ -82,9 +82,8 @@ export default function HackalonOverview() {
 
   const getTeamProgress = (teamName) => {
     const hasSpec = !!getSubmission(teamName, 'specification');
-    const hasPres1 = !!getSubmission(teamName, 'presentation1');
-    const hasPres2 = !!getSubmission(teamName, 'presentation2');
-    return [hasSpec, hasPres1, hasPres2].filter(Boolean).length;
+    const hasFinal = !!getSubmission(teamName, 'final_product');
+    return [hasSpec, hasFinal].filter(Boolean).length;
   };
 
   const handleTeamClick = (team) => {
@@ -159,7 +158,7 @@ export default function HackalonOverview() {
                             
                             {/* Progress bar */}
                             <div className="flex gap-1 mt-2">
-                              {[1, 2, 3].map((step) => (
+                              {[1, 2].map((step) => (
                                 <div 
                                   key={step}
                                   className={`h-2 flex-1 rounded-full ${
@@ -168,7 +167,7 @@ export default function HackalonOverview() {
                                 />
                               ))}
                             </div>
-                            <p className="text-xs text-slate-500 mt-1 text-center">{progress}/3 הועלו</p>
+                            <p className="text-xs text-slate-500 mt-1 text-center">{progress}/2 הועלו</p>
                           </Card>
                         );
                       })}
@@ -261,46 +260,21 @@ export default function HackalonOverview() {
                       )}
                     </div>
 
-                    {/* Presentation 1 */}
-                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
-                      <div className="flex items-center gap-3">
-                        <Presentation className="w-6 h-6 text-blue-600" />
-                        <div>
-                          <p className="font-medium">מצגת 1</p>
-                          {getSubmission(selectedTeam.name, 'presentation1') && (
-                            <p className="text-xs text-slate-500">
-                              הועלה על ידי {getSubmission(selectedTeam.name, 'presentation1').uploaded_by}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      {getSubmission(selectedTeam.name, 'presentation1') ? (
-                        <a href={getSubmission(selectedTeam.name, 'presentation1').file_url} target="_blank" rel="noopener noreferrer">
-                          <Button size="sm">
-                            <Download className="w-4 h-4 ml-2" />
-                            הורד
-                          </Button>
-                        </a>
-                      ) : (
-                        <span className="text-sm text-slate-400">לא הועלה</span>
-                      )}
-                    </div>
-
-                    {/* Presentation 2 */}
+                    {/* Final Product */}
                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
                       <div className="flex items-center gap-3">
                         <Presentation className="w-6 h-6 text-purple-600" />
                         <div>
-                          <p className="font-medium">מצגת 2</p>
-                          {getSubmission(selectedTeam.name, 'presentation2') && (
+                          <p className="font-medium">תוצר סופי</p>
+                          {getSubmission(selectedTeam.name, 'final_product') && (
                             <p className="text-xs text-slate-500">
-                              הועלה על ידי {getSubmission(selectedTeam.name, 'presentation2').uploaded_by}
+                              הועלה על ידי {getSubmission(selectedTeam.name, 'final_product').uploaded_by}
                             </p>
                           )}
                         </div>
                       </div>
-                      {getSubmission(selectedTeam.name, 'presentation2') ? (
-                        <a href={getSubmission(selectedTeam.name, 'presentation2').file_url} target="_blank" rel="noopener noreferrer">
+                      {getSubmission(selectedTeam.name, 'final_product') ? (
+                        <a href={getSubmission(selectedTeam.name, 'final_product').file_url} target="_blank" rel="noopener noreferrer">
                           <Button size="sm">
                             <Download className="w-4 h-4 ml-2" />
                             הורד

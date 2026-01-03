@@ -16,7 +16,14 @@ export default function HackalonManageProblems() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [problemForm, setProblemForm] = useState({ name: '', intro: '', objective: '', requirements: '' });
+  const [problemForm, setProblemForm] = useState({ 
+    name: '', 
+    intro: '', 
+    objective: '', 
+    requirements: '',
+    template_url: '',
+    deadline: ''
+  });
 
   const queryClient = useQueryClient();
 
@@ -44,7 +51,7 @@ export default function HackalonManageProblems() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowModal(false);
       setSelectedTeam(null);
-      setProblemForm({ name: '', intro: '', objective: '', requirements: '' });
+      setProblemForm({ name: '', intro: '', objective: '', requirements: '', template_url: '', deadline: '' });
       toast.success('הבעיה עודכנה בהצלחה');
     }
   });
@@ -55,7 +62,9 @@ export default function HackalonManageProblems() {
       name: team.problem_name || '',
       intro: team.problem_intro || '',
       objective: team.problem_objective || '',
-      requirements: team.problem_requirements || ''
+      requirements: team.problem_requirements || '',
+      template_url: team.specification_template_url || '',
+      deadline: team.specification_deadline ? new Date(team.specification_deadline).toISOString().slice(0, 16) : ''
     });
     setShowModal(true);
   };
@@ -71,7 +80,9 @@ export default function HackalonManageProblems() {
         problem_name: problemForm.name,
         problem_intro: problemForm.intro,
         problem_objective: problemForm.objective,
-        problem_requirements: problemForm.requirements
+        problem_requirements: problemForm.requirements,
+        specification_template_url: problemForm.template_url || null,
+        specification_deadline: problemForm.deadline ? new Date(problemForm.deadline).toISOString() : null
       }
     });
   };
@@ -142,10 +153,7 @@ export default function HackalonManageProblems() {
                         <Card key={team.id} className="p-4 bg-slate-50 border-slate-200">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <h4 className="font-semibold text-slate-800">{team.name}</h4>
-                                <span className="text-sm text-slate-500">• כיתה {team.classroom_number || 'לא הוגדר'}</span>
-                              </div>
+                              <h4 className="font-semibold text-slate-800 mb-2">{team.name}</h4>
                               
                               {team.problem_name ? (
                                 <div>
@@ -177,9 +185,52 @@ export default function HackalonManageProblems() {
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogContent dir="rtl" className="max-w-4xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>הגדרת בעיה - {selectedTeam?.name}</DialogTitle>
+              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">הגדרת בעיה - {selectedTeam?.name}</DialogTitle>
             </DialogHeader>
             <div className="space-y-6">
+              {/* Template Upload Section */}
+              <div className="border-b pb-4">
+                <Label className="text-base font-semibold mb-2 block">טמפלייט למסמך איפיון</Label>
+                <p className="text-xs text-slate-500 mb-2">העלה קובץ שהצוערים יכולים להוריד ולמלא</p>
+                <input
+                  type="file"
+                  id="template-upload"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    try {
+                      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                      setProblemForm({...problemForm, template_url: file_url});
+                      toast.success('הטמפלייט הועלה בהצלחה');
+                    } catch (error) {
+                      toast.error('שגיאה בהעלאת הטמפלייט');
+                    }
+                  }}
+                />
+                <div className="flex gap-2">
+                  <label htmlFor="template-upload">
+                    <Button type="button" asChild variant="outline">
+                      <span>העלה טמפלייט</span>
+                    </Button>
+                  </label>
+                  {problemForm.template_url && (
+                    <a href={problemForm.template_url} target="_blank" rel="noopener noreferrer">
+                      <Button type="button" variant="outline">צפה בטמפלייט הנוכחי</Button>
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Deadline Section */}
+              <div className="border-b pb-4">
+                <Label className="text-base font-semibold mb-2 block">דדליין להגשת מסמך איפיון</Label>
+                <Input
+                  type="datetime-local"
+                  value={problemForm.deadline || ''}
+                  onChange={(e) => setProblemForm({...problemForm, deadline: e.target.value})}
+                />
+              </div>
               <div>
                 <Label className="text-base font-semibold mb-2 block">שם הבעיה</Label>
                 <Input 

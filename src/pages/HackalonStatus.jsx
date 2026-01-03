@@ -81,14 +81,12 @@ export default function HackalonStatus() {
   const getStats = () => {
     const totalTeams = teams.length;
     const teamsWithSpec = new Set(submissions.filter(s => s.submission_type === 'specification').map(s => s.team_name)).size;
-    const teamsWithPres1 = new Set(submissions.filter(s => s.submission_type === 'presentation1').map(s => s.team_name)).size;
-    const teamsWithPres2 = new Set(submissions.filter(s => s.submission_type === 'presentation2').map(s => s.team_name)).size;
+    const teamsWithFinal = new Set(submissions.filter(s => s.submission_type === 'final_product').map(s => s.team_name)).size;
     
     const teamsWithoutSpec = totalTeams - teamsWithSpec;
-    const teamsWithoutPres1 = totalTeams - teamsWithPres1;
-    const teamsWithoutPres2 = totalTeams - teamsWithPres2;
+    const teamsWithoutFinal = totalTeams - teamsWithFinal;
 
-    return { totalTeams, teamsWithSpec, teamsWithPres1, teamsWithPres2, teamsWithoutSpec, teamsWithoutPres1, teamsWithoutPres2 };
+    return { totalTeams, teamsWithSpec, teamsWithFinal, teamsWithoutSpec, teamsWithoutFinal };
   };
 
   const stats = getStats();
@@ -97,19 +95,16 @@ export default function HackalonStatus() {
     const deptTeams = teams.filter(t => t.department_name === deptName);
     const deptTotal = deptTeams.length;
     const deptSpec = deptTeams.filter(t => getSubmission(t.name, 'specification')).length;
-    const deptPres1 = deptTeams.filter(t => getSubmission(t.name, 'presentation1')).length;
-    const deptPres2 = deptTeams.filter(t => getSubmission(t.name, 'presentation2')).length;
-    return { deptTotal, deptSpec, deptPres1, deptPres2 };
+    const deptFinal = deptTeams.filter(t => getSubmission(t.name, 'final_product')).length;
+    return { deptTotal, deptSpec, deptFinal };
   };
 
   const shouldShowTeam = (team) => {
     if (filterType === 'all') return true;
     if (filterType === 'with-spec') return !!getSubmission(team.name, 'specification');
     if (filterType === 'no-spec') return !getSubmission(team.name, 'specification');
-    if (filterType === 'with-pres1') return !!getSubmission(team.name, 'presentation1');
-    if (filterType === 'no-pres1') return !getSubmission(team.name, 'presentation1');
-    if (filterType === 'with-pres2') return !!getSubmission(team.name, 'presentation2');
-    if (filterType === 'no-pres2') return !getSubmission(team.name, 'presentation2');
+    if (filterType === 'with-final') return !!getSubmission(team.name, 'final_product');
+    if (filterType === 'no-final') return !getSubmission(team.name, 'final_product');
     return true;
   };
 
@@ -129,7 +124,7 @@ export default function HackalonStatus() {
 
         {/* Stats with filters */}
         <Card className="p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Specification */}
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
@@ -154,50 +149,26 @@ export default function HackalonStatus() {
               </div>
             </div>
 
-            {/* Presentation 1 */}
+            {/* Final Product */}
             <div>
               <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
                 <Presentation className="w-4 h-4" />
-                מצגת 1
+                תוצר סופי
               </h3>
               <div className="grid grid-cols-2 gap-2">
                 <Card 
-                  className={`p-3 cursor-pointer transition-all ${filterType === 'with-pres1' ? 'ring-2 ring-blue-500 bg-blue-50' : 'bg-blue-50 border-blue-200 hover:shadow-md'}`}
-                  onClick={() => setFilterType(filterType === 'with-pres1' ? 'all' : 'with-pres1')}
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'with-final' ? 'ring-2 ring-purple-500 bg-purple-50' : 'bg-purple-50 border-purple-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'with-final' ? 'all' : 'with-final')}
                 >
-                  <p className="text-xs text-blue-600">עם מצגת</p>
-                  <p className="text-xl font-bold text-blue-700">{stats.teamsWithPres1}</p>
+                  <p className="text-xs text-purple-600">עם תוצר</p>
+                  <p className="text-xl font-bold text-purple-700">{stats.teamsWithFinal}</p>
                 </Card>
                 <Card 
-                  className={`p-3 cursor-pointer transition-all ${filterType === 'no-pres1' ? 'ring-2 ring-orange-500 bg-orange-50' : 'bg-orange-50 border-orange-200 hover:shadow-md'}`}
-                  onClick={() => setFilterType(filterType === 'no-pres1' ? 'all' : 'no-pres1')}
+                  className={`p-3 cursor-pointer transition-all ${filterType === 'no-final' ? 'ring-2 ring-amber-500 bg-amber-50' : 'bg-amber-50 border-amber-200 hover:shadow-md'}`}
+                  onClick={() => setFilterType(filterType === 'no-final' ? 'all' : 'no-final')}
                 >
-                  <p className="text-xs text-orange-600">ללא מצגת</p>
-                  <p className="text-xl font-bold text-orange-700">{stats.teamsWithoutPres1}</p>
-                </Card>
-              </div>
-            </div>
-
-            {/* Presentation 2 */}
-            <div>
-              <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                <Presentation className="w-4 h-4" />
-                מצגת 2
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                <Card 
-                  className={`p-3 cursor-pointer transition-all ${filterType === 'with-pres2' ? 'ring-2 ring-purple-500 bg-purple-50' : 'bg-purple-50 border-purple-200 hover:shadow-md'}`}
-                  onClick={() => setFilterType(filterType === 'with-pres2' ? 'all' : 'with-pres2')}
-                >
-                  <p className="text-xs text-purple-600">עם מצגת</p>
-                  <p className="text-xl font-bold text-purple-700">{stats.teamsWithPres2}</p>
-                </Card>
-                <Card 
-                  className={`p-3 cursor-pointer transition-all ${filterType === 'no-pres2' ? 'ring-2 ring-amber-500 bg-amber-50' : 'bg-amber-50 border-amber-200 hover:shadow-md'}`}
-                  onClick={() => setFilterType(filterType === 'no-pres2' ? 'all' : 'no-pres2')}
-                >
-                  <p className="text-xs text-amber-600">ללא מצגת</p>
-                  <p className="text-xl font-bold text-amber-700">{stats.teamsWithoutPres2}</p>
+                  <p className="text-xs text-amber-600">ללא תוצר</p>
+                  <p className="text-xl font-bold text-amber-700">{stats.teamsWithoutFinal}</p>
                 </Card>
               </div>
             </div>
@@ -233,13 +204,9 @@ export default function HackalonStatus() {
                         <p className="text-xs text-green-600">מסמכי איפיון</p>
                         <p className="font-bold text-green-700">{deptStats.deptSpec}/{deptStats.deptTotal}</p>
                       </div>
-                      <div className="text-center px-3 py-1 bg-blue-50 rounded-lg">
-                        <p className="text-xs text-blue-600">מצגת 1</p>
-                        <p className="font-bold text-blue-700">{deptStats.deptPres1}/{deptStats.deptTotal}</p>
-                      </div>
                       <div className="text-center px-3 py-1 bg-purple-50 rounded-lg">
-                        <p className="text-xs text-purple-600">מצגת 2</p>
-                        <p className="font-bold text-purple-700">{deptStats.deptPres2}/{deptStats.deptTotal}</p>
+                        <p className="text-xs text-purple-600">תוצרים סופיים</p>
+                        <p className="font-bold text-purple-700">{deptStats.deptFinal}/{deptStats.deptTotal}</p>
                       </div>
                     </div>
                   </div>
@@ -248,8 +215,7 @@ export default function HackalonStatus() {
                     <div className="space-y-3">
                       {visibleTeams.map(team => {
                         const specSubmission = getSubmission(team.name, 'specification');
-                        const pres1Submission = getSubmission(team.name, 'presentation1');
-                        const pres2Submission = getSubmission(team.name, 'presentation2');
+                        const finalSubmission = getSubmission(team.name, 'final_product');
                         
                         return (
                           <Card key={team.id} className="p-4 bg-slate-50">
@@ -259,7 +225,7 @@ export default function HackalonStatus() {
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                               {/* Specification */}
                               <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
                                 <div className="flex items-center gap-2">
@@ -282,41 +248,19 @@ export default function HackalonStatus() {
                                 )}
                               </div>
 
-                              {/* Presentation 1 */}
-                              <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                                <div className="flex items-center gap-2">
-                                  <Presentation className="w-5 h-5 text-blue-600" />
-                                  <div>
-                                    <p className="text-sm font-medium">מצגת 1</p>
-                                    {pres1Submission && (
-                                      <p className="text-xs text-slate-500">{pres1Submission.uploaded_by}</p>
-                                    )}
-                                  </div>
-                                </div>
-                                {pres1Submission ? (
-                                  <a href={pres1Submission.file_url} target="_blank" rel="noopener noreferrer">
-                                    <Button size="sm" variant="ghost">
-                                      <Download className="w-4 h-4" />
-                                    </Button>
-                                  </a>
-                                ) : (
-                                  <XCircle className="w-5 h-5 text-red-400" />
-                                )}
-                              </div>
-
-                              {/* Presentation 2 */}
+                              {/* Final Product */}
                               <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
                                 <div className="flex items-center gap-2">
                                   <Presentation className="w-5 h-5 text-purple-600" />
                                   <div>
-                                    <p className="text-sm font-medium">מצגת 2</p>
-                                    {pres2Submission && (
-                                      <p className="text-xs text-slate-500">{pres2Submission.uploaded_by}</p>
+                                    <p className="text-sm font-medium">תוצר סופי</p>
+                                    {finalSubmission && (
+                                      <p className="text-xs text-slate-500">{finalSubmission.uploaded_by}</p>
                                     )}
                                   </div>
                                 </div>
-                                {pres2Submission ? (
-                                  <a href={pres2Submission.file_url} target="_blank" rel="noopener noreferrer">
+                                {finalSubmission ? (
+                                  <a href={finalSubmission.file_url} target="_blank" rel="noopener noreferrer">
                                     <Button size="sm" variant="ghost">
                                       <Download className="w-4 h-4" />
                                     </Button>
