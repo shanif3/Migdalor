@@ -143,9 +143,18 @@ export default function Layout({ children, currentPageName }) {
       return allHackalonNavItems;
     }
 
+    const allowedPositions = ['מפק״ץ', 'מנהל האקתון'];
+    const hasAllowedPosition = user?.positions?.some(pos => allowedPositions.includes(pos));
+
     return allHackalonNavItems.filter(item => {
       // Always show non-admin items
-      if (!item.adminOnly) return true;
+      if (!item.adminOnly) {
+        // For Overview and Status pages, check special permissions
+        if (item.page === 'HackalonOverview' || item.page === 'HackalonStatus') {
+          return hasAllowedPosition;
+        }
+        return true;
+      }
 
       // For admin-only items, check permissions
       if (!userPermissions?.pages_access) return false;

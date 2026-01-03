@@ -34,7 +34,9 @@ export default function HackalonOverview() {
   }, []);
 
   const isAdmin = user?.role === 'admin';
-  const hasAccess = isAdmin || (userPermissions?.pages_access?.includes('HackalonOverview'));
+  const allowedPositions = ['מפק״ץ', 'מנהל האקתון'];
+  const hasAllowedPosition = user?.positions?.some(pos => allowedPositions.includes(pos));
+  const hasAccess = isAdmin || hasAllowedPosition;
 
   const { data: departments = [], isLoading: depsLoading } = useQuery({
     queryKey: ['hackalon-departments'],
