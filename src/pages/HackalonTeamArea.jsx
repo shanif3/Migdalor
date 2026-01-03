@@ -115,20 +115,25 @@ useEffect(() => {
         const teamExists = allTeams.some(t => t.name === userData.hackalon_team);
         
         if (!teamExists) {
+          console.log('Team deleted, removing assignment...');
           // Team was deleted - remove assignment
           await base44.entities.User.update(userData.id, {
             hackalon_team: null,
             hackalon_department: null
           });
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
+          
+          // Force reload from server
+          const freshUser = await base44.auth.me();
+          setUser(freshUser);
           toast.info('הצוות שלך נמחק - הוסרת מהשיבוץ');
           return;
         }
       }
       
       setUser(userData);
-    } catch (error) {}
+    } catch (error) {
+      console.error('Load user error:', error);
+    }
   };
   loadUser();
 
