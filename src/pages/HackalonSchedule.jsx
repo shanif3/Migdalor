@@ -411,7 +411,7 @@ export default function HackalonSchedule() {
                   <Input
                     type="time"
                     value={formData.start_time}
-                    onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} />
+                    onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="flex h-9 w-full flex-row-reverse rounded-md border border-input bg-transparent\npx-3 py-1 text-base shadow-sm transition-colors\ntext-right\nfile:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground\nplaceholder:text-muted-foreground\nfocus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\ndisabled:cursor-not-allowed disabled:opacity-50\nmd:text-sm\n" />
 
                 </div>
                 <div>
@@ -419,7 +419,7 @@ export default function HackalonSchedule() {
                   <Input
                     type="time"
                     value={formData.end_time}
-                    onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} />
+                    onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} className="flex h-9 w-full flex-row-reverse rounded-md border border-input bg-transparent\npx-3 py-1 text-base shadow-sm transition-colors\ntext-right\nfile:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground\nplaceholder:text-muted-foreground\nfocus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\ndisabled:cursor-not-allowed disabled:opacity-50\nmd:text-sm\n" />
 
                 </div>
               </div>
