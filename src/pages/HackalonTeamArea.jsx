@@ -31,7 +31,18 @@ export default function HackalonTeamArea() {
     const interval = setInterval(loadUser, 2000);
     return () => clearInterval(interval);
   }, []);
-// Auto-assign user if name matches team member list
+
+
+  const { data: teamInfo, isLoading: teamLoading } = useQuery({
+    queryKey: ['hackalon-team-info', user?.hackalon_team],
+    queryFn: async () => {
+      const teams = await base44.entities.HackalonTeam.list();
+      return teams.find(t => t.name === user.hackalon_team);
+    },
+    enabled: !!user?.hackalon_team
+  });
+
+  // Auto-assign user if name matches team member list
 useEffect(() => {
   const autoAssign = async () => {
     if (!user || !teamInfo || user.hackalon_team) return;
@@ -62,15 +73,6 @@ useEffect(() => {
   autoAssign();
 }, [user?.onboarding_full_name, user?.full_name, teamInfo]);
 
-
-  const { data: teamInfo, isLoading: teamLoading } = useQuery({
-    queryKey: ['hackalon-team-info', user?.hackalon_team],
-    queryFn: async () => {
-      const teams = await base44.entities.HackalonTeam.list();
-      return teams.find(t => t.name === user.hackalon_team);
-    },
-    enabled: !!user?.hackalon_team
-  });
 
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
     queryKey: ['hackalon-team-members', user?.hackalon_team, teamInfo?.member_names],
