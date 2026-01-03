@@ -108,7 +108,6 @@ export default function MyProfile() {
                 <Link to={createPageUrl('Home')}>
                   <Button variant="outline" className="text-slate-700 hover:text-slate-900 hover:bg-slate-50">
                     <Home className="w-4 h-4 ml-2" />
-                    חזרה לדף הבית
                   </Button>
                 </Link>
 
@@ -119,7 +118,6 @@ export default function MyProfile() {
                   className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                 >
                   <LogOut className="w-4 h-4 ml-2" />
-                  התנתק
                 </Button>
               </div>
             )}
