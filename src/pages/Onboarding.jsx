@@ -54,7 +54,8 @@ export default function Onboarding() {
         squad_name: data.squad_name,
         platoon_name: data.platoon_name,
         phone_number: data.phone_number,
-        onboarding_completed: data.onboarding_completed
+        onboarding_completed: data.onboarding_completed,
+        positions: ['צוער']
       };
 
       // If matching team found, assign automatically
