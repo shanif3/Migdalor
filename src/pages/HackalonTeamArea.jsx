@@ -25,11 +25,43 @@ export default function HackalonTeamArea() {
       } catch (error) {}
     };
     loadUser();
+
     
     // Reload user data every 2 seconds to catch updates from other pages
     const interval = setInterval(loadUser, 2000);
     return () => clearInterval(interval);
   }, []);
+// Auto-assign user if name matches team member list
+useEffect(() => {
+  const autoAssign = async () => {
+    if (!user || !teamInfo || user.hackalon_team) return;
+    
+    const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
+    if (!userName) return;
+    
+    // Check if user's name appears in any team's member_names
+    const allTeams = await base44.entities.HackalonTeam.list();
+    const matchingTeam = allTeams.find(team => 
+      team.member_names?.some(name => name.trim().toLowerCase() === userName)
+    );
+    
+    if (matchingTeam) {
+      try {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: matchingTeam.name,
+          hackalon_department: matchingTeam.department_name
+        });
+        setUser({...user, hackalon_team: matchingTeam.name, hackalon_department: matchingTeam.department_name});
+        toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
+      } catch (error) {
+        console.error('Auto-assign failed:', error);
+      }
+    }
+  };
+  
+  autoAssign();
+}, [user?.onboarding_full_name, user?.full_name, teamInfo]);
+
 
   const { data: teamInfo, isLoading: teamLoading } = useQuery({
     queryKey: ['hackalon-team-info', user?.hackalon_team],
