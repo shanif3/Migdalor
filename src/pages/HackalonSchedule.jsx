@@ -159,11 +159,11 @@ export default function HackalonSchedule() {
 
   // Event type colors
   const eventTypeColors = {
-    'פורום גדודי': 'bg-purple-500 border-purple-600',
-    'פורום מדורי': 'bg-blue-500 border-blue-600',
-    'הרצאת אורח': 'bg-green-500 border-green-600',
-    'מתפללים': 'bg-amber-500 border-amber-600',
-    'ארוחה': 'bg-orange-500 border-orange-600'
+    'פורום גדודי': 'bg-purple-100 border-purple-200',
+    'פורום מדורי': 'bg-blue-100 border-blue-200',
+    'הרצאת אורח': 'bg-green-100 border-green-200',
+    'מתפללים': 'bg-amber-100 border-amber-200',
+    'ארוחה': 'bg-orange-100 border-orange-200'
   };
 
   const eventTypeIcons = {
