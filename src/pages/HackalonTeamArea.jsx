@@ -42,50 +42,67 @@ export default function HackalonTeamArea() {
     enabled: !!user?.hackalon_team
   });
 
-  // Auto-assign user if name matches team member list
-  useEffect(() => {
-    const autoAssign = async () => {
-      if (!user) return;
-
-      const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
-      if (!userName) return;
-
-      try {
-        const allTeams = await base44.entities.HackalonTeam.list();
-        const matchingTeam = allTeams.find((team) =>
-        team.member_names?.some((name) => name.trim().toLowerCase() === userName)
-        );
-
-        // If name matches a team but user isn't assigned - assign them
-        if (matchingTeam && user.hackalon_team !== matchingTeam.name) {
-          await base44.entities.User.update(user.id, {
-            hackalon_team: matchingTeam.name,
-            hackalon_department: matchingTeam.department_name
-          });
-
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
-          toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
-        }
-
-        // If name doesn't match current team - remove assignment
-        if (!matchingTeam && user.hackalon_team) {
-          await base44.entities.User.update(user.id, {
-            hackalon_team: null,
-            hackalon_department: null
-          });
-
-          const updatedUser = await base44.auth.me();
-          setUser(updatedUser);
-          toast.info('הוסרת מהצוות כי השם שלך לא תואם למשתתפי הצוות');
-        }
-      } catch (error) {
-        console.error('Auto-assign failed:', error);
+// Auto-assign user if name matches team member list
+useEffect(() => {
+  const autoAssign = async () => {
+    if (!user) return;
+    
+    const userName = (user.onboarding_full_name || user.full_name || '').trim().toLowerCase();
+    if (!userName) return;
+    
+    try {
+      const allTeams = await base44.entities.HackalonTeam.list();
+      const matchingTeam = allTeams.find(team => 
+        team.member_names?.some(name => name.trim().toLowerCase() === userName)
+      );
+      
+      // Check if current team/department still exists
+      const currentTeamExists = user.hackalon_team ? 
+        allTeams.some(t => t.name === user.hackalon_team) : false;
+      
+      // If assigned team was deleted - remove assignment
+      if (user.hackalon_team && !currentTeamExists) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: null,
+          hackalon_department: null
+        });
+        
+        const updatedUser = await base44.auth.me();
+        setUser(updatedUser);
+        toast.info('הצוות שלך נמחק - הוסרת מהשיבוץ');
+        return;
       }
-    };
-
-    autoAssign();
-  }, [user?.onboarding_full_name, user?.full_name]);
+      
+      // If name matches a team but user isn't assigned - assign them
+      if (matchingTeam && user.hackalon_team !== matchingTeam.name) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: matchingTeam.name,
+          hackalon_department: matchingTeam.department_name
+        });
+        
+        const updatedUser = await base44.auth.me();
+        setUser(updatedUser);
+        toast.success(`שובצת אוטומטית לצוות ${matchingTeam.name}`);
+      }
+      
+      // If name doesn't match current team - remove assignment
+      if (!matchingTeam && user.hackalon_team && currentTeamExists) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: null,
+          hackalon_department: null
+        });
+        
+        const updatedUser = await base44.auth.me();
+        setUser(updatedUser);
+        toast.info('הוסרת מהצוות כי השם שלך השתנה');
+      }
+    } catch (error) {
+      console.error('Auto-assign failed:', error);
+    }
+  };
+  
+  autoAssign();
+}, [user?.onboarding_full_name, user?.full_name]);
 
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
     queryKey: ['hackalon-team-members', user?.hackalon_team, teamInfo?.member_names],
