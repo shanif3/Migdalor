@@ -93,10 +93,15 @@ export default function ManageUsers() {
 
   const handleEdit = (user) => {
     setEditingUser(user);
+    const userPositions = user.positions || (user.position ? [user.position] : []);
+    // Add 'צוער' if user has no positions
+    if (userPositions.length === 0) {
+      userPositions.push('צוער');
+    }
     setFormData({
       squad_name: user.squad_name || '',
       platoon_name: user.platoon_name || '',
-      positions: user.positions || (user.position ? [user.position] : []),
+      positions: userPositions,
       role: user.role || 'user',
       phone_number: user.phone_number || '',
       full_name: user.full_name || '',
