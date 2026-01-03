@@ -73,7 +73,7 @@ export default function Home() {
     title: 'HackAlon',
     description: 'ניהול האקאלון, מחזור 2',
     icon: Lightbulb,
-    path: 'HackalonOverview',
+    path: 'HackalonSchedule',
     color: 'bg-blue-500',
     available: true
   },
