@@ -122,6 +122,10 @@ export default function Home() {
               <h2 className="text-lg font-semibold text-slate-800">מגדלור</h2>
             </Link>
 
+            <p className="text-sm text-slate-600 italic hidden md:block">
+              כשהאור תמיד דולק, הדרך ברורה
+            </p>
+
             {user && (
               <div className="flex items-center gap-3">
                 {/* My Profile Button */}
