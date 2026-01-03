@@ -100,9 +100,11 @@ export default function MySchedule() {
   const isAdmin = user?.role === 'admin';
   
   // Check if user has create permission for Lesson entity
+  // Default to true for backwards compatibility if no permissions system configured
   const canAddLessons = isAdmin || 
     (userPermissions?.entity_permissions?.Lesson && 
-     userPermissions.entity_permissions.Lesson.includes('create'));
+     userPermissions.entity_permissions.Lesson.includes('create')) ||
+    (!user?.positions || user.positions.length === 0); // Allow if no positions assigned (backwards compatibility)
 
   const { data: allLessons = [], isLoading } = useQuery({
     queryKey: ['my-lessons', user?.platoon_name, selectedDate],
