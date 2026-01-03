@@ -82,12 +82,35 @@ export default function HackalonAssignment() {
   });
 
   const deleteDeptMutation = useMutation({
-    mutationFn: (id) => base44.entities.HackalonDepartment.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
-      toast.success('המדור נמחק בהצלחה');
+  mutationFn: async (deptId) => {
+    const dept = departments.find(d => d.id === deptId);
+    
+    // Delete all teams in this department first
+    const deptTeams = teams.filter(t => t.department_name === dept.name);
+    for (const team of deptTeams) {
+      // Remove team assignments from all users
+      const teamUsers = users.filter(u => u.hackalon_team === team.name);
+      for (const user of teamUsers) {
+        await base44.entities.User.update(user.id, {
+          hackalon_team: null,
+          hackalon_department: null
+        });
+      }
+      
+      // Delete the team
+      await base44.entities.HackalonTeam.delete(team.id);
     }
-  });
+    
+    // Finally delete the department
+    return base44.entities.HackalonDepartment.delete(deptId);
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
+    queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
+    queryClient.invalidateQueries({ queryKey: ['users'] });
+    toast.success('המדור וכל הצוותים שלו נמחקו בהצלחה');
+  }
+});
 
   // Team mutations
   const createTeamMutation = useMutation({
