@@ -161,7 +161,7 @@ export default function Layout({ children, currentPageName }) {
   const isManagementPage = managementPages.includes(currentPageName);
   
   // Show management dropdown only in classroom area
-  const showManagementDropdown = !isUserManagementArea;
+  const showManagementDropdown = !isUserManagementArea && !isHackalonArea;
 
   // Hide navigation for Home page
   if (currentPageName === 'Home') {
