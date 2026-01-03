@@ -30,13 +30,34 @@ export default function MyProfile() {
 
   const updateNameMutation = useMutation({
     mutationFn: async (newName) => {
-      await base44.entities.User.update(user.id, {
+      // Check for HackAlon team assignment based on name
+      const allTeams = await base44.entities.HackalonTeam.list();
+      const matchingTeam = allTeams.find(team => 
+        team.member_names && team.member_names.some(name => 
+          name.trim().toLowerCase() === newName.trim().toLowerCase()
+        )
+      );
+
+      const updateData = {
         full_name: newName,
         onboarding_full_name: newName
-      });
+      };
+
+      // If matching team found, assign automatically
+      if (matchingTeam) {
+        updateData.hackalon_department = matchingTeam.department_name;
+        updateData.hackalon_team = matchingTeam.name;
+      }
+
+      await base44.entities.User.update(user.id, updateData);
+      return { assignedToTeam: !!matchingTeam, teamName: matchingTeam?.name };
     },
-    onSuccess: () => {
-      toast.success('השם עודכן בהצלחה');
+    onSuccess: (result) => {
+      if (result.assignedToTeam) {
+        toast.success(`השם עודכן ושובצת לצוות ${result.teamName}! 🎉`);
+      } else {
+        toast.success('השם עודכן בהצלחה');
+      }
       setIsEditing(false);
       // Refresh user data
       base44.auth.me().then((userData) => {
