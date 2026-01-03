@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles} from 'lucide-react';
+import { Key, Calendar, Users,FaUserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles} from 'lucide-react';
 
 import { motion } from 'framer-motion';
 
@@ -129,8 +129,7 @@ export default function Home() {
                 {/* My Profile Button */}
                 <Link to={createPageUrl('MyProfile')}>
                   <Button variant="outline" className="text-slate-700 hover:text-slate-900 hover:bg-slate-50">
-                    <Users className="w-4 h-4 ml-2" />
-                    אזור אישי
+                    <FaUserPen className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
 
@@ -141,7 +140,7 @@ export default function Home() {
                 className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
 
                   <LogOut className="w-4 h-4 ml-2" />
-                  התנתק
+                  
                 </Button>
               </div>
             }
