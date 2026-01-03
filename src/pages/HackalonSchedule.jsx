@@ -7,23 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Edit, Trash2, Loader2, Target, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Loader2, Edit2, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, addDays, subDays, parseISO } from 'date-fns';
 
 export default function HackalonSchedule() {
   const [user, setUser] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    date: '',
+    date: selectedDate,
     start_time: '',
     end_time: '',
-    event_type: 'event'
+    event_type: 'פורום מדורי'
   });
   const queryClient = useQueryClient();
 
@@ -34,19 +35,17 @@ export default function HackalonSchedule() {
   const isAdmin = user?.role === 'admin';
 
   const { data: scheduleItems = [], isLoading } = useQuery({
-    queryKey: ['hackalon-schedule'],
-    queryFn: () => base44.entities.HackalonScheduleItem.list('date')
+    queryKey: ['hackalon-schedule', selectedDate],
+    queryFn: () => base44.entities.HackalonScheduleItem.filter({ date: selectedDate }, 'start_time'),
   });
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.HackalonScheduleItem.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hackalon-schedule'] });
-      toast.success('נוסף בהצלחה');
-      handleCloseModal();
-    },
-    onError: () => {
-      toast.error('שגיאה בהוספה');
+      setShowModal(false);
+      resetForm();
+      toast.success('אירוע נוסף בהצלחה');
     }
   });
 
@@ -54,11 +53,9 @@ export default function HackalonSchedule() {
     mutationFn: ({ id, data }) => base44.entities.HackalonScheduleItem.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hackalon-schedule'] });
-      toast.success('עודכן בהצלחה');
-      handleCloseModal();
-    },
-    onError: () => {
-      toast.error('שגיאה בעדכון');
+      setShowModal(false);
+      resetForm();
+      toast.success('אירוע עודכן בהצלחה');
     }
   });
 
@@ -66,54 +63,21 @@ export default function HackalonSchedule() {
     mutationFn: (id) => base44.entities.HackalonScheduleItem.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hackalon-schedule'] });
-      toast.success('נמחק בהצלחה');
-    },
-    onError: () => {
-      toast.error('שגיאה במחיקה');
+      toast.success('אירוע נמחק בהצלחה');
     }
   });
 
-  const handleOpenModal = (item = null) => {
-    if (item) {
-      setEditingItem(item);
-      setFormData({
-        title: item.title,
-        description: item.description || '',
-        date: item.date,
-        start_time: item.start_time || '',
-        end_time: item.end_time || '',
-        event_type: item.event_type || 'event'
-      });
-    } else {
-      setEditingItem(null);
-      setFormData({
-        title: '',
-        description: '',
-        date: '',
-        start_time: '',
-        end_time: '',
-        event_type: 'event'
-      });
+  const handleSubmit = () => {
+    if (!formData.title || !formData.start_time || !formData.end_time) {
+      toast.error('אנא מלא את כל השדות הנדרשים');
+      return;
     }
-    setShowModal(true);
-  };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingItem(null);
-    setFormData({
-      title: '',
-      description: '',
-      date: '',
-      start_time: '',
-      end_time: '',
-      event_type: 'event'
-    });
-  };
+    if (formData.start_time >= formData.end_time) {
+      toast.error('שעת הסיום חייבת להיות מאוחרת יותר משעת ההתחלה');
+      return;
+    }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
     if (editingItem) {
       updateMutation.mutate({ id: editingItem.id, data: formData });
     } else {
@@ -121,33 +85,119 @@ export default function HackalonSchedule() {
     }
   };
 
-  const handleDelete = (item) => {
-    if (confirm(`האם למחוק את "${item.title}"?`)) {
-      deleteMutation.mutate(item.id);
+  const handleEdit = (item) => {
+    setEditingItem(item);
+    setFormData({
+      title: item.title,
+      description: item.description || '',
+      date: item.date,
+      start_time: item.start_time,
+      end_time: item.end_time,
+      event_type: item.event_type
+    });
+    setShowModal(true);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('האם אתה בטוח שברצונך למחוק את האירוע?')) {
+      deleteMutation.mutate(id);
     }
   };
 
-  const getEventTypeConfig = (type) => {
-    switch (type) {
-      case 'milestone':
-        return { label: 'אבן דרך', color: 'bg-purple-100 text-purple-700', icon: Target };
-      case 'deadline':
-        return { label: 'דדליין', color: 'bg-red-100 text-red-700', icon: AlertCircle };
-      default:
-        return { label: 'אירוע', color: 'bg-blue-100 text-blue-700', icon: Calendar };
-    }
+  const resetForm = () => {
+    setEditingItem(null);
+    setFormData({
+      title: '',
+      description: '',
+      date: selectedDate,
+      start_time: '',
+      end_time: '',
+      event_type: 'פורום מדורי'
+    });
   };
 
-  // Group items by date
-  const groupedItems = scheduleItems.reduce((acc, item) => {
-    if (!acc[item.date]) {
-      acc[item.date] = [];
-    }
-    acc[item.date].push(item);
-    return acc;
-  }, {});
+  const openAddModal = () => {
+    resetForm();
+    setShowModal(true);
+  };
 
-  const sortedDates = Object.keys(groupedItems).sort();
+  const changeDate = (days) => {
+    const newDate = days > 0 
+      ? addDays(parseISO(selectedDate), days)
+      : subDays(parseISO(selectedDate), Math.abs(days));
+    setSelectedDate(format(newDate, 'yyyy-MM-dd'));
+  };
+
+  // Generate time slots for timeline (6:00 to 23:00)
+  const generateTimeSlots = () => {
+    const slots = [];
+    for (let hour = 6; hour <= 23; hour++) {
+      slots.push(`${String(hour).padStart(2, '0')}:00`);
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
+
+  // Calculate event position and height
+  const getEventStyle = (startTime, endTime) => {
+    const startHour = parseInt(startTime.split(':')[0]);
+    const startMinute = parseInt(startTime.split(':')[1]);
+    const endHour = parseInt(endTime.split(':')[0]);
+    const endMinute = parseInt(endTime.split(':')[1]);
+
+    const startOffset = (startHour - 6) * 60 + startMinute;
+    const endOffset = (endHour - 6) * 60 + endMinute;
+    const duration = endOffset - startOffset;
+
+    const pixelsPerMinute = 80 / 60; // 80px per hour
+    const top = startOffset * pixelsPerMinute;
+    const height = duration * pixelsPerMinute;
+
+    return { top: `${top}px`, height: `${height}px` };
+  };
+
+  // Event type colors
+  const eventTypeColors = {
+    'פורום גדודי': 'bg-purple-500 border-purple-600',
+    'פורום מדורי': 'bg-blue-500 border-blue-600',
+    'הרצאת אורח': 'bg-green-500 border-green-600',
+    'מתפללים': 'bg-amber-500 border-amber-600',
+    'ארוחה': 'bg-orange-500 border-orange-600'
+  };
+
+  const eventTypeIcons = {
+    'פורום גדודי': '👥',
+    'פורום מדורי': '🏢',
+    'הרצאת אורח': '🎤',
+    'מתפללים': '🙏',
+    'ארוחה': '🍽️'
+  };
+
+  // Detect overlapping events
+  const getOverlappingEvents = () => {
+    const sorted = [...scheduleItems].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    const columns = [];
+
+    sorted.forEach(event => {
+      let placed = false;
+      for (let col of columns) {
+        const lastEvent = col[col.length - 1];
+        if (lastEvent.end_time <= event.start_time) {
+          col.push(event);
+          placed = true;
+          break;
+        }
+      }
+      if (!placed) {
+        columns.push([event]);
+      }
+    });
+
+    return columns;
+  };
+
+  const eventColumns = getOverlappingEvents();
 
   if (!user || isLoading) {
     return (
@@ -159,195 +209,205 @@ export default function HackalonSchedule() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-800 mb-2">
-                📅 לוח זמנים HackAlon
-              </h1>
-              <p className="text-slate-500">מעקב אחר אירועים, דדליינים ואבני דרך</p>
-            </div>
-            {isAdmin && (
-              <Button onClick={() => handleOpenModal()} className="bg-purple-600 hover:bg-purple-700">
-                <Plus className="w-4 h-4 ml-2" />
-                הוסף אירוע
-              </Button>
-            )}
-          </div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            📅 לוח זמנים HackAlon
+          </h1>
+          <p className="text-slate-500">תכנון ומעקב אחר אירועים</p>
         </motion.div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <Card className="p-4 bg-blue-50 border-blue-200">
-            <p className="text-sm text-blue-600">אירועים</p>
-            <p className="text-2xl font-bold text-blue-700">
-              {scheduleItems.filter(i => i.event_type === 'event').length}
-            </p>
-          </Card>
-          <Card className="p-4 bg-purple-50 border-purple-200">
-            <p className="text-sm text-purple-600">אבני דרך</p>
-            <p className="text-2xl font-bold text-purple-700">
-              {scheduleItems.filter(i => i.event_type === 'milestone').length}
-            </p>
-          </Card>
-          <Card className="p-4 bg-red-50 border-red-200">
-            <p className="text-sm text-red-600">דדליינים</p>
-            <p className="text-2xl font-bold text-red-700">
-              {scheduleItems.filter(i => i.event_type === 'deadline').length}
-            </p>
-          </Card>
+        {/* Date Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon" onClick={() => changeDate(-1)}>
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+            <Input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-auto"
+            />
+            <Button variant="outline" size="icon" onClick={() => changeDate(1)}>
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setSelectedDate(format(new Date(), 'yyyy-MM-dd'))}
+            >
+              היום
+            </Button>
+          </div>
+          {isAdmin && (
+            <Button onClick={openAddModal} className="bg-indigo-600 hover:bg-indigo-700">
+              <Plus className="w-4 h-4 ml-2" />
+              הוסף אירוע
+            </Button>
+          )}
         </div>
 
-        {/* Schedule Items */}
-        {sortedDates.length > 0 ? (
-          <div className="space-y-6">
-            {sortedDates.map((date, index) => (
-              <motion.div
-                key={date}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+        {/* Legend */}
+        <Card className="p-4 mb-6">
+          <div className="flex flex-wrap gap-4">
+            {Object.entries(eventTypeColors).map(([type, color]) => (
+              <div key={type} className="flex items-center gap-2">
+                <div className={`w-4 h-4 rounded ${color}`}></div>
+                <span className="text-sm">{eventTypeIcons[type]} {type}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Timeline View */}
+        <Card className="overflow-hidden">
+          <div className="relative" style={{ minHeight: '1440px' }}>
+            {/* Time slots */}
+            {timeSlots.map((time, idx) => (
+              <div
+                key={time}
+                className="absolute left-0 right-0 border-t border-slate-200"
+                style={{ top: `${idx * 80}px` }}
               >
-                <div className="mb-3">
-                  <h3 className="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    <Calendar className="w-5 h-5" />
-                    {format(new Date(date), 'EEEE, dd/MM/yyyy')}
-                  </h3>
+                <div className="absolute -top-3 right-4 bg-white px-2 text-sm font-medium text-slate-600">
+                  {time}
                 </div>
-                <div className="space-y-3">
-                  {groupedItems[date].map((item) => {
-                    const typeConfig = getEventTypeConfig(item.event_type);
-                    const TypeIcon = typeConfig.icon;
+              </div>
+            ))}
+
+            {/* Events */}
+            <div className="relative pr-20" style={{ minHeight: '1440px' }}>
+              {eventColumns.map((column, colIdx) => (
+                <div
+                  key={colIdx}
+                  className="absolute"
+                  style={{
+                    right: `${20 + colIdx * (100 / eventColumns.length)}%`,
+                    width: `${95 / eventColumns.length}%`,
+                    top: 0,
+                    bottom: 0
+                  }}
+                >
+                  {column.map((item) => {
+                    const style = getEventStyle(item.start_time, item.end_time);
+                    const color = eventTypeColors[item.event_type] || 'bg-slate-500 border-slate-600';
+                    
                     return (
-                      <Card key={item.id} className="p-4 hover:shadow-md transition-shadow">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <Badge className={typeConfig.color}>
-                                <TypeIcon className="w-3 h-3 ml-1" />
-                                {typeConfig.label}
-                              </Badge>
-                              {item.start_time && (
-                                <div className="flex items-center gap-1 text-sm text-slate-500">
-                                  <Clock className="w-4 h-4" />
-                                  {item.start_time}
-                                  {item.end_time && ` - ${item.end_time}`}
-                                </div>
-                              )}
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={`absolute right-0 left-0 ${color} text-white rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden`}
+                        style={style}
+                        onClick={() => isAdmin && handleEdit(item)}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1 mb-1">
+                              <span className="text-lg">{eventTypeIcons[item.event_type]}</span>
+                              <p className="font-bold text-sm truncate">{item.title}</p>
                             </div>
-                            <h4 className="text-lg font-semibold text-slate-800 mb-1">
-                              {item.title}
-                            </h4>
+                            <p className="text-xs opacity-90">
+                              {item.start_time} - {item.end_time}
+                            </p>
                             {item.description && (
-                              <p className="text-slate-600 text-sm whitespace-pre-wrap">
-                                {item.description}
-                              </p>
+                              <p className="text-xs opacity-75 mt-1 line-clamp-2">{item.description}</p>
                             )}
                           </div>
                           {isAdmin && (
-                            <div className="flex items-center gap-2 mr-4">
+                            <div className="flex gap-1 flex-shrink-0">
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleOpenModal(item)}
-                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                className="h-6 w-6 text-white hover:bg-white/20"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(item);
+                                }}
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit2 className="w-3 h-3" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => handleDelete(item)}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="h-6 w-6 text-white hover:bg-white/20"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(item.id);
+                                }}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 h-3" />
                               </Button>
                             </div>
                           )}
                         </div>
-                      </Card>
+                      </motion.div>
                     );
                   })}
                 </div>
-              </motion.div>
-            ))}
+              ))}
+
+              {scheduleItems.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-400">אין אירועים מתוכננים לתאריך זה</p>
+                    {isAdmin && (
+                      <Button onClick={openAddModal} variant="outline" className="mt-4">
+                        <Plus className="w-4 h-4 ml-2" />
+                        הוסף אירוע ראשון
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        ) : (
-          <Card className="p-12 text-center">
-            <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-600 mb-2">אין אירועים עדיין</h3>
-            <p className="text-slate-400 mb-4">לוח הזמנים ריק</p>
-            {isAdmin && (
-              <Button onClick={() => handleOpenModal()}>
-                <Plus className="w-4 h-4 ml-2" />
-                הוסף אירוע ראשון
-              </Button>
-            )}
-          </Card>
-        )}
+        </Card>
 
         {/* Add/Edit Modal */}
         <Dialog open={showModal} onOpenChange={setShowModal}>
-          <DialogContent dir="rtl" className="max-w-2xl">
+          <DialogContent dir="rtl" className="max-w-md">
             <DialogHeader>
-              <DialogTitle>
-                {editingItem ? 'ערוך אירוע' : 'הוסף אירוע חדש'}
-              </DialogTitle>
+              <DialogTitle>{editingItem ? 'ערוך אירוע' : 'הוסף אירוע חדש'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
               <div>
                 <Label>כותרת *</Label>
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                  placeholder="לדוגמה: הגשת מסמך איפיון"
+                  placeholder="שם האירוע"
                 />
               </div>
-              
+
               <div>
                 <Label>תיאור</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="פרטים נוספים על האירוע..."
+                  placeholder="פרטים נוספים"
                   rows={3}
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>תאריך *</Label>
-                  <Input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label>סוג אירוע</Label>
-                  <select
-                    value={formData.event_type}
-                    onChange={(e) => setFormData({ ...formData, event_type: e.target.value })}
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  >
-                    <option value="event">אירוע</option>
-                    <option value="milestone">אבן דרך</option>
-                    <option value="deadline">דדליין</option>
-                  </select>
-                </div>
+              <div>
+                <Label>תאריך *</Label>
+                <Input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label>שעת התחלה</Label>
+                  <Label>שעת התחלה *</Label>
                   <Input
                     type="time"
                     value={formData.start_time}
@@ -355,7 +415,7 @@ export default function HackalonSchedule() {
                   />
                 </div>
                 <div>
-                  <Label>שעת סיום</Label>
+                  <Label>שעת סיום *</Label>
                   <Input
                     type="time"
                     value={formData.end_time}
@@ -364,15 +424,34 @@ export default function HackalonSchedule() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={handleCloseModal}>
+              <div>
+                <Label>סוג אירוע *</Label>
+                <Select
+                  value={formData.event_type}
+                  onValueChange={(value) => setFormData({ ...formData, event_type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent dir="rtl">
+                    <SelectItem value="פורום גדודי">👥 פורום גדודי</SelectItem>
+                    <SelectItem value="פורום מדורי">🏢 פורום מדורי</SelectItem>
+                    <SelectItem value="הרצאת אורח">🎤 הרצאת אורח</SelectItem>
+                    <SelectItem value="מתפללים">🙏 מתפללים</SelectItem>
+                    <SelectItem value="ארוחה">🍽️ ארוחה</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">
                   ביטול
                 </Button>
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                <Button onClick={handleSubmit} className="flex-1 bg-indigo-600 hover:bg-indigo-700">
                   {editingItem ? 'עדכן' : 'הוסף'}
                 </Button>
               </div>
-            </form>
+            </div>
           </DialogContent>
         </Dialog>
       </div>

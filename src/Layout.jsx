@@ -80,6 +80,11 @@ export default function Layout({ children, currentPageName }) {
   const isUserManagementArea = currentPageName === 'ManageUsers' || currentPageName === 'ManagePermissions' || currentPageName === 'ManagePositions';
   const isHackalonArea = ['HackalonSchedule', 'HackalonOverview', 'HackalonAssignment', 'HackalonTeamArea', 'HackalonManageProblems', 'HackalonStatus'].includes(currentPageName);
 
+  // Redirect to HackalonSchedule when clicking on any Hackalon nav item if not already in Hackalon area
+  if (isHackalonArea && currentPageName !== 'HackalonSchedule' && !window.location.search) {
+    // This allows direct navigation to specific Hackalon pages via URL
+  }
+
   // Classroom Management Navigation
   const allNavItems = [
     { name: 'לוח בקרה', icon: LayoutDashboard, page: 'Dashboard', tooltip: 'לוח בקרה' },
