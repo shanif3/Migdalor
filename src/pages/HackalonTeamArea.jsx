@@ -104,6 +104,39 @@ useEffect(() => {
   autoAssign();
 }, [user?.onboarding_full_name, user?.full_name]);
 
+useEffect(() => {
+  const loadUser = async () => {
+    try {
+      const userData = await base44.auth.me();
+      
+      // Check if assigned team still exists
+      if (userData.hackalon_team) {
+        const allTeams = await base44.entities.HackalonTeam.list();
+        const teamExists = allTeams.some(t => t.name === userData.hackalon_team);
+        
+        if (!teamExists) {
+          // Team was deleted - remove assignment
+          await base44.entities.User.update(userData.id, {
+            hackalon_team: null,
+            hackalon_department: null
+          });
+          const updatedUser = await base44.auth.me();
+          setUser(updatedUser);
+          toast.info('הצוות שלך נמחק - הוסרת מהשיבוץ');
+          return;
+        }
+      }
+      
+      setUser(userData);
+    } catch (error) {}
+  };
+  loadUser();
+
+  // Reload user data every 2 seconds to catch updates from other pages
+  const interval = setInterval(loadUser, 2000);
+  return () => clearInterval(interval);
+}, []);
+
   const { data: teamMembers = [], isLoading: membersLoading } = useQuery({
     queryKey: ['hackalon-team-members', user?.hackalon_team, teamInfo?.member_names],
     queryFn: async () => {
