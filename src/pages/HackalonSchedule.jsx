@@ -151,9 +151,9 @@ export default function HackalonSchedule() {
     const endOffset = (endHour - 6) * 60 + endMinute;
     const duration = endOffset - startOffset;
 
-    const pixelsPerMinute = 80 / 60; // 80px per hour
+    const pixelsPerMinute = 120 / 60; // 120px per hour (increased from 80px)
     const top = startOffset * pixelsPerMinute;
-    const height = Math.max(duration * pixelsPerMinute, 40); // Minimum 40px height
+    const height = Math.max(duration * pixelsPerMinute, 50); // Minimum 50px height
 
     return { top: `${top}px`, height: `${height}px`, duration };
   };
@@ -267,13 +267,13 @@ export default function HackalonSchedule() {
 
         {/* Timeline View */}
         <Card className="overflow-auto max-h-[800px]">
-          <div className="relative" style={{ minHeight: '1440px', minWidth: '600px' }}>
+          <div className="relative" style={{ minHeight: '2160px', minWidth: '600px' }}>
             {/* Time slots */}
             {timeSlots.map((time, idx) =>
             <div
               key={time}
               className="absolute left-0 right-0 border-t border-slate-200"
-              style={{ top: `${idx * 80}px` }}>
+              style={{ top: `${idx * 120}px` }}>
 
                 <div className="absolute -top-3 right-4 bg-white px-2 text-sm font-medium text-slate-600">
                   {time}
@@ -282,7 +282,7 @@ export default function HackalonSchedule() {
             )}
 
             {/* Events */}
-            <div className="relative pr-20" style={{ minHeight: '1440px' }}>
+            <div className="relative pr-20" style={{ minHeight: '2160px' }}>
               {eventColumns.map((column, colIdx) =>
               <div
                 key={colIdx}
