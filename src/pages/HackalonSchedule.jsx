@@ -152,18 +152,18 @@ export default function HackalonSchedule() {
 
     const pixelsPerMinute = 80 / 60; // 80px per hour
     const top = startOffset * pixelsPerMinute;
-    const height = duration * pixelsPerMinute;
+    const height = Math.max(duration * pixelsPerMinute, 40); // Minimum 40px height
 
-    return { top: `${top}px`, height: `${height}px` };
+    return { top: `${top}px`, height: `${height}px`, duration };
   };
 
   // Event type colors
   const eventTypeColors = {
-    'פורום גדודי': 'bg-purple-100 border-purple-200',
-    'פורום מדורי': 'bg-blue-100 border-blue-200',
-    'הרצאת אורח': 'bg-green-100 border-green-200',
-    'מתפללים': 'bg-amber-100 border-amber-200',
-    'ארוחה': 'bg-orange-100 border-orange-200'
+    'פורום גדודי': 'bg-purple-100 border-purple-300 text-purple-900',
+    'פורום מדורי': 'bg-blue-100 border-blue-300 text-blue-900',
+    'הרצאת אורח': 'bg-green-100 border-green-300 text-green-900',
+    'מתפללים': 'bg-amber-100 border-amber-300 text-amber-900',
+    'ארוחה': 'bg-orange-100 border-orange-300 text-orange-900'
   };
 
   const eventTypeIcons = {
@@ -287,36 +287,37 @@ export default function HackalonSchedule() {
                 key={colIdx}
                 className="absolute"
                 style={{
-                  right: `${20 + colIdx * (100 / eventColumns.length)}%`,
-                  width: `${95 / eventColumns.length}%`,
+                  right: `${100 + colIdx * 280}px`,
+                  width: '260px',
                   top: 0,
                   bottom: 0
                 }}>
 
                   {column.map((item) => {
                   const style = getEventStyle(item.start_time, item.end_time);
-                  const color = eventTypeColors[item.event_type] || 'bg-slate-500 border-slate-600';
+                  const color = eventTypeColors[item.event_type] || 'bg-slate-100 border-slate-300 text-slate-900';
+                  const isShortEvent = style.duration < 30; // Less than 30 minutes
 
                   return (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className={`absolute right-0 left-0 ${color} text-white rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden group`}
+                      className={`absolute right-0 left-0 ${color} rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden group`}
                       style={style}
                       onClick={() => isAdmin && handleEdit(item)}>
 
-                        <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start justify-between gap-2 h-full">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1 mb-1">
+                            <div className="flex items-center gap-1.5 mb-0.5">
+                              <span className="text-base flex-shrink-0">{eventTypeIcons[item.event_type]}</span>
                               <p className="font-bold text-sm truncate">{item.title}</p>
-                              <span className="text-lg">{eventTypeIcons[item.event_type]}</span>
                             </div>
-                            <p className="text-xs opacity-90">
+                            <p className="text-xs opacity-75 font-medium">
                               {item.start_time} - {item.end_time}
                             </p>
-                            {item.description &&
-                          <p className="text-xs opacity-75 mt-1 line-clamp-2">{item.description}</p>
+                            {!isShortEvent && item.description &&
+                          <p className="text-xs opacity-65 mt-1 line-clamp-2">{item.description}</p>
                           }
                           </div>
                           {isAdmin &&
@@ -324,7 +325,7 @@ export default function HackalonSchedule() {
                               <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-white hover:bg-white/20"
+                            className="h-6 w-6 hover:bg-black/10"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleEdit(item);
@@ -335,7 +336,7 @@ export default function HackalonSchedule() {
                               <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-white hover:bg-red-600/30"
+                            className="h-6 w-6 hover:bg-red-500/20"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDelete(item.id);
@@ -401,7 +402,15 @@ export default function HackalonSchedule() {
                 <Input
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors\ntext-right\nfile:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground\nplaceholder:text-muted-foreground\nfocus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\ndisabled:cursor-not-allowed disabled:opacity-50\nmd:text-sm\nflex-row-reverse text-right\n" />
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors
+text-right
+file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground
+placeholder:text-muted-foreground
+focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+disabled:cursor-not-allowed disabled:opacity-50
+md:text-sm
+flex-row-reverse text-right
+" />
 
               </div>
 
@@ -411,7 +420,15 @@ export default function HackalonSchedule() {
                   <Input
                     type="time"
                     value={formData.start_time}
-                    onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="flex h-9 w-full flex-row-reverse rounded-md border border-input bg-transparent\npx-3 py-1 text-base shadow-sm transition-colors\ntext-right\nfile:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground\nplaceholder:text-muted-foreground\nfocus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\ndisabled:cursor-not-allowed disabled:opacity-50\nmd:text-sm\n" />
+                    onChange={(e) => setFormData({ ...formData, start_time: e.target.value })} className="flex h-9 w-full flex-row-reverse rounded-md border border-input bg-transparent
+px-3 py-1 text-base shadow-sm transition-colors
+text-right
+file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground
+placeholder:text-muted-foreground
+focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+disabled:cursor-not-allowed disabled:opacity-50
+md:text-sm
+" />
 
                 </div>
                 <div>
@@ -419,7 +436,15 @@ export default function HackalonSchedule() {
                   <Input
                     type="time"
                     value={formData.end_time}
-                    onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} className="flex h-9 w-full flex-row-reverse rounded-md border border-input bg-transparent\npx-3 py-1 text-base shadow-sm transition-colors\ntext-right\nfile:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground\nplaceholder:text-muted-foreground\nfocus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\ndisabled:cursor-not-allowed disabled:opacity-50\nmd:text-sm\n" />
+                    onChange={(e) => setFormData({ ...formData, end_time: e.target.value })} className="flex h-9 w-full flex-row-reverse rounded-md border border-input bg-transparent
+px-3 py-1 text-base shadow-sm transition-colors
+text-right
+file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground
+placeholder:text-muted-foreground
+focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+disabled:cursor-not-allowed disabled:opacity-50
+md:text-sm
+" />
 
                 </div>
               </div>
