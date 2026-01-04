@@ -334,6 +334,11 @@ useEffect(() => {
   const isSpecDeadlinePassed = teamInfo?.specification_deadline 
     ? new Date() > new Date(teamInfo.specification_deadline)
     : false;
+  
+  // Check if final product deadline passed
+  const isFinalDeadlinePassed = teamInfo?.final_product_deadline 
+    ? new Date() > new Date(teamInfo.final_product_deadline)
+    : false;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100" dir="rtl">
