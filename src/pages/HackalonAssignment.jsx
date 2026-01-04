@@ -217,14 +217,21 @@ const updateDeptMutation = useMutation({
 const handleSaveDept = () => {
   if (!deptForm.name.trim()) return;
 
+  // Convert form data to match database fields
+  const dataToSave = {
+    name: deptForm.name,
+    icon: deptForm.icon,
+    classroom_number: deptForm.classroom // המרה לשדה הנכון
+  };
+
   if (editingDept) {
     updateDeptMutation.mutate({ 
       id: editingDept.id, 
-      data: deptForm,
-      oldName: editingDept.name // העברת השם הישן
+      data: dataToSave,
+      oldName: editingDept.name
     });
   } else {
-    createDeptMutation.mutate(deptForm);
+    createDeptMutation.mutate(dataToSave);
   }
 };
 
