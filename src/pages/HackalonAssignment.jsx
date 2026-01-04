@@ -557,31 +557,48 @@ const handleSaveDept = () => {
         </Card>
 
         {/* Department Modal */}
-        <Dialog open={showDeptModal} onOpenChange={setShowDeptModal}>
-          <DialogContent dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">{editingDept ? 'ערוך מדור' : 'הוסף מדור'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>שם המדור</Label>
-                <Input value={deptForm.name} onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })} placeholder="הזן שם מדור" />
-              </div>
-              <div>
-                <Label>מספר כיתה</Label>
-                <select value={deptForm.classroom} onChange={(e) => setDeptForm({ ...deptForm, classroom: e.target.value })} className="w-full px-3 py-2 border rounded-md">
-                  <option value="">בחר כיתה...</option>
-                  {classroomKeys.map((key) => <option key={key.id} value={key.room_number}>כיתה {key.room_number} ({key.room_type})</option>)}
-                </select>
-              </div>
+// Department Modal
+<Dialog open={showDeptModal} onOpenChange={setShowDeptModal}>
+  <DialogContent dir="rtl">
+    <DialogHeader>
+      <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right">{editingDept ? 'ערוך מדור' : 'הוסף מדור'}</DialogTitle>
+    </DialogHeader>
+    <div className="space-y-4">
+      <div>
+        <Label>שם המדור</Label>
+        <Input value={deptForm.name} onChange={(e) => setDeptForm({ ...deptForm, name: e.target.value })} placeholder="הזן שם מדור" />
+      </div>
+      <div>
+        <Label>מספר כיתה</Label>
+        <select value={deptForm.classroom} onChange={(e) => setDeptForm({ ...deptForm, classroom: e.target.value })} className="w-full px-3 py-2 border rounded-md">
+          <option value="">בחר כיתה...</option>
+          {classroomKeys.map((key) => {
+            // בדיקה אם הכיתה תפוסה על ידי מדור אחר
+            const isOccupied = departments.some(
+              (d) => d.classroom_number === key.room_number && 
+              (!editingDept || d.id !== editingDept.id) // לא תופס על ידי המדור הנוכחי
+            );
             
-              <div className="flex gap-2">
-                <Button onClick={handleSaveDept} disabled={!deptForm.name.trim()} className="flex-1">שמור</Button>
-                <Button variant="outline" onClick={() => setShowDeptModal(false)} className="flex-1">ביטול</Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            return (
+              <option 
+                key={key.id} 
+                value={key.room_number}
+                disabled={isOccupied}
+              >
+                כיתה {key.room_number} ({key.room_type}) {isOccupied ? '- תפוס' : ''}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+    
+      <div className="flex gap-2">
+        <Button onClick={handleSaveDept} disabled={!deptForm.name.trim()} className="flex-1">שמור</Button>
+        <Button variant="outline" onClick={() => setShowDeptModal(false)} className="flex-1">ביטול</Button>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
 
         {/* Team Modal */}
         <Dialog open={showTeamModal} onOpenChange={setShowTeamModal}>
