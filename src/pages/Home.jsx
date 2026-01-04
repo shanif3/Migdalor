@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users, UserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles } from 'lucide-react';
+import { Key, Calendar, Users,UserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles} from 'lucide-react';
 
 import { motion } from 'framer-motion';
 
@@ -120,7 +120,7 @@ export default function Home() {
                 alt="מגדלור לוגו"
                 className="w-12 h-12 object-contain" />
 
-              <h2 className="text-lg font-semibold text-slate-800"></h2>
+              <h2 className="text-lg font-semibold text-slate-800">מגדלור</h2>
             </Link>
 
 
@@ -155,7 +155,7 @@ export default function Home() {
           className="text-center mb-12">
 
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/9732960ed_8.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/693b00a201212578d09f8396/2f970d938_9.png"
             alt="מגדלור לוגו"
             className="w-24 h-24 object-contain mx-auto mb-6" />
 
