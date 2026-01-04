@@ -22,7 +22,8 @@ export default function HackalonManageProblems() {
     objective: '', 
     requirements: '',
     template_url: '',
-    deadline: ''
+    deadline: '',
+    final_deadline: ''
   });
 
   const queryClient = useQueryClient();
@@ -51,7 +52,7 @@ export default function HackalonManageProblems() {
       queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
       setShowModal(false);
       setSelectedTeam(null);
-      setProblemForm({ name: '', intro: '', objective: '', requirements: '', template_url: '', deadline: '' });
+      setProblemForm({ name: '', intro: '', objective: '', requirements: '', template_url: '', deadline: '', final_deadline: '' });
       toast.success('הבעיה עודכנה בהצלחה');
     }
   });
@@ -64,7 +65,8 @@ export default function HackalonManageProblems() {
       objective: team.problem_objective || '',
       requirements: team.problem_requirements || '',
       template_url: team.specification_template_url || '',
-      deadline: team.specification_deadline ? new Date(team.specification_deadline).toISOString().slice(0, 16) : ''
+      deadline: team.specification_deadline ? new Date(team.specification_deadline).toISOString().slice(0, 16) : '',
+      final_deadline: team.final_product_deadline ? new Date(team.final_product_deadline).toISOString().slice(0, 16) : ''
     });
     setShowModal(true);
   };
@@ -82,7 +84,8 @@ export default function HackalonManageProblems() {
         problem_objective: problemForm.objective,
         problem_requirements: problemForm.requirements,
         specification_template_url: problemForm.template_url || null,
-        specification_deadline: problemForm.deadline ? new Date(problemForm.deadline).toISOString() : null
+        specification_deadline: problemForm.deadline ? new Date(problemForm.deadline).toISOString() : null,
+        final_product_deadline: problemForm.final_deadline ? new Date(problemForm.final_deadline).toISOString() : null
       }
     });
   };
@@ -229,6 +232,16 @@ export default function HackalonManageProblems() {
                   type="datetime-local"
                   value={problemForm.deadline || ''}
                   onChange={(e) => setProblemForm({...problemForm, deadline: e.target.value})}
+                />
+              </div>
+
+              {/* Final Product Deadline Section */}
+              <div className="border-b pb-4">
+                <Label className="text-base font-semibold mb-2 block">דדליין להגשת תוצר סופי</Label>
+                <Input
+                  type="datetime-local"
+                  value={problemForm.final_deadline || ''}
+                  onChange={(e) => setProblemForm({...problemForm, final_deadline: e.target.value})}
                 />
               </div>
               <div>

@@ -509,9 +509,19 @@ useEffect(() => {
 
           {/* Final Product */}
           <Card className="p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <AppWindow className="w-6 h-6 text-purple-600" />
-              <h3 className="text-lg font-bold text-slate-800">תוצר סופי</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <AppWindow className="w-6 h-6 text-purple-600" />
+                <h3 className="text-lg font-bold text-slate-800">תוצר סופי</h3>
+              </div>
+              {teamInfo?.final_product_deadline && (
+                <div className="text-xs text-slate-500">
+                  <div>דדליין: {new Date(teamInfo.final_product_deadline).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })} {new Date(teamInfo.final_product_deadline).toLocaleDateString('he-IL')}</div>
+                  {isFinalDeadlinePassed && !finalProductSubmission && (
+                    <div className="text-red-600 font-semibold">חלף המועד!</div>
+                  )}
+                </div>
+              )}
             </div>
             {finalProductSubmission ?
             <div className="space-y-2">
