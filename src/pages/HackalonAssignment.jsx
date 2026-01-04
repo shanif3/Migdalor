@@ -70,16 +70,39 @@ export default function HackalonAssignment() {
     }
   });
 
-  const updateDeptMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.HackalonDepartment.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
-      setShowDeptModal(false);
-      setEditingDept(null);
-      setDeptForm({ name: '', icon: 'Users', classroom: '' });
-      toast.success('המדור עודכן בהצלחה');
+const updateDeptMutation = useMutation({
+  mutationFn: async ({ id, data, oldName }) => {
+    // Update the department
+    await base44.entities.HackalonDepartment.update(id, data);
+    
+    // If name changed, update all teams in this department
+    if (oldName && data.name !== oldName) {
+      const deptTeams = teams.filter((t) => t.department_name === oldName);
+      for (const team of deptTeams) {
+        await base44.entities.HackalonTeam.update(team.id, {
+          department_name: data.name
+        });
+        
+        // Also update users assigned to this team
+        const teamUsers = users.filter((u) => u.hackalon_department === oldName && u.hackalon_team === team.name);
+        for (const user of teamUsers) {
+          await base44.entities.User.update(user.id, {
+            hackalon_department: data.name
+          });
+        }
+      }
     }
-  });
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['hackalon-departments'] });
+    queryClient.invalidateQueries({ queryKey: ['hackalon-teams'] });
+    queryClient.invalidateQueries({ queryKey: ['users'] });
+    setShowDeptModal(false);
+    setEditingDept(null);
+    setDeptForm({ name: '', icon: 'Users', classroom: '' });
+    toast.success('המדור עודכן בהצלחה');
+  }
+});
 
   const deleteDeptMutation = useMutation({
     mutationFn: async (deptId) => {
@@ -191,15 +214,19 @@ export default function HackalonAssignment() {
     }
   });
 
-  const handleSaveDept = () => {
-    if (!deptForm.name.trim()) return;
+const handleSaveDept = () => {
+  if (!deptForm.name.trim()) return;
 
-    if (editingDept) {
-      updateDeptMutation.mutate({ id: editingDept.id, data: deptForm });
-    } else {
-      createDeptMutation.mutate(deptForm);
-    }
-  };
+  if (editingDept) {
+    updateDeptMutation.mutate({ 
+      id: editingDept.id, 
+      data: deptForm,
+      oldName: editingDept.name // העברת השם הישן
+    });
+  } else {
+    createDeptMutation.mutate(deptForm);
+  }
+};
 
   const handleAssignUserToTeam = (teamId, teamName, deptName) => {
     if (!selectedUserForAssign) return;
