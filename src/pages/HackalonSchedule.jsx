@@ -18,6 +18,7 @@ export default function HackalonSchedule() {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [viewingItem, setViewingItem] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -305,7 +306,13 @@ export default function HackalonSchedule() {
                       animate={{ opacity: 1, scale: 1 }}
                       className={`absolute right-0 left-0 ${color} rounded-lg border-2 p-2 cursor-pointer hover:shadow-lg transition-all overflow-hidden group`}
                       style={style}
-                      onClick={() => isAdmin && handleEdit(item)}>
+                      onClick={() => {
+                        if (isAdmin) {
+                          handleEdit(item);
+                        } else {
+                          setViewingItem(item);
+                        }
+                      }}>
 
                         <div className="flex items-start justify-between gap-2 h-full">
                           <div className="flex-1 min-w-0">
@@ -462,7 +469,7 @@ md:text-sm
                     <SelectItem value="פורום גדודי">פורום גדודי 👥</SelectItem>
                     <SelectItem value="פורום מדורי">פורום מדורי 🏢</SelectItem>
                     <SelectItem value="הרצאת אורח">הרצאת אורח 🎤</SelectItem>
-                    <SelectItem value="מתפללים">🙏 מתפללים </SelectItem>
+                    <SelectItem value="מתפללים">מתפללים 🙏</SelectItem>
                     <SelectItem value="ארוחה">ארוחה 🍽️</SelectItem>
                   </SelectContent>
                 </Select>
@@ -478,6 +485,56 @@ md:text-sm
                 
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* View Modal for Non-Admin Users */}
+        <Dialog open={!!viewingItem} onOpenChange={(open) => !open && setViewingItem(null)}>
+          <DialogContent dir="rtl" className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-semibold leading-none tracking-tight text-right flex items-center gap-2">
+                <span className="text-2xl">{viewingItem && eventTypeIcons[viewingItem.event_type]}</span>
+                {viewingItem?.title}
+              </DialogTitle>
+            </DialogHeader>
+            {viewingItem && (
+              <div className="space-y-4">
+                <div className={`p-4 rounded-lg ${eventTypeColors[viewingItem.event_type]}`}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Calendar className="w-4 h-4" />
+                    <span className="font-medium">תאריך:</span>
+                    <span>{new Date(viewingItem.date).toLocaleDateString('he-IL')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🕐</span>
+                    <span className="font-medium">שעות:</span>
+                    <span className="text-lg font-bold">{viewingItem.start_time} - {viewingItem.end_time}</span>
+                  </div>
+                </div>
+
+                {viewingItem.description && (
+                  <div>
+                    <p className="font-medium mb-2">תיאור:</p>
+                    <p className="text-slate-600 bg-slate-50 p-3 rounded-lg">{viewingItem.description}</p>
+                  </div>
+                )}
+
+                <div>
+                  <p className="font-medium mb-1">סוג אירוע:</p>
+                  <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${eventTypeColors[viewingItem.event_type]}`}>
+                    <span>{eventTypeIcons[viewingItem.event_type]}</span>
+                    <span className="font-medium">{viewingItem.event_type}</span>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={() => setViewingItem(null)} 
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                >
+                  סגור
+                </Button>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
