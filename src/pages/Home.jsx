@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users,UserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles} from 'lucide-react';
+import { Key, Calendar, Users, UserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 
@@ -120,7 +120,7 @@ export default function Home() {
                 alt="מגדלור לוגו"
                 className="w-12 h-12 object-contain" />
 
-              <h2 className="text-lg font-semibold text-slate-800">מגדלור</h2>
+              <h2 className="text-lg font-semibold text-slate-800"></h2>
             </Link>
 
 
