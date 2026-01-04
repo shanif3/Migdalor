@@ -48,11 +48,22 @@ export default function HackalonStatus() {
     enabled: hasAccess
   });
 
-  const { data: submissions = [] } = useQuery({
-    queryKey: ['hackalon-submissions'],
-    queryFn: () => base44.entities.HackalonSubmission.list(),
-    enabled: hasAccess
-  });
+  // const { data: submissions = [] } = useQuery({
+  //   queryKey: ['hackalon-submissions'],
+  //   queryFn: () => base44.entities.HackalonSubmission.list(),
+  //   enabled: hasAccess
+  // });
+  // ⭐ השינוי העיקרי - פילטור submissions רק לצוותים קיימים
+const { data: submissions = [] } = useQuery({
+  queryKey: ['hackalon-submissions', teams.length],
+  queryFn: async () => {
+    const allSubmissions = await base44.entities.HackalonSubmission.list();
+    // Filter only submissions that belong to existing teams
+    const teamNames = teams.map(t => t.name);
+    return allSubmissions.filter(s => teamNames.includes(s.team_name));
+  },
+  enabled: hasAccess && teams.length > 0
+});
 
   if (!user) {
     return (
