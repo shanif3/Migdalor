@@ -462,7 +462,7 @@ md:text-sm
                     <SelectItem value="פורום גדודי">פורום גדודי 👥</SelectItem>
                     <SelectItem value="פורום מדורי">פורום מדורי 🏢</SelectItem>
                     <SelectItem value="הרצאת אורח">הרצאת אורח 🎤</SelectItem>
-                    <SelectItem value="מתפללים">מתפללים 🙏</SelectItem>
+                    <SelectItem value="מתפללים">🙏 מתפללים </SelectItem>
                     <SelectItem value="ארוחה">ארוחה 🍽️</SelectItem>
                   </SelectContent>
                 </Select>
