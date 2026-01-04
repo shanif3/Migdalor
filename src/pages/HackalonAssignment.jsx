@@ -567,21 +567,7 @@ const handleSaveDept = () => {
                   {classroomKeys.map((key) => <option key={key.id} value={key.room_number}>כיתה {key.room_number} ({key.room_type})</option>)}
                 </select>
               </div>
-              <div>
-                <Label>אייקון</Label>
-                <select value={deptForm.icon} onChange={(e) => setDeptForm({ ...deptForm, icon: e.target.value })} className="w-full px-3 py-2 border rounded-md">
-                  <option value="Users">Users - 👥</option>
-                  <option value="Briefcase">Briefcase - 💼</option>
-                  <option value="Target">Target - 🎯</option>
-                  <option value="Lightbulb">Lightbulb - 💡</option>
-                  <option value="Zap">Zap - ⚡</option>
-                  <option value="Star">Star - ⭐</option>
-                  <option value="Award">Award - 🏆</option>
-                  <option value="Heart">Heart - ❤️</option>
-                  <option value="Rocket">Rocket - 🚀</option>
-                  <option value="Code">Code - 💻</option>
-                </select>
-              </div>
+            
               <div className="flex gap-2">
                 <Button onClick={handleSaveDept} disabled={!deptForm.name.trim()} className="flex-1">שמור</Button>
                 <Button variant="outline" onClick={() => setShowDeptModal(false)} className="flex-1">ביטול</Button>
