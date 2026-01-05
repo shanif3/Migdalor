@@ -153,7 +153,7 @@ export default function HackalonSchedule() {
 
     const pixelsPerMinute = 120 / 60; // 120px per hour (increased from 80px)
     const top = startOffset * pixelsPerMinute;
-    const height = Math.max(duration * pixelsPerMinute, 50); // Minimum 50px height
+    const height = Math.max(duration * pixelsPerMinute - 4, 50); // Subtract 4px for gap, minimum 50px height
 
     return { top: `${top}px`, height: `${height}px`, duration };
   };
@@ -175,21 +175,36 @@ export default function HackalonSchedule() {
     'ארוחה': '🍽️'
   };
 
-  // Detect overlapping events
+  // Detect overlapping events - improved algorithm
   const getOverlappingEvents = () => {
-    const sorted = [...scheduleItems].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    const sorted = [...scheduleItems].sort((a, b) => {
+      const timeCompare = a.start_time.localeCompare(b.start_time);
+      if (timeCompare !== 0) return timeCompare;
+      return a.end_time.localeCompare(b.end_time);
+    });
+    
     const columns = [];
 
     sorted.forEach((event) => {
       let placed = false;
-      for (let col of columns) {
-        const lastEvent = col[col.length - 1];
-        if (lastEvent.end_time <= event.start_time) {
+      
+      // Try to find a column where this event doesn't overlap
+      for (let i = 0; i < columns.length; i++) {
+        const col = columns[i];
+        const hasOverlap = col.some(existingEvent => {
+          // Events overlap if one starts before the other ends
+          return !(event.start_time >= existingEvent.end_time || 
+                   event.end_time <= existingEvent.start_time);
+        });
+        
+        if (!hasOverlap) {
           col.push(event);
           placed = true;
           break;
         }
       }
+      
+      // If no suitable column found, create a new one
       if (!placed) {
         columns.push([event]);
       }
@@ -288,8 +303,8 @@ export default function HackalonSchedule() {
                 key={colIdx}
                 className="absolute"
                 style={{
-                  right: `${100 + colIdx * 280}px`,
-                  width: '260px',
+                  right: `${100 + colIdx * 290}px`,
+                  width: '270px',
                   top: 0,
                   bottom: 0
                 }}>
