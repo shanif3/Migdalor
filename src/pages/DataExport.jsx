@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 export default function DataExport() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingDDL, setLoadingDDL] = useState(false);
+  const [loadingRLS, setLoadingRLS] = useState(false);
   const [exportedSQL, setExportedSQL] = useState('');
   const [selectedEntities, setSelectedEntities] = useState({});
 
@@ -182,6 +184,184 @@ export default function DataExport() {
     toast.success('הועתק ללוח');
   };
 
+  const getSQLType = (fieldSchema) => {
+    if (!fieldSchema) return 'TEXT';
+    
+    if (fieldSchema.type === 'string') {
+      if (fieldSchema.format === 'date') return 'DATE';
+      if (fieldSchema.format === 'date-time') return 'TIMESTAMP WITH TIME ZONE';
+      if (fieldSchema.enum) return 'TEXT';
+      return 'TEXT';
+    }
+    if (fieldSchema.type === 'number') return 'NUMERIC';
+    if (fieldSchema.type === 'integer') return 'INTEGER';
+    if (fieldSchema.type === 'boolean') return 'BOOLEAN';
+    if (fieldSchema.type === 'array') return 'JSONB';
+    if (fieldSchema.type === 'object') return 'JSONB';
+    
+    return 'TEXT';
+  };
+
+  const generateDDL = async () => {
+    setLoadingDDL(true);
+    let ddl = `-- DDL (Data Definition Language) Export\n`;
+    ddl += `-- Generated: ${new Date().toISOString()}\n`;
+    ddl += `-- App: ${window.location.origin}\n\n`;
+
+    try {
+      for (const entityName of entities) {
+        if (!selectedEntities[entityName]) continue;
+
+        try {
+          const schema = await base44.entities[entityName].schema();
+          const tableName = entityName.toLowerCase();
+          
+          ddl += `-- ${entityName}\n`;
+          ddl += `CREATE TABLE ${tableName} (\n`;
+          
+          // Built-in fields
+          ddl += `  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\n`;
+          ddl += `  created_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n`;
+          ddl += `  updated_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),\n`;
+          ddl += `  created_by TEXT,\n`;
+          
+          // Schema fields
+          if (schema?.properties) {
+            const fields = Object.entries(schema.properties);
+            fields.forEach(([fieldName, fieldSchema], idx) => {
+              const sqlType = getSQLType(fieldSchema);
+              const isRequired = schema.required?.includes(fieldName);
+              const notNull = isRequired ? ' NOT NULL' : '';
+              const defaultVal = fieldSchema.default !== undefined 
+                ? ` DEFAULT ${typeof fieldSchema.default === 'string' ? `'${fieldSchema.default}'` : fieldSchema.default}`
+                : '';
+              
+              ddl += `  ${fieldName} ${sqlType}${notNull}${defaultVal}`;
+              if (idx < fields.length - 1) ddl += ',';
+              if (fieldSchema.description) {
+                ddl += ` -- ${fieldSchema.description}`;
+              }
+              ddl += '\n';
+            });
+          }
+          
+          ddl += `);\n\n`;
+          
+          // Add indexes
+          ddl += `CREATE INDEX idx_${tableName}_created_date ON ${tableName}(created_date);\n`;
+          ddl += `CREATE INDEX idx_${tableName}_created_by ON ${tableName}(created_by);\n\n`;
+          
+        } catch (error) {
+          ddl += `-- Error generating DDL for ${entityName}: ${error.message}\n\n`;
+        }
+      }
+
+      const blob = new Blob([ddl], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `base44_ddl_${new Date().toISOString().split('T')[0]}.sql`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success('קובץ DDL הורד בהצלחה');
+    } catch (error) {
+      toast.error('שגיאה ביצירת DDL');
+      console.error(error);
+    } finally {
+      setLoadingDDL(false);
+    }
+  };
+
+  const generateRLS = async () => {
+    setLoadingRLS(true);
+    let rls = `-- RLS (Row Level Security) Policies Export\n`;
+    rls += `-- Generated: ${new Date().toISOString()}\n`;
+    rls += `-- App: ${window.location.origin}\n\n`;
+
+    try {
+      for (const entityName of entities) {
+        if (!selectedEntities[entityName]) continue;
+
+        try {
+          const schema = await base44.entities[entityName].schema();
+          const tableName = entityName.toLowerCase();
+          
+          if (!schema?.rls) {
+            rls += `-- ${entityName}: No RLS policies defined\n\n`;
+            continue;
+          }
+
+          rls += `-- ${entityName} RLS Policies\n`;
+          rls += `ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY;\n\n`;
+          
+          // Create policies
+          if (schema.rls.read) {
+            rls += `-- Read Policy\n`;
+            rls += `CREATE POLICY "${tableName}_read_policy" ON ${tableName}\n`;
+            rls += `  FOR SELECT\n`;
+            rls += `  USING (\n`;
+            rls += `    -- ${JSON.stringify(schema.rls.read, null, 2).replace(/\n/g, '\n    -- ')}\n`;
+            rls += `    true -- Customize based on your RLS rules\n`;
+            rls += `  );\n\n`;
+          }
+
+          if (schema.rls.create) {
+            rls += `-- Create Policy\n`;
+            rls += `CREATE POLICY "${tableName}_create_policy" ON ${tableName}\n`;
+            rls += `  FOR INSERT\n`;
+            rls += `  WITH CHECK (\n`;
+            rls += `    -- ${JSON.stringify(schema.rls.create, null, 2).replace(/\n/g, '\n    -- ')}\n`;
+            rls += `    true -- Customize based on your RLS rules\n`;
+            rls += `  );\n\n`;
+          }
+
+          if (schema.rls.update) {
+            rls += `-- Update Policy\n`;
+            rls += `CREATE POLICY "${tableName}_update_policy" ON ${tableName}\n`;
+            rls += `  FOR UPDATE\n`;
+            rls += `  USING (\n`;
+            rls += `    -- ${JSON.stringify(schema.rls.update, null, 2).replace(/\n/g, '\n    -- ')}\n`;
+            rls += `    true -- Customize based on your RLS rules\n`;
+            rls += `  );\n\n`;
+          }
+
+          if (schema.rls.delete) {
+            rls += `-- Delete Policy\n`;
+            rls += `CREATE POLICY "${tableName}_delete_policy" ON ${tableName}\n`;
+            rls += `  FOR DELETE\n`;
+            rls += `  USING (\n`;
+            rls += `    -- ${JSON.stringify(schema.rls.delete, null, 2).replace(/\n/g, '\n    -- ')}\n`;
+            rls += `    true -- Customize based on your RLS rules\n`;
+            rls += `  );\n\n`;
+          }
+          
+        } catch (error) {
+          rls += `-- Error generating RLS for ${entityName}: ${error.message}\n\n`;
+        }
+      }
+
+      const blob = new Blob([rls], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `base44_rls_${new Date().toISOString().split('T')[0]}.sql`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success('קובץ RLS הורד בהצלחה');
+    } catch (error) {
+      toast.error('שגיאה ביצירת RLS');
+      console.error(error);
+    } finally {
+      setLoadingRLS(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
@@ -259,27 +439,74 @@ export default function DataExport() {
           </div>
         </Card>
 
-        {/* Export Button */}
-        <Card className="p-6 mb-6">
-          <Button
-            onClick={handleExport}
-            disabled={loading || Object.values(selectedEntities).every(v => !v)}
-            className="w-full bg-indigo-600 hover:bg-indigo-700"
-            size="lg"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 ml-2 animate-spin" />
-                מייצא נתונים...
-              </>
-            ) : (
-              <>
-                <Database className="w-5 h-5 ml-2" />
-                ייצא נתונים
-              </>
-            )}
-          </Button>
-        </Card>
+        {/* Export Buttons */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="p-6">
+            <h3 className="font-semibold text-slate-800 mb-2">ייצוא נתונים</h3>
+            <p className="text-sm text-slate-600 mb-4">INSERT statements</p>
+            <Button
+              onClick={handleExport}
+              disabled={loading || Object.values(selectedEntities).every(v => !v)}
+              className="w-full bg-indigo-600 hover:bg-indigo-700"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                  מייצא...
+                </>
+              ) : (
+                <>
+                  <Database className="w-4 h-4 ml-2" />
+                  ייצא נתונים
+                </>
+              )}
+            </Button>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="font-semibold text-slate-800 mb-2">DDL Schema</h3>
+            <p className="text-sm text-slate-600 mb-4">CREATE TABLE statements</p>
+            <Button
+              onClick={generateDDL}
+              disabled={loadingDDL || Object.values(selectedEntities).every(v => !v)}
+              className="w-full bg-green-600 hover:bg-green-700"
+            >
+              {loadingDDL ? (
+                <>
+                  <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                  מייצא...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 ml-2" />
+                  הורד DDL
+                </>
+              )}
+            </Button>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="font-semibold text-slate-800 mb-2">RLS Policies</h3>
+            <p className="text-sm text-slate-600 mb-4">Row Level Security</p>
+            <Button
+              onClick={generateRLS}
+              disabled={loadingRLS || Object.values(selectedEntities).every(v => !v)}
+              className="w-full bg-purple-600 hover:bg-purple-700"
+            >
+              {loadingRLS ? (
+                <>
+                  <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                  מייצא...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 ml-2" />
+                  הורד RLS
+                </>
+              )}
+            </Button>
+          </Card>
+        </div>
 
         {/* Results */}
         {exportedSQL && (
