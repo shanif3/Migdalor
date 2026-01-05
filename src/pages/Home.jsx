@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Key, Calendar, Users,UserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles} from 'lucide-react';
+import { Key, Calendar, Users, UserPen, ArrowLeft, Shield, Settings, LogOut, Lightbulb, Sparkles, Database } from 'lucide-react';
 
 import { motion } from 'framer-motion';
 
@@ -88,13 +88,20 @@ export default function Home() {
 
 
   const adminFeatures = [
-  {
-    title: 'ניהול משתמשים',
-    description: 'צפייה ועריכת משתמשים במערכת',
-    icon: Settings,
-    path: 'ManageUsers',
-    available: isAdmin
-  }];
+    {
+      title: 'ניהול משתמשים',
+      description: 'צפייה ועריכת משתמשים במערכת',
+      icon: Settings,
+      path: 'ManageUsers',
+      available: isAdmin
+    },
+    {
+      title: 'ייצוא נתונים',
+      description: 'ייצוא נתונים ל-PostgreSQL/Supabase',
+      icon: Database,
+      path: 'DataExport',
+      available: isAdmin
+    }];
 
 
   if (loading) {
